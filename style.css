@@ -54,10 +54,23 @@ button:hover { background: #3a3a3a; }
 
 /* Reader */
 #reader { flex: 1; display: flex; flex-direction: column; min-width: 0; border-left: 1px solid #3c3c3c; }
+#metabar { display: flex; align-items: center; background: #252526; border-bottom: 1px solid #3c3c3c; }
+#metabar button { padding: 1px 7px; border-top: 0; border-bottom: 0; border-right: 0; font-size: 12px; }
+#metabar button.on { background: #094771; color: #fff; }
 #meta {
-  padding: 3px 6px; background: #252526; border-bottom: 1px solid #3c3c3c;
+  flex: 1; min-width: 0; padding: 3px 6px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px;
 }
+
+/* Full screen: only the email is left */
+#btnExitFull {
+  display: none; position: fixed; z-index: 10; right: 8px;
+  bottom: max(8px, env(safe-area-inset-bottom)); width: 36px; height: 36px;
+  border-radius: 18px; opacity: .45; background: #333;
+}
+body.full #toolbar, body.full #metabar, body.full #status, body.full #list, body.full #folders { display: none !important; }
+body.full #reader { border-left: 0; }
+body.full #btnExitFull { display: block; }
 #meta b { color: #fff; }
 #meta .d { color: #999; }
 #body { flex: 1; width: 100%; border: 0; background: #1e1e1e; }

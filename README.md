@@ -8,6 +8,14 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 - Runs 100% in your browser. There is no server, so your mail is never stored anywhere else.
 - Free: hosted on GitHub Pages, Gmail API is free for personal use.
 
+## Reading buttons (top right of an open email)
+
+| Button | What it does |
+|---|---|
+| `A-` / `A+` | Smaller / bigger text. Remembered for next time. |
+| `Aa` | **Reading mode** (blue = on). Removes the newsletter's colors and columns and shows clean dark text in one column. Tap again to see the original design. Remembered for next time. |
+| `⛶` | **Full screen**. Hides every bar, so only the email is on screen. Tap the faint `✕` at the bottom right to come back. |
+
 ## Files
 
 | File | What it does |
@@ -65,5 +73,10 @@ Steps:
 ## Known limits
 
 - You'll need to tap **Sign in** again about every hour (Google's sign-in for browser-only apps lasts 1 hour). Fixing this needs a small server; see CHANGELOG ideas.
-- Emails with their own design (newsletters, receipts) show on a white background so they stay readable. Plain-text emails use dark mode.
+- On iPhone, the browser itself can't go fully full screen. Use **Add to Home Screen**: then the Safari bars disappear too.
+- Reading mode is great for newsletters but can make receipts or emails with data tables look odd. Tap `Aa` to see the original.
+
+## Can I put this in the App Store / Google Play?
+
+Possible, but not free and not quick. See the "Store" notes in CHANGELOG ideas. For now it's a private app for your own account (Google allows up to 100 "test users" you add yourself, free).
 - Images inside emails load from the sender's server (same as Gmail). Senders can see that you opened the email.

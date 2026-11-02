@@ -33,8 +33,15 @@
 
     <!-- Reader: takes the whole screen on phones -->
     <section id="reader" hidden>
-      <div id="meta"></div>
+      <div id="metabar">
+        <div id="meta"></div>
+        <button id="btnSmaller" title="Smaller text">A-</button>
+        <button id="btnBigger" title="Bigger text">A+</button>
+        <button id="btnRead" title="Reading mode: dark, clean text">Aa</button>
+        <button id="btnFull" title="Full screen">&#x26F6;</button>
+      </div>
       <iframe id="body" sandbox="allow-popups allow-popups-to-escape-sandbox" title="Email"></iframe>
+      <button id="btnExitFull" title="Exit full screen">&#x2715;</button>
     </section>
   </div>
 

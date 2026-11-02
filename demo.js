@@ -12,6 +12,12 @@ window.ATSU_DEMO = {
     { id: "L3", name: "Receipts", type: "user" }
   ],
   messages: [
+    { id: "m0", labels: ["INBOX"], unread: true, from: "The Weekly Market Letter", subject: "Issue #42: Why small bots beat big ones", snippet: "This week: three lessons from a year of automated trading", date: Date.now() - 600e3,
+      html: "<table width='600' bgcolor='#f4f1ea' style='font-family:Arial;color:#333'><tr><td style='padding:24px'>" +
+        "<img src='x' width='1' height='1'><h1 style='color:#8b0000;font-size:28px'>Why small bots beat big ones</h1>" +
+        "<p style='font-size:12px;color:#777'>Issue #42 &middot; 9 min read</p>" +
+        Array.from({ length: 8 }, (_, i) => `<h2>Lesson ${i + 1}</h2><p style='font-size:13px'>` + "Simple rules you understand are easier to fix than clever rules you don't. Start with one market, one timeframe and one idea, and keep a log of every trade the bot makes. ".repeat(4) + "</p>").join("") +
+        "<p><a href='https://example.com'>Read on the web</a></p></td></tr></table>" },
     { id: "m1", labels: ["INBOX"], unread: true, from: "Broker Alerts", subject: "Order filled: 10 AAPL", snippet: "Your limit order was filled at", date: Date.now() - 3600e3,
       html: "<h3>Order filled</h3><p>Your limit order for <b>10 AAPL</b> was filled at <b>$231.40</b>.</p><p>Thank you for trading.</p>" },
     { id: "m2", labels: ["INBOX"], unread: true, from: "GitHub", subject: "[AtsuMail] Welcome to your new repo", snippet: "You just created a repository", date: Date.now() - 86400e3,

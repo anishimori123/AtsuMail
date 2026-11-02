@@ -125,20 +125,73 @@
     // One thin line of info, so the email body gets almost all the screen.
     $("meta").innerHTML = `<b>${esc(fromName(from))}</b> &middot; ${esc(subject || "(no subject)")} <span class="d">&middot; ${new Date(date).toLocaleString()}</span>`;
     $("meta").title = `${from}\n${subject}`;
-    const base = `<base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1">
-      <style>body{margin:8px;font:15px/1.45 -apple-system,Segoe UI,Arial,sans-serif;word-wrap:break-word}
-      img{max-width:100%;height:auto} table{max-width:100%!important}
-      .plain{background:#1e1e1e;color:#ddd;white-space:pre-wrap;margin:0}</style>`;
-    // Emails with their own design keep a white page (so they stay readable). Plain text uses dark mode.
-    $("body").srcdoc = html ? base + `<style>html{background:#fff;color:#111}</style>` + html
-                            : base + `<style>html{background:#1e1e1e}</style><div class="plain">${esc(text || "(empty)")}</div>`;
+    cur = { html, text };
+    render();
     $("reader").hidden = false;
     document.body.classList.add("reading");
     $("btnBack").hidden = false;
     status("Ready");
   }
 
+  // ---------- Reading mode, text size, full screen ----------
+  let cur = { html: "", text: "" };
+  const load = (k, d) => { try { const v = localStorage.getItem("atsu." + k); return v === null ? d : JSON.parse(v); } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem("atsu." + k, JSON.stringify(v)); } catch {} };
+  let readMode = load("readMode", true);   // true = dark, clean, one column (best for long newsletters)
+  let fontPx = load("fontPx", 17);
+
+  // Strip the newsletter's own colors and layout, keep text, links, images.
+  function cleanHtml(html) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    doc.querySelectorAll("style,script,link,meta,title,noscript,svg,form,input,button").forEach((e) => e.remove());
+    doc.querySelectorAll("img").forEach((i) => {
+      const w = +i.getAttribute("width"), h = +i.getAttribute("height");
+      if ((w && w < 5) || (h && h < 5)) i.remove(); // invisible tracking pixels
+    });
+    doc.body.querySelectorAll("*").forEach((e) => {
+      for (const a of [...e.attributes]) if (!["href", "src", "alt", "colspan", "rowspan"].includes(a.name)) e.removeAttribute(a.name);
+    });
+    return doc.body.innerHTML;
+  }
+
+  function render() {
+    const { html, text } = cur;
+    const base = `<base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1">`;
+    const dark = `<style>
+      html{background:#1e1e1e;color:#ddd}
+      body{margin:0 auto;padding:10px 12px 60px;max-width:42em;font:${fontPx}px/1.6 Georgia,"Times New Roman",serif;word-wrap:break-word;overflow-wrap:anywhere}
+      a{color:#6cb6ff} h1,h2,h3,h4,b,strong{color:#fff;line-height:1.3}
+      img{max-width:100%!important;height:auto!important;display:block;margin:8px auto}
+      table,tbody,thead,tr,td,th,center{display:block;width:auto!important}
+      hr{border:0;border-top:1px solid #444}
+      .plain{white-space:pre-wrap;font-family:inherit}</style>`;
+    let doc;
+    if (!html) doc = base + dark + `<div class="plain">${esc(text || "(empty)")}</div>`;
+    else if (readMode) doc = base + dark + cleanHtml(html);
+    else doc = base + `<style>html{background:#fff;color:#111;zoom:${fontPx / 17}}
+      body{margin:8px;font-family:-apple-system,Segoe UI,Arial,sans-serif}
+      img{max-width:100%;height:auto} table{max-width:100%!important}</style>` + html;
+    $("body").srcdoc = doc;
+    $("btnRead").classList.toggle("on", readMode);
+  }
+
+  function setFull(on) {
+    document.body.classList.toggle("full", on);
+    try {
+      if (on && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+      if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    } catch {}
+  }
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) document.body.classList.remove("full"); });
+
+  $("btnRead").onclick = () => { readMode = !readMode; save("readMode", readMode); render(); };
+  $("btnBigger").onclick = () => { fontPx = Math.min(30, fontPx + 1); save("fontPx", fontPx); render(); };
+  $("btnSmaller").onclick = () => { fontPx = Math.max(11, fontPx - 1); save("fontPx", fontPx); render(); };
+  $("btnFull").onclick = () => setFull(true);
+  $("btnExitFull").onclick = () => setFull(false);
+
   function closeReader() {
+    setFull(false);
     $("reader").hidden = true; curMsgId = null;
     document.body.classList.remove("reading");
     $("btnBack").hidden = true;
