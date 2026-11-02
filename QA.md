@@ -17,6 +17,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9b. Open an email. Use your phone's normal back gesture (Android) or the left-edge swipe (iPhone). You are back at the list, and still inside AtsuMail.
 9d. Open the Japanese newsletter (週刊マーケット通信). Tap 🔊. Text Reader opens with the text filled in and the PLAY button shows the subject. Tap PLAY. You hear it read aloud.
 9e. Android: opening an email hides the address bar. Going back to the list shows it again.
+9f. Open an email, tap ⛶. Swipe from the right edge to the left: back to the normal email screen. Swipe again: back to the list.
 9c. On the list, swipe right. Folders slide in, with big text. Swipe left. They hide.
 
 ## Part B — Real Gmail (after you add your Client ID)

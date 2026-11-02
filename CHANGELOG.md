@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.2 — 2026-11-01 — time spent: ~5 min
+
+**What changed**
+- In full screen, swiping from the right edge to the left (or the phone's back gesture) first returns to the normal email screen. Swipe again to go back to the list.
+
+**Why**
+- Faster than finding the small ✕ button.
+
+
 ## v0.4.0 / v0.4.1 — 2026-11-01 — time spent: ~30 min
 
 **What changed**

@@ -240,6 +240,8 @@
   // normal back gesture/button closes the email instead of leaving the app.
   function goBack() {
     if ($("reader").hidden) return;
+    // In full screen, the first swipe/back only leaves full screen.
+    if (document.body.classList.contains("full")) { setFull(false); return; }
     if (history.state && history.state.atsuRead) history.back(); else closeReader();
   }
   window.addEventListener("popstate", () => { if (!$("reader").hidden) closeReader(); });
