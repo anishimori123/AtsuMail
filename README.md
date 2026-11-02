@@ -48,13 +48,15 @@ Words you'll see:
 Steps:
 1. Go to https://console.cloud.google.com and sign in with your Gmail account.
 2. Top bar → project picker → **New Project** → name it `AtsuMail` → **Create**.
-3. Search bar at top: type `Gmail API` → click it → **Enable**.
+3. Search bar at top: type `Gmail API` → click it → **Enable**. Then search `Google Sheets API` → click it → **Enable**.
 4. Search bar: type `Google Auth Platform` (or "OAuth consent screen") → **Get started**.
    - App name: `AtsuMail`, support email: your email.
    - Audience: **External**.
    - Finish the wizard.
 5. In **Audience** → **Test users** → **Add users** → add your own Gmail address.
-6. In **Data Access** → **Add or remove scopes** → find `.../auth/gmail.readonly` → tick it → **Update** → **Save**.
+6. In **Data Access** → **Add or remove scopes** → tick these two → **Update** → **Save**:
+   - `.../auth/gmail.readonly` (read your mail)
+   - `.../auth/spreadsheets.readonly` (read your Google Sheets)
 7. In **Clients** → **Create client**:
    - Application type: **Web application**
    - Authorized JavaScript origins: add `https://anishimori123.github.io` (and `http://localhost:8000` for testing on your PC)
@@ -64,6 +66,16 @@ Steps:
 9. Open AtsuMail → click **Sign in**.
    - Google will say **"Google hasn't verified this app"**. That's normal because it's your own private app. Click **Continue**.
    - Success = your real folders and emails appear.
+
+## Show a Google Sheet (like your Myojin sheet)
+
+1. Open the sheet in your browser. Copy the address from the address bar (it looks like `https://docs.google.com/spreadsheets/d/1AbC.../edit`).
+2. On GitHub, open `config.js` → click the ✏️ pencil (Edit).
+3. Paste the link between the quotes in `{ name: "Myojin", url: "" }`.
+4. Click **Commit changes**.
+5. In AtsuMail, the sheet is under **SHEETS** at the bottom of the folder list. Tabs are at the bottom of the sheet, like Excel.
+- Read-only: you can look, not edit.
+- To add another sheet, add another line: `{ name: "Budget", url: "..." },`
 
 ## Put it online (GitHub Pages, free)
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.6.0 — 2026-11-01 — time spent: ~30 min
+
+**What changed**
+- New **SHEETS** section at the bottom of the folder list. Shows Google Sheets (read-only) in a dark, Excel-like grid: column letters, row numbers, first row bold, numbers right-aligned, tabs at the bottom.
+- Sheets are set in `config.js` → `SHEETS` (name + link). "Myojin" is ready; paste its link.
+- Sign-in now also asks for "read your Google Sheets" (`spreadsheets.readonly`). Needs the Google Sheets API turned on (README).
+- ↻ refreshes the open sheet.
+- Phone: tap a cut-off cell to see its full text.
+- Demo: fake "Myojin" sheet with 2 tabs.
+
+**Why**
+- See the Myojin sheet in the same app as email.
+
+
 ## v0.5.5 — 2026-11-01 — time spent: ~10 min
 
 **What changed**

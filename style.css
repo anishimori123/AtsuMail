@@ -80,7 +80,7 @@ body.full #btnExitFull { display: block; }
 #meta b { color: #fff; }
 #meta .d { color: #999; }
 #reader { position: relative; }
-#toast { position: absolute; z-index: 6; top: 40px; left: 50%; transform: translateX(-50%);
+#toast { position: fixed; z-index: 20; top: 64px; max-width: 90vw; white-space: normal; left: 50%; transform: translateX(-50%);
   background: #007acc; color: #fff; padding: 4px 12px; font-size: 13px; pointer-events: none; }
 /* Invisible strip on the left edge of the email: swipe right here to go back */
 #edge, #edgeR { position: absolute; top: 30px; bottom: 0; width: 28px; z-index: 3; }
@@ -129,6 +129,25 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   .c-subj { flex-basis: 100%; }
   .row.head { display: none; }
 }
+
+/* ---------- Sheets ---------- */
+.tree-head { margin: 8px 0 2px; padding: 2px 10px; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-top: 1px solid #333; }
+.folder.sheet::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='1' width='12' height='14' rx='1' fill='%2334a853'/%3E%3Cpath d='M4.5 5h7v7h-7zM4.5 7.5h7M4.5 10h7M7.5 5v7' stroke='%23fff' stroke-width='1' fill='none'/%3E%3C/svg%3E"); filter: none; }
+body.sheetmode #list, body.sheetmode #reader, body.sheetmode #split2 { display: none !important; }
+#sheetview { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#sheetgrid { flex: 1; overflow: auto; }
+#sheetgrid table { border-collapse: collapse; font-size: 13px; }
+#sheetgrid th, #sheetgrid td { border: 1px solid #333; padding: 3px 7px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+#sheetgrid thead th { position: sticky; top: 0; background: #252526; color: #999; font-weight: normal; z-index: 2; }
+#sheetgrid th.rn { position: sticky; left: 0; background: #252526; color: #888; font-weight: normal; text-align: right; min-width: 32px; z-index: 1; }
+#sheetgrid thead th.rn { z-index: 3; }
+#sheetgrid tbody tr:first-child td { color: #fff; font-weight: bold; }
+#sheetgrid tbody tr:hover td { background: #2a2d2e; }
+#sheetgrid td.num { text-align: right; font-variant-numeric: tabular-nums; }
+#sheetgrid .hint { padding: 12px; color: #aaa; }
+#sheettabs { display: flex; gap: 2px; overflow-x: auto; background: #252526; border-top: 1px solid #3c3c3c; padding: 2px 4px; }
+#sheettabs button { border: 0; background: #2d2d2d; padding: 3px 12px; white-space: nowrap; }
+#sheettabs button.on { background: #1e1e1e; color: #fff; border-bottom: 2px solid #34a853; }
 
 /* Drag handles between panes (PC only) */
 .split { display: none; width: 5px; flex-shrink: 0; cursor: col-resize; background: #2a2a2a; }

@@ -39,9 +39,9 @@
 
   async function gapi(path) {
     if (!token) throw new Error("Not signed in");
-    const r = await fetch(API + path, { headers: { Authorization: "Bearer " + token } });
+    const r = await fetch(path.startsWith("http") ? path : API + path, { headers: { Authorization: "Bearer " + token } });
     if (r.status === 401) { token = null; $("btnSignIn").textContent = "Sign in"; throw new Error("Session expired - click Sign in again"); }
-    if (!r.ok) throw new Error("Gmail error " + r.status);
+    if (!r.ok) throw new Error((path.includes("sheets.googleapis") ? "Sheets" : "Gmail") + " error " + r.status + (r.status === 403 ? " (is the Sheets API turned on, and can your account open this sheet?)" : ""));
     return r.json();
   }
 
@@ -62,8 +62,67 @@
       const depth = l.type === "system" ? 0 : l.name.split("/").length - 1;
       const name = l.type === "system" ? prettyName(l.name) : l.name.split("/").pop();
       return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${10 + depth * 1.2}em` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
-    }).join("");
+    }).join("") + sheetFolders();
   }
+
+  // ---------- Google Sheets (read-only) ----------
+  const SHEETS = (CFG.SHEETS || []).filter((s) => s && s.name);
+  let curSheet = null, curTab = null;
+  const sheetId = (url) => (String(url || "").match(/\/d\/([\w-]{20,})/) || [])[1] || "";
+  function sheetFolders() {
+    if (!SHEETS.length) return "";
+    return `<div class="tree-head">Sheets</div>` + SHEETS.map((s, i) =>
+      `<div class="folder sheet ${curSheet === i ? "sel" : ""}" data-sheet="${i}" data-name="${esc(s.name)}">${esc(s.name)}</div>`).join("");
+  }
+  async function openSheet(i) {
+    curSheet = i; curTab = null;
+    document.body.classList.add("sheetmode");
+    $("sheetview").hidden = false;
+    $("sheetgrid").innerHTML = ""; $("sheettabs").innerHTML = "";
+    const s = SHEETS[i], id = sheetId(s.url);
+    status("Loading sheet...");
+    let tabs;
+    if (!id && DEMO) tabs = Object.keys(ATSU_DEMO.sheet);
+    else if (!id) { $("sheetgrid").innerHTML = `<p class="hint">Paste the link of "${esc(s.name)}" into <b>config.js</b> (SHEETS) to show it here.</p>`; status("No sheet link yet"); return; }
+    else {
+      const meta = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}?fields=properties.title,sheets.properties(title,hidden)`);
+      tabs = meta.sheets.filter((t) => !t.properties.hidden).map((t) => t.properties.title);
+    }
+    $("sheettabs").innerHTML = tabs.map((t) => `<button data-tab="${esc(t)}">${esc(t)}</button>`).join("");
+    await openTab(tabs[0]);
+  }
+  async function openTab(tab) {
+    curTab = tab;
+    document.querySelectorAll("#sheettabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
+    const s = SHEETS[curSheet], id = sheetId(s.url);
+    status("Loading " + tab + "...");
+    let rows;
+    if (!id && DEMO) rows = ATSU_DEMO.sheet[tab] || [];
+    else {
+      const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent("'" + tab.replace(/'/g, "''") + "'")}`);
+      rows = res.values || [];
+    }
+    const cols = Math.max(1, ...rows.map((r) => r.length));
+    const colName = (n) => { let s = ""; n++; while (n) { n--; s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26); } return s; };
+    const num = (v) => /^[-+]?[\d,]+(\.\d+)?%?$|^[$¥€£]/.test(String(v).trim());
+    let h = `<table><thead><tr><th class="rn"></th>${Array.from({ length: cols }, (_, c) => `<th>${colName(c)}</th>`).join("")}</tr></thead><tbody>`;
+    rows.forEach((r, ri) => {
+      h += `<tr><th class="rn">${ri + 1}</th>`;
+      for (let c = 0; c < cols; c++) { const v = r[c] ?? ""; h += `<td class="${num(v) ? "num" : ""}" title="${esc(v)}">${esc(v)}</td>`; }
+      h += "</tr>";
+    });
+    $("sheetgrid").innerHTML = h + "</tbody></table>";
+    $("sheetgrid").scrollTo(0, 0);
+    status(`${s.name} › ${tab} · ${rows.length} rows`);
+  }
+  function closeSheet() {
+    curSheet = null;
+    document.body.classList.remove("sheetmode");
+    $("sheetview").hidden = true;
+  }
+  $("sheettabs").onclick = (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.tab).catch((er) => status(er.message)); };
+  // Phone: tap a cell to see its full text
+  $("sheetgrid").onclick = (e) => { const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
 
   // ---------- Message list ----------
   const header = (m, n) => (m.payload?.headers || []).find((h) => h.name.toLowerCase() === n)?.value || "";
@@ -286,17 +345,20 @@
 
   // ---------- Clicks ----------
   $("btnSignIn").onclick = () => tokenClient?.requestAccessToken();
-  $("btnRefresh").onclick = () => loadAll();
+  $("btnRefresh").onclick = () => (curSheet !== null ? openSheet(curSheet).catch((er) => status(er.message)) : loadAll());
   $("btnBack").onclick = () => goBack();
   $("btnBack2").onclick = () => goBack();
   $("btnFolders").onclick = () => document.body.classList.toggle("show-folders");
   $("btnMore").onclick = () => loadList(true).catch((e) => status(e.message));
   $("folders").onclick = (e) => {
     const f = e.target.closest(".folder"); if (!f) return;
-    curLabel = f.dataset.id; $("path").textContent = "AtsuMail › " + f.dataset.name;
+    $("path").textContent = "AtsuMail › " + f.dataset.name;
     document.querySelectorAll(".folder").forEach((x) => x.classList.toggle("sel", x === f));
     document.body.classList.remove("show-folders");
     goBack();
+    if (f.dataset.sheet !== undefined) { openSheet(+f.dataset.sheet).catch((er) => status(er.message)); return; }
+    closeSheet();
+    curLabel = f.dataset.id;
     loadList().catch((er) => status(er.message));
   };
   $("rows").onclick = (e) => { const r = e.target.closest(".row"); if (r) openMsg(r.dataset.id).catch((er) => status(er.message)); };

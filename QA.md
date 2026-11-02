@@ -20,6 +20,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9f. Open an email, tap ⛶. Swipe from the right edge to the left: back to the normal email screen. Swipe again: back to the list.
 9g. Turn the phone sideways and open an email. It fills the full width with one thin bar on top. Tap ← in that bar to go back.
 9c. On the list, swipe right. Folders slide in, with big text. Swipe left. They hide.
+9h. In the folder list, under SHEETS, tap **Myojin**. A dark table shows with tabs at the bottom (Sheet1, Log). Tap **Log**: it switches. Tap **Inbox**: back to email.
 
 ## Part B — Real Gmail (after you add your Client ID)
 10. Tap `Sign in` → choose your account → "unverified app" warning → `Continue` → allow. Your folders appear.
@@ -29,6 +30,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 14. Open 1 receipt/order email. If reading mode looks odd, `Aa` shows the original correctly.
 15. Open a Japanese email. Japanese text shows correctly (no garbled letters).
 16. Wait over 1 hour, tap `↻`. You'll see "Session expired". Tap `Sign in` again and it works. (This is expected for now.)
+16a. After pasting the Myojin link in config.js: tap **Myojin**. Your real sheet shows, with all its tabs.
 17. Phone: Add to Home Screen, open from the icon. No browser bars.
 
 ## Part C — PC (Windows, Edge or Chrome)

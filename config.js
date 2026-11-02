@@ -6,9 +6,15 @@
 // Leave it empty ("") to run in DEMO mode with fake emails.
 window.ATSU_CONFIG = {
   CLIENT_ID: "",
-  // Read-only access: the app can read your mail but cannot send, delete or change anything.
-  SCOPE: "https://www.googleapis.com/auth/gmail.readonly",
+  // Read-only access: the app can read your mail and sheets but cannot send, delete or change anything.
+  SCOPE: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/spreadsheets.readonly",
   PAGE_SIZE: 50,
   // Your voice app. "../text_reader/" means "the text_reader site next to AtsuMail".
-  VOICE_URL: "../text_reader/"
+  VOICE_URL: "../text_reader/",
+  // Google Sheets shown under "Sheets" in the folder list.
+  // Paste the sheet's link (copy it from the browser address bar while the sheet is open).
+  // You can add more lines like: { name: "Budget", url: "https://docs.google.com/spreadsheets/d/..." },
+  SHEETS: [
+    { name: "Myojin", url: "" }
+  ]
 };

@@ -34,5 +34,10 @@ window.ATSU_DEMO = {
     { id: "m4", labels: ["INBOX", "L1"], from: "Bot Log", subject: "Daily P/L report", snippet: "+1.2% today", date: Date.now() - 5 * 86400e3,
       text: "Daily report\n------------\nTrades: 4\nP/L: +1.2%\n" },
     { id: "m5", labels: ["SENT"], from: "me", subject: "Re: meeting", snippet: "Sounds good", date: Date.now() - 9 * 86400e3, text: "Sounds good, see you then." }
-  ]
+  ],
+  // Fake sheet so the Sheets view can be tried without Google
+  sheet: {
+    "Sheet1": [["Date", "Item", "Amount", "Note"], ["2026-10-01", "Offering", "5,000", ""], ["2026-10-08", "Supplies", "1,200", "Candles"], ["2026-10-15", "Offering", "3,000", ""], ["2026-10-22", "Repair", "8,500", "Roof, east side"], ["2026-10-29", "Offering", "4,000", ""]],
+    "Log": [["When", "Who", "What"], ["10/02", "Atsushi", "Checked the list"], ["10/20", "Atsushi", "Added October rows"]]
+  }
 };
