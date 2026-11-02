@@ -15,7 +15,8 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9. Tap the link "Read on the web" in the newsletter. It opens in a new tab (not inside the app).
 9a. Open an email. Put your finger on the **right edge** of the screen and swipe **left**. You are back at the list.
 9b. Open an email. Use your phone's normal back gesture (Android) or the left-edge swipe (iPhone). You are back at the list, and still inside AtsuMail.
-9d. Open the Japanese newsletter (週刊マーケット通信). Tap 🔊. Text Reader opens with the text filled in and the PLAY button shows the subject. Tap PLAY. You hear it read aloud.
+9d. Open the Japanese newsletter (週刊マーケット通信). Tap 🔊. The player appears at the bottom and starts reading in a Japanese voice. Try ❚❚, ⏭, − / +, and Soft / Radio DJ. Tap ↗: Text Reader opens with the email.
+9d2. Open the English newsletter, tap 🔊: it reads in an English voice. Pick another EN voice: it switches. Go back to the list: the voice stops.
 9e. Android: opening an email hides the address bar. Going back to the list shows it again.
 9f. Open an email, tap ⛶. Swipe from the right edge to the left: back to the normal email screen. Swipe again: back to the list.
 9g. Turn the phone sideways and open an email. It fills the full width with one thin bar on top. Tap ← in that bar to go back.
@@ -40,4 +41,4 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 20. Install it (README "Install on your Windows PC"). It opens in its own window with the pink envelope icon.
 21. Open an email on PC. Drag the thin bar between the list and the email left/right: the email gets wider/narrower. Close and reopen the app: the size is remembered. Double-click the bar: back to normal.
 22. Drag the bar between folders and list. Same behavior.
-23. PC: open an email, press F (or Ctrl+F): full screen. Press Ctrl+F again: normal. Close the email and press Ctrl+F: the browser's Find box opens.
+23. PC: open an email, press F: full screen. Press Ctrl+F again: normal. Ctrl+F opens the browser's Find box (not full screen).

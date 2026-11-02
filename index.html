@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1e1e1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>AtsuMail</title>
-<link rel="stylesheet" href="style.css?v=0.6.4">
+<link rel="stylesheet" href="style.css?v=0.7.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -41,13 +41,33 @@
       <div id="metabar">
         <button id="btnBack2" title="Back">&larr;</button>
         <div id="meta"></div>
-        <button id="btnSpeak" title="Read aloud in Text Reader">&#x1F50A;</button>
+        <button id="btnSpeak" title="Read aloud">&#x1F50A;</button>
         <button id="btnSmaller" title="Smaller text">A-</button>
         <button id="btnBigger" title="Bigger text">A+</button>
         <button id="btnRead" title="Reading mode: dark, clean text">Aa</button>
-        <button id="btnFull" title="Full screen (F or Ctrl+F)">&#x26F6;</button>
+        <button id="btnFull" title="Full screen (F)">&#x26F6;</button>
       </div>
       <iframe id="body" sandbox="allow-popups allow-popups-to-escape-sandbox" title="Email"></iframe>
+      <!-- Voice player (reads the email aloud) -->
+      <div id="player" hidden>
+        <div id="vProg"><div id="vBar"></div></div>
+        <div class="vrow">
+          <button id="vPrev" title="Previous sentence">&#9198;</button>
+          <button id="vPlay" title="Play">&#9654;</button>
+          <button id="vNext" title="Next sentence">&#9197;</button>
+          <button id="vStop" title="Stop">&#9632;</button>
+          <select id="vStyle" title="Reading style"></select>
+          <button id="vSlower" title="Slower">&minus;</button><span id="vSpeed">1.0x</span><button id="vFaster" title="Faster">+</button>
+          <span class="spacer"></span>
+          <button id="vTR" title="Open in Text Reader app">&#8599;</button>
+          <button id="vClose" title="Close player">&#x2715;</button>
+        </div>
+        <div class="vrow">
+          <label>EN <select id="vEn"></select></label>
+          <label>JA <select id="vJa"></select></label>
+        </div>
+        <div id="vNow"></div>
+      </div>
       <div id="edge"></div>
       <div id="edgeR"></div>
       <button id="btnExitFull" title="Exit full screen">&#x2715;</button>
@@ -63,9 +83,10 @@
   <div id="toast" hidden></div>
   <div id="status">Ready</div>
 
-  <script src="config.js?v=0.6.4"></script>
+  <script src="config.js?v=0.7.0"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="demo.js?v=0.6.4"></script>
-  <script src="app.js?v=0.6.4"></script>
+  <script src="demo.js?v=0.7.0"></script>
+  <script src="voice.js?v=0.7.0"></script>
+  <script src="app.js?v=0.7.0"></script>
 </body>
 </html>

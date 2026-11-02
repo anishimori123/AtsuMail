@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.7.0 | 2026-11-01 | 7 min | Built-in voice reader (EN + JA, Soft / Radio DJ / News); F key only for full screen |
 | v0.6.4 | 2026-11-01 | 2 min | PC: plain F key also toggles full screen |
 | v0.6.3 | 2026-11-01 | 2 min | PC: Ctrl+F turns full screen on/off while an email is open |
 | v0.6.2 | 2026-11-01 | 3 min | Phone: back gesture / swipe on the list opens the folder screen |
@@ -24,12 +25,27 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **1 h 29 min** | |
+| **Total** | | **1 h 36 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.7.0 — 2026-11-01 — time spent: 7 min
+
+**What changed**
+- 🔊 now opens a **built-in voice player** at the bottom of the email (no Text Reader app needed):
+  - ▶ / ❚❚ play-pause, ⏮ ⏭ previous/next sentence, ■ stop, − / + speed, pink progress bar, current sentence shown.
+  - Styles: **Soft** (slower, lower, longer pauses), **Radio DJ** (quicker, brighter, short pauses), **News**.
+  - Reads English and Japanese in the same email: switches voice per sentence.
+  - Picks the most natural voice on your device automatically (Edge "Online (Natural)", iPhone "Premium/Enhanced", Google). You can change EN/JA voice. All settings remembered.
+  - ↗ button still sends the email to your Text Reader app.
+- Removed Ctrl+F shortcut. Only **F** toggles full screen (Ctrl+F is the browser's Find again).
+- New file: `voice.js`.
+
+**Why**
+- Test listening to emails inside AtsuMail. Free: uses voices already on your device.
 
 ## v0.6.4 — 2026-11-01 — time spent: 2 min
 

@@ -14,7 +14,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 |---|---|
 | `A-` / `A+` | Smaller / bigger text. Remembered for next time. |
 | `Aa` | **Reading mode** (blue = on). Removes the newsletter's colors and columns and shows clean dark text in one column. Tap again to see the original design. Remembered for next time. |
-| `🔊` | **Read aloud**: opens your Text Reader app with this email filled in. Tap PLAY there. |
+| `🔊` | **Read aloud**: opens the voice player at the bottom. Choose Soft / Radio DJ / News, speed, and English / Japanese voice. `↗` in the player sends the email to your Text Reader app instead. |
 | `⛶` | **Full screen**. Hides every bar, so only the email is on screen. Tap the faint `✕` at the bottom right to come back. |
 
 ## Files
@@ -26,6 +26,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `app.js` | Talks to Gmail and shows the mail |
 | `config.js` | Your settings (Google Client ID goes here) |
 | `demo.js` | Fake emails, used when no Client ID is set |
+| `voice.js` | Built-in voice reader (uses your device's voices) |
 | `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
 
@@ -91,9 +92,15 @@ Steps:
    Chrome: click the small **install icon** (a screen with a down arrow) at the right end of the address bar → **Install**.
 3. Success = AtsuMail opens in its own window with the pink envelope icon, and shows up in the Start menu. Right-click its taskbar icon → **Pin to taskbar**.
 
-PC keyboard: `↑` / `↓` = previous / next email, `F` or `Ctrl+F` = full screen on/off (when an email is open), `Esc` = leave full screen / close email.
+PC keyboard: `↑` / `↓` = previous / next email, `F` = full screen on/off (when an email is open), `Esc` = leave full screen / close email.
 
 PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
+
+## Best voices (free)
+
+- **Windows PC:** use **Edge**. It has very natural voices named "Online (Natural)" (e.g. Aria, Jenny for English; Nanami, Keita for Japanese).
+- **iPhone:** Settings → Accessibility → Spoken Content → Voices → English / Japanese → download a voice marked **Enhanced** or **Premium**. Then pick it in the player.
+- **Android:** Settings → search "Text-to-speech" → Google engine → install voice data for English and Japanese.
 
 ## Known limits
 

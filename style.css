@@ -130,6 +130,21 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   .row.head { display: none; }
 }
 
+/* ---------- Voice player ---------- */
+#player { background: #252526; border-top: 1px solid #3c3c3c; padding: 2px 4px 4px; font-size: 12px;
+  padding-bottom: max(4px, env(safe-area-inset-bottom)); }
+#player .vrow { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-top: 3px; }
+#player button { padding: 3px 7px; min-width: 28px; }
+#player select { background: #1e1e1e; color: #ddd; border: 1px solid #444; font: inherit; padding: 2px; max-width: 38vw; }
+#vStyle { max-width: 90px !important; }
+#player label { display: flex; align-items: center; gap: 3px; color: #999; }
+#vSpeed { min-width: 30px; text-align: center; color: #fff; }
+#vPlay { background: #094771; color: #fff; }
+#vProg { height: 3px; background: #333; }
+#vBar { height: 100%; width: 0; background: #ff8fd1; transition: width .3s; }
+#vNow { margin-top: 3px; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#btnSpeak.on { background: #094771; color: #fff; }
+
 /* ---------- Sheets ---------- */
 .tree-head { margin: 8px 0 2px; padding: 2px 10px; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-top: 1px solid #333; }
 .folder.sheet::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2' y='1' width='12' height='14' rx='1' fill='%2334a853'/%3E%3Cpath d='M4.5 5h7v7h-7zM4.5 7.5h7M4.5 10h7M7.5 5v7' stroke='%23fff' stroke-width='1' fill='none'/%3E%3C/svg%3E"); filter: none; }

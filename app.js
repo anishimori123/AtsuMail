@@ -185,6 +185,7 @@
     $("meta").innerHTML = `<b>${esc(fromName(from))}</b> &middot; ${esc(subject || "(no subject)")} <span class="d">&middot; ${new Date(date).toLocaleString()}</span>`;
     $("meta").title = `${from}\n${subject}`;
     cur = { html, text, subject, from };
+    AtsuVoice.close(); $("btnSpeak").classList.remove("on");
     render();
     if (!(history.state && history.state.atsuRead)) history.pushState({ atsuRead: 1 }, "");
     $("reader").hidden = false;
@@ -275,7 +276,14 @@
                .replace(/[ \t\u00a0]+/g, " ").replace(/\s*\n\s*/g, "\n").trim();
     return (subject ? subject + "\n" : "") + body;
   }
+  // 🔊 = built-in voice player. ↗ in the player = open in your Text Reader app instead.
   $("btnSpeak").onclick = () => {
+    if (AtsuVoice.isOpen()) { AtsuVoice.close(); $("btnSpeak").classList.remove("on"); return; }
+    AtsuVoice.open(emailToText()); $("btnSpeak").classList.add("on");
+  };
+  $("vClose").addEventListener("click", () => $("btnSpeak").classList.remove("on"));
+  $("vTR").onclick = () => {
+    AtsuVoice.stop();
     try {
       localStorage.setItem("atsu.speak", JSON.stringify({ subject: cur.subject || "", text: emailToText(), ts: Date.now() }));
     } catch { status("Could not hand the email to Text Reader"); return; }
@@ -304,6 +312,7 @@
 
   function closeReader() {
     setFull(false);
+    AtsuVoice.close(); $("btnSpeak").classList.remove("on");
     $("reader").hidden = true; curMsgId = null;
     document.body.classList.remove("reading");
     $("btnBack").hidden = true;
@@ -378,9 +387,9 @@
   // PC keyboard: Esc = back, Up/Down = previous/next email
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") return goBack();
-    // F or Ctrl+F (Cmd+F on Mac): full screen on/off while an email is open
+    // F: full screen on/off while an email is open (Ctrl+F stays the browser's Find)
     const plainF = e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
-    if ((plainF || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f")) && !$("reader").hidden) {
+    if (plainF && !$("reader").hidden) {
       e.preventDefault();
       setFull(!document.body.classList.contains("full"));
       return;
