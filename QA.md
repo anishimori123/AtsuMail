@@ -15,6 +15,8 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9. Tap the link "Read on the web" in the newsletter. It opens in a new tab (not inside the app).
 9a. Open an email. Put your finger on the **right edge** of the screen and swipe **left**. You are back at the list.
 9b. Open an email. Use your phone's normal back gesture (Android) or the left-edge swipe (iPhone). You are back at the list, and still inside AtsuMail.
+9d. Open the Japanese newsletter (週刊マーケット通信). Tap 🔊. Text Reader opens with the text filled in and the PLAY button shows the subject. Tap PLAY. You hear it read aloud.
+9e. Android: opening an email hides the address bar. Going back to the list shows it again.
 9c. On the list, swipe right. Folders slide in, with big text. Swipe left. They hide.
 
 ## Part B — Real Gmail (after you add your Client ID)

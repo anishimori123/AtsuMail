@@ -125,10 +125,11 @@
     // One thin line of info, so the email body gets almost all the screen.
     $("meta").innerHTML = `<b>${esc(fromName(from))}</b> &middot; ${esc(subject || "(no subject)")} <span class="d">&middot; ${new Date(date).toLocaleString()}</span>`;
     $("meta").title = `${from}\n${subject}`;
-    cur = { html, text };
+    cur = { html, text, subject, from };
     render();
     if (!(history.state && history.state.atsuRead)) history.pushState({ atsuRead: 1 }, "");
     $("reader").hidden = false;
+    autoHideBrowserBar();
     document.body.classList.add("reading");
     $("btnBack").hidden = false;
     status("Ready");
@@ -180,6 +181,16 @@
     $("btnRead").classList.toggle("on", readMode);
   }
 
+  // On phones, opening an email hides the browser's address bar (Android Chrome).
+  // Not needed when opened from the Home Screen icon (no address bar there).
+  // iPhone Safari doesn't allow this; use Add to Home Screen instead.
+  function autoHideBrowserBar() {
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    const phone = matchMedia("(max-width: 700px)").matches;
+    if (!phone || standalone || document.fullscreenElement) return;
+    try { document.documentElement.requestFullscreen?.({ navigationUI: "hide" }).catch(() => {}); } catch {}
+  }
+
   function setFull(on) {
     document.body.classList.toggle("full", on);
     try {
@@ -188,6 +199,28 @@
     } catch {}
   }
   document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) document.body.classList.remove("full"); });
+
+  // ---------- Read aloud (sends the email to your Text Reader app) ----------
+  // Both apps live on the same website, so they share browser storage.
+  function emailToText() {
+    const { html, text, subject } = cur;
+    let body = text || "";
+    if (html) {
+      const d = document.createElement("div");
+      d.innerHTML = cleanHtml(html).replace(/<img[^>]*>/gi, "");
+      d.querySelectorAll("p,div,h1,h2,h3,h4,h5,h6,li,tr,br,table,blockquote").forEach((e) => e.append("\n"));
+      body = d.textContent;
+    }
+    body = body.replace(/https?:\/\/\S+/g, "")      // don't read web addresses aloud
+               .replace(/[ \t\u00a0]+/g, " ").replace(/\s*\n\s*/g, "\n").trim();
+    return (subject ? subject + "\n" : "") + body;
+  }
+  $("btnSpeak").onclick = () => {
+    try {
+      localStorage.setItem("atsu.speak", JSON.stringify({ subject: cur.subject || "", text: emailToText(), ts: Date.now() }));
+    } catch { status("Could not hand the email to Text Reader"); return; }
+    window.open(CFG.VOICE_URL || "../text_reader/", "_blank");
+  };
 
   $("btnRead").onclick = () => { readMode = !readMode; save("readMode", readMode); render(); };
   $("btnBigger").onclick = () => { fontPx = Math.min(30, fontPx + 1); save("fontPx", fontPx); render(); };

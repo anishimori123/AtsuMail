@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0 / v0.4.1 — 2026-11-01 — time spent: ~30 min
+
+**What changed**
+- 🔊 button on an open email: sends the email text to Text Reader (`../text_reader/`) and opens it in a new tab. Tap PLAY there to listen. Web addresses and images are left out.
+- Needs Text Reader v8.1.7 or newer and its GitHub Pages turned on.
+- Demo: added a Japanese email magazine for testing voice.
+- Phones: opening an email now hides the browser's address bar (Android Chrome). On iPhone, open AtsuMail from the Home Screen icon instead; there is no address bar there.
+
+**Why**
+- Listen to email magazines without copy-paste.
+- More of the screen for the email text.
+
+
 ## v0.3.3 — 2026-11-01 — time spent: ~3 min
 
 **What changed**

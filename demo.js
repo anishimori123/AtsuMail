@@ -12,6 +12,13 @@ window.ATSU_DEMO = {
     { id: "L3", name: "Receipts", type: "user" }
   ],
   messages: [
+    { id: "mj", labels: ["INBOX"], unread: true, from: "週刊マーケット通信", subject: "第42号：小さなボットが勝つ理由", snippet: "今週のテーマは自動売買の三つの教訓です", date: Date.now() - 300e3,
+      html: "<table width='600' bgcolor='#f4f1ea'><tr><td style='padding:24px;color:#333'>" +
+        "<h1 style='color:#8b0000'>小さなボットが勝つ理由</h1><p style='font-size:12px;color:#777'>第42号・読了時間 5分</p>" +
+        "<h2>教訓1：シンプルに始める</h2><p>理解できるルールは、理解できない賢いルールよりも直しやすいです。まずは一つの市場、一つの時間足、一つのアイデアから始めましょう。</p>" +
+        "<h2>教訓2：記録を残す</h2><p>ボットが行ったすべての取引を記録してください。記録があれば、何がうまくいき、何が失敗したのかがすぐにわかります。</p>" +
+        "<h2>教訓3：少額で試す</h2><p>本番の前に、必ず少ない金額で試しましょう。小さな失敗は、大きな学びになります。</p>" +
+        "<p>来週もお楽しみに！</p></td></tr></table>" },
     { id: "m0", labels: ["INBOX"], unread: true, from: "The Weekly Market Letter", subject: "Issue #42: Why small bots beat big ones", snippet: "This week: three lessons from a year of automated trading", date: Date.now() - 600e3,
       html: "<table width='600' bgcolor='#f4f1ea' style='font-family:Arial;color:#333'><tr><td style='padding:24px'>" +
         "<img src='x' width='1' height='1'><h1 style='color:#8b0000;font-size:28px'>Why small bots beat big ones</h1>" +

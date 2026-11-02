@@ -8,5 +8,7 @@ window.ATSU_CONFIG = {
   CLIENT_ID: "",
   // Read-only access: the app can read your mail but cannot send, delete or change anything.
   SCOPE: "https://www.googleapis.com/auth/gmail.readonly",
-  PAGE_SIZE: 50
+  PAGE_SIZE: 50,
+  // Your voice app. "../text_reader/" means "the text_reader site next to AtsuMail".
+  VOICE_URL: "../text_reader/"
 };

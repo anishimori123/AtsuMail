@@ -14,6 +14,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 |---|---|
 | `A-` / `A+` | Smaller / bigger text. Remembered for next time. |
 | `Aa` | **Reading mode** (blue = on). Removes the newsletter's colors and columns and shows clean dark text in one column. Tap again to see the original design. Remembered for next time. |
+| `🔊` | **Read aloud**: opens your Text Reader app with this email filled in. Tap PLAY there. |
 | `⛶` | **Full screen**. Hides every bar, so only the email is on screen. Tap the faint `✕` at the bottom right to come back. |
 
 ## Files
