@@ -1,0 +1,25 @@
+# AtsuMail test checklist
+
+Do this after every new version. ~10 minutes. Test on your **phone** first (that's the main use), then PC.
+If something fails, write: **test number + what you saw + a screenshot**. That's all I need to fix it.
+
+## Part A — Demo mode (no Google needed)
+1. Open the app. You see `Demo mode` at top right and 5 emails in Inbox.
+2. Phone: tap `☰`. The folder list slides in. Tap `Sent`. It shows 1 email and the folder list closes.
+3. Go back to Inbox. Tap **The Weekly Market Letter**. It opens with dark background, big text, one column.
+4. Tap `A+` three times. Text gets bigger. Tap `A-` to go back.
+5. Tap `Aa`. You see the original beige design. Tap `Aa` again. Back to dark.
+6. Tap `⛶`. Only the email is on screen. Scroll to the bottom. Tap the faint `✕` bottom right. Bars come back.
+7. Close the app and open it again. Open the same email. Text size and `Aa` setting are remembered.
+8. Tap `←`. You are back at the list.
+9. Tap the link "Read on the web" in the newsletter. It opens in a new tab (not inside the app).
+
+## Part B — Real Gmail (after you add your Client ID)
+10. Tap `Sign in` → choose your account → "unverified app" warning → `Continue` → allow. Your folders appear.
+11. Your own Gmail labels show, with sub-folders indented.
+12. Inbox shows your latest 50 emails, newest first, unread in bold. Scroll down → `Load more` works.
+13. Open 3 real email magazines. Reading mode looks clean? Note any that look broken (sender name + screenshot).
+14. Open 1 receipt/order email. If reading mode looks odd, `Aa` shows the original correctly.
+15. Open a Japanese email. Japanese text shows correctly (no garbled letters).
+16. Wait over 1 hour, tap `↻`. You'll see "Session expired". Tap `Sign in` again and it works. (This is expected for now.)
+17. Phone: Add to Home Screen, open from the icon. No browser bars.

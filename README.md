@@ -26,6 +26,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `config.js` | Your settings (Google Client ID goes here) |
 | `demo.js` | Fake emails, used when no Client ID is set |
 | `manifest.json` | Lets you "Add to Home Screen" on your phone like an app |
+| `QA.md` | Test checklist to run after every new version |
 
 ## Try it (demo mode, no Google needed)
 
