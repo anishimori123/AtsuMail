@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.5 — 2026-11-01 — time spent: ~10 min
+
+**What changed**
+- PC: folder list text is smaller (13px) and the panel is narrower by default (180px). Phone keeps the bigger size for easy tapping.
+- Folder icons are now flat drawn icons (Explorer style) instead of the 📁 emoji. Inbox icon is pink to match its name.
+
+**Why**
+- Cleaner, more professional look on PC.
+
+
 ## v0.5.4 — 2026-11-01 — time spent: ~10 min
 
 **What changed**

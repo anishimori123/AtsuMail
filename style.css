@@ -28,12 +28,15 @@ button:hover { background: #3a3a3a; }
 
 /* Folder tree */
 #folders {
-  width: var(--foldW, 240px); flex-shrink: 0; overflow-y: auto;
+  width: var(--foldW, 180px); flex-shrink: 0; overflow-y: auto;
   background: #222; border-right: 1px solid #3c3c3c; padding: 2px 0;
 }
 /* Folder names are bigger than the rest (easier to tap on a phone) */
 .folder { font-size: 20px; padding: 4px 10px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.folder::before { content: "\1F4C1  "; }
+/* Flat folder icon (drawn, not an emoji); scales with the text size */
+.folder::before { content: ""; display: inline-block; width: 1.05em; height: 1.05em; margin-right: .45em;
+  vertical-align: -0.15em; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 3.5h5l1.5 1.5H15v8.5H1z' fill='%23d9b44a'/%3E%3Cpath d='M1 6h14v7.5H1z' fill='%23e8c766'/%3E%3C/svg%3E") no-repeat center / contain; }
+.folder[data-id="INBOX"]::before { filter: hue-rotate(290deg) saturate(1.4); }
 .folder:hover { background: #2a2d2e; }
 .folder.sel { background: #094771; color: #fff; }
 /* "Inbox" in pink (also when selected) */
@@ -137,6 +140,9 @@ body.dragging iframe { pointer-events: none; }  /* so the email doesn't "eat" th
   #btnFolders { display: none; }
   #folders { border-right: 0; }
   #reader { border-left: 0; }
+  /* PC: smaller, tidier folder list (phone keeps big text for tapping) */
+  .folder { font-size: 13px; padding: 3px 10px; }
+  .folder.sub { padding-left: 26px; }
   #split1 { display: block; }
   body.reading #split2 { display: block; }
   body.reading #list { flex: 0 0 var(--listW, 42%); }
