@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.6.3 | 2026-11-01 | 2 min | PC: Ctrl+F turns full screen on/off while an email is open |
 | v0.6.2 | 2026-11-01 | 3 min | Phone: back gesture / swipe on the list opens the folder screen |
 | v0.6.1 | 2026-11-01 | 3 min | Myojin sheet link saved |
 | v0.6.0 | 2026-11-01 | 5 min | Google Sheets view (SHEETS section) |
@@ -22,12 +23,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **1 h 25 min** | |
+| **Total** | | **1 h 27 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.6.3 — 2026-11-01 — time spent: 2 min
+
+**What changed**
+- PC: **Ctrl+F** turns full screen on/off while an email is open. Esc also leaves full screen.
+- When no email is open, Ctrl+F is the browser's normal "Find".
+
+**Why**
+- Faster than clicking the small ⛶ button.
 
 ## v0.6.2 — 2026-11-01 — time spent: 3 min
 

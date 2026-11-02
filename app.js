@@ -189,6 +189,7 @@
     if (!(history.state && history.state.atsuRead)) history.pushState({ atsuRead: 1 }, "");
     $("reader").hidden = false;
     autoHideBrowserBar();
+    if (document.activeElement && document.activeElement.tagName === "IFRAME") document.activeElement.blur();
     document.body.classList.add("reading");
     $("btnBack").hidden = false;
     status("Ready");
@@ -377,6 +378,12 @@
   // PC keyboard: Esc = back, Up/Down = previous/next email
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") return goBack();
+    // Ctrl+F (Cmd+F on Mac): full screen on/off while an email is open
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f" && !$("reader").hidden) {
+      e.preventDefault();
+      setFull(!document.body.classList.contains("full"));
+      return;
+    }
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
     const rows = [...document.querySelectorAll("#rows .row")];
     if (!rows.length) return;
