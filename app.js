@@ -61,7 +61,7 @@
     $("folders").innerHTML = [...sys, ...user].map((l) => {
       const depth = l.type === "system" ? 0 : l.name.split("/").length - 1;
       const name = l.type === "system" ? prettyName(l.name) : l.name.split("/").pop();
-      return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${8 + depth * 14}px` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
+      return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${12 + depth * 28}px` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
     }).join("");
   }
 
@@ -127,6 +127,7 @@
     $("meta").title = `${from}\n${subject}`;
     cur = { html, text };
     render();
+    if (!(history.state && history.state.atsuRead)) history.pushState({ atsuRead: 1 }, "");
     $("reader").hidden = false;
     document.body.classList.add("reading");
     $("btnBack").hidden = false;
@@ -171,7 +172,11 @@
     else doc = base + `<style>html{background:#fff;color:#111;zoom:${fontPx / 17}}
       body{margin:8px;font-family:-apple-system,Segoe UI,Arial,sans-serif}
       img{max-width:100%;height:auto} table{max-width:100%!important}</style>` + html;
-    $("body").srcdoc = doc;
+    // Use a fresh frame each time: changing an existing frame adds hidden
+    // "back" steps to the browser history, which breaks the back swipe.
+    const old = $("body"), fr = old.cloneNode(false);
+    fr.srcdoc = doc;
+    old.replaceWith(fr);
     $("btnRead").classList.toggle("on", readMode);
   }
 
@@ -197,6 +202,35 @@
     $("btnBack").hidden = true;
   }
 
+  // ---------- Back: button, Esc, phone back swipe, edge swipe ----------
+  // Opening an email adds a "page" to the browser history, so the phone's
+  // normal back gesture/button closes the email instead of leaving the app.
+  function goBack() {
+    if ($("reader").hidden) return;
+    if (history.state && history.state.atsuRead) history.back(); else closeReader();
+  }
+  window.addEventListener("popstate", () => { if (!$("reader").hidden) closeReader(); });
+
+  // Swipe detector: calls fn("right"|"left") for a mostly-sideways swipe.
+  function onSwipe(el, fn) {
+    let x0 = null, y0 = 0;
+    el.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    el.addEventListener("touchend", (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) fn(dx > 0 ? "right" : "left");
+    }, { passive: true });
+  }
+  // Edge strips over the email (the email itself can't see swipes).
+  // Main gesture: start at the RIGHT edge and swipe to the left = back to the list.
+  onSwipe($("edgeR"), (d) => { if (d === "left") goBack(); });
+  onSwipe($("edge"), (d) => { if (d === "right") goBack(); });
+  onSwipe($("metabar"), () => goBack());
+  // In the list: swipe right = show folders, swipe left = hide folders.
+  onSwipe($("list"), (d) => document.body.classList.toggle("show-folders", d === "right"));
+  onSwipe($("folders"), (d) => { if (d === "left") document.body.classList.remove("show-folders"); });
+
   async function loadAll() {
     try { await loadLabels(); await loadList(); } catch (e) { status(e.message); }
   }
@@ -204,7 +238,7 @@
   // ---------- Clicks ----------
   $("btnSignIn").onclick = () => tokenClient?.requestAccessToken();
   $("btnRefresh").onclick = () => loadAll();
-  $("btnBack").onclick = () => closeReader();
+  $("btnBack").onclick = () => goBack();
   $("btnFolders").onclick = () => document.body.classList.toggle("show-folders");
   $("btnMore").onclick = () => loadList(true).catch((e) => status(e.message));
   $("folders").onclick = (e) => {
@@ -212,11 +246,11 @@
     curLabel = f.dataset.id; $("path").textContent = "AtsuMail › " + f.dataset.name;
     document.querySelectorAll(".folder").forEach((x) => x.classList.toggle("sel", x === f));
     document.body.classList.remove("show-folders");
-    closeReader();
+    goBack();
     loadList().catch((er) => status(er.message));
   };
   $("rows").onclick = (e) => { const r = e.target.closest(".row"); if (r) openMsg(r.dataset.id).catch((er) => status(er.message)); };
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeReader(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") goBack(); });
 
   initAuth();
 })();

@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.3.0 — 2026-11-01 — time spent: ~20 min
+
+**What changed**
+- Swipe to go back from an email to the list:
+  - Start at the **right edge** of the email and swipe **to the left** (main gesture).
+  - Or start at the left edge and swipe right.
+  - Or swipe sideways on the thin info bar at the top of the email.
+  - The phone's own back gesture/button also closes the email now (instead of leaving the app).
+- In the list: swipe right to show folders, swipe left to hide them.
+- Folder list is 2x bigger (text 26px, more space between folders), easier to tap.
+- Fix: opening several emails no longer adds extra hidden "back" steps.
+
+**Why**
+- Tapping the small back button on a phone is slow; swiping is faster with one hand.
+- Folder names were too small to tap comfortably.
+
 ## v0.2.0 — 2026-11-01 — time spent: ~20 min
 
 **What changed**

@@ -28,15 +28,16 @@ button:hover { background: #3a3a3a; }
 
 /* Folder tree */
 #folders {
-  width: 190px; flex-shrink: 0; overflow-y: auto;
+  width: 300px; flex-shrink: 0; overflow-y: auto;
   background: #222; border-right: 1px solid #3c3c3c; padding: 2px 0;
 }
-.folder { padding: 2px 8px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Folder names are 2x bigger than the rest (easier to tap on a phone) */
+.folder { font-size: 26px; padding: 6px 12px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .folder::before { content: "\1F4C1  "; }
 .folder:hover { background: #2a2d2e; }
 .folder.sel { background: #094771; color: #fff; }
 .folder .n { color: #888; }
-.folder.sub { padding-left: 22px; }
+.folder.sub { padding-left: 40px; }
 
 /* Message list - "Details" view */
 #list { flex: 1; overflow-y: auto; min-width: 0; }
@@ -73,6 +74,12 @@ body.full #reader { border-left: 0; }
 body.full #btnExitFull { display: block; }
 #meta b { color: #fff; }
 #meta .d { color: #999; }
+#reader { position: relative; }
+/* Invisible strip on the left edge of the email: swipe right here to go back */
+#edge, #edgeR { position: absolute; top: 30px; bottom: 0; width: 28px; z-index: 3; }
+body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
+#edge { left: 0; }
+#edgeR { right: 0; }
 #body { flex: 1; width: 100%; border: 0; background: #1e1e1e; }
 
 #status {
@@ -82,7 +89,7 @@ body.full #btnExitFull { display: block; }
 
 /* ---------- Phone ---------- */
 @media (max-width: 700px) {
-  #folders { position: absolute; z-index: 5; top: 30px; bottom: 16px; left: 0; width: 70%; display: none; box-shadow: 4px 0 8px #000; }
+  #folders { position: absolute; z-index: 5; top: 30px; bottom: 16px; left: 0; width: 80%; display: none; box-shadow: 4px 0 8px #000; }
   body.show-folders #folders { display: block; }
   .row { flex-wrap: wrap; padding: 4px 6px; gap: 0 6px; }
   .c-from { width: auto; flex: 1; }
