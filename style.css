@@ -1,0 +1,87 @@
+/* AtsuMail - old-school dark, Windows Explorer style */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: #1e1e1e; color: #ddd;
+  font: 13px/1.35 "Segoe UI", Tahoma, Arial, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button {
+  background: #2d2d2d; color: #ddd; border: 1px solid #444;
+  font: inherit; padding: 3px 9px; cursor: pointer; border-radius: 0;
+}
+button:hover { background: #3a3a3a; }
+
+#toolbar {
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 4px; background: #252526; border-bottom: 1px solid #3c3c3c;
+  padding-top: max(3px, env(safe-area-inset-top));
+}
+#path {
+  flex: 0 1 auto; background: #1e1e1e; border: 1px solid #3c3c3c;
+  padding: 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.spacer { flex: 1; }
+
+#main { flex: 1; display: flex; min-height: 0; }
+
+/* Folder tree */
+#folders {
+  width: 190px; flex-shrink: 0; overflow-y: auto;
+  background: #222; border-right: 1px solid #3c3c3c; padding: 2px 0;
+}
+.folder { padding: 2px 8px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.folder::before { content: "\1F4C1  "; }
+.folder:hover { background: #2a2d2e; }
+.folder.sel { background: #094771; color: #fff; }
+.folder .n { color: #888; }
+.folder.sub { padding-left: 22px; }
+
+/* Message list - "Details" view */
+#list { flex: 1; overflow-y: auto; min-width: 0; }
+.row { display: flex; gap: 8px; padding: 1px 6px; border-bottom: 1px solid #262626; white-space: nowrap; cursor: default; }
+.row span { overflow: hidden; text-overflow: ellipsis; }
+.row.head { position: sticky; top: 0; background: #252526; color: #aaa; border-bottom: 1px solid #3c3c3c; }
+.row:not(.head):hover { background: #2a2d2e; }
+.row.sel { background: #094771; color: #fff; }
+.row.unread { font-weight: bold; color: #fff; }
+.c-from { width: 180px; flex-shrink: 0; }
+.c-subj { flex: 1; }
+.c-subj small { color: #888; font-weight: normal; }
+.c-date { width: 72px; flex-shrink: 0; text-align: right; color: #999; }
+#btnMore { margin: 6px; }
+
+/* Reader */
+#reader { flex: 1; display: flex; flex-direction: column; min-width: 0; border-left: 1px solid #3c3c3c; }
+#meta {
+  padding: 3px 6px; background: #252526; border-bottom: 1px solid #3c3c3c;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px;
+}
+#meta b { color: #fff; }
+#meta .d { color: #999; }
+#body { flex: 1; width: 100%; border: 0; background: #1e1e1e; }
+
+#status {
+  padding: 1px 6px; background: #007acc; color: #fff; font-size: 11px;
+  padding-bottom: max(1px, env(safe-area-inset-bottom));
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 700px) {
+  #folders { position: absolute; z-index: 5; top: 30px; bottom: 16px; left: 0; width: 70%; display: none; box-shadow: 4px 0 8px #000; }
+  body.show-folders #folders { display: block; }
+  .row { flex-wrap: wrap; padding: 4px 6px; gap: 0 6px; }
+  .c-from { width: auto; flex: 1; }
+  .c-date { width: auto; }
+  .c-subj { flex-basis: 100%; }
+  .row.head { display: none; }
+  /* When reading: hide the list, reader takes everything */
+  body.reading #list { display: none; }
+  #reader { border-left: 0; }
+  body.reading #status { display: none; }
+}
+@media (min-width: 701px) {
+  #btnFolders { display: none; }
+  body.reading #list { flex: 0 0 42%; }
+}
