@@ -16,6 +16,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9a. Open an email. Put your finger on the **right edge** of the screen and swipe **left**. You are back at the list.
 9b. Open an email. Use your phone's normal back gesture (Android) or the left-edge swipe (iPhone). You are back at the list, and still inside AtsuMail.
 9d. Open the Japanese newsletter (週刊マーケット通信). Tap 🔊. The player appears at the bottom and starts reading in a Japanese voice. Try ❚❚, ⏭, − / +, and Soft / Radio DJ. Tap ↗: Text Reader opens with the email.
+9d1. While it reads, the current sentence is light blue and the page scrolls with it. Tap another sentence: it reads from there. Tap A+: it keeps the place.
 9d2. Open the English newsletter, tap 🔊: it reads in an English voice. Pick another EN voice: it switches. Go back to the list: the voice stops.
 9e. Android: opening an email hides the address bar. Going back to the list shows it again.
 9f. Open an email, tap ⛶. Swipe from the right edge to the left: back to the normal email screen. Swipe again: back to the list.

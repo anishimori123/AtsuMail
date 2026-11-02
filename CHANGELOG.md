@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.7.2 | 2026-11-01 | 11 min | Light-blue highlight on the sentence being read; tap a sentence to read from there |
 | v0.7.0 | 2026-11-01 | 7 min | Built-in voice reader (EN + JA, Soft / Radio DJ / News); F key only for full screen |
 | v0.6.4 | 2026-11-01 | 2 min | PC: plain F key also toggles full screen |
 | v0.6.3 | 2026-11-01 | 2 min | PC: Ctrl+F turns full screen on/off while an email is open |
@@ -25,12 +26,24 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **1 h 36 min** | |
+| **Total** | | **1 h 47 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.7.2 — 2026-11-01 — time spent: 11 min
+
+**What changed**
+- While the voice reads, the current sentence is highlighted in **light blue** and the email scrolls to keep it in view.
+- While the player is open, **tap/click any sentence** in the email to read from there.
+- Changing text size or Aa while reading keeps your place.
+- Esc and F now work even after clicking inside the email.
+- Technical: the email frame is now "same origin" so the app can find sentences in it. The email's own scripts still cannot run (no `allow-scripts`).
+
+**Why**
+- Easier to follow along while listening.
 
 ## v0.7.0 — 2026-11-01 — time spent: 7 min
 

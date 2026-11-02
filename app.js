@@ -219,7 +219,9 @@
 
   function render() {
     const { html, text } = cur;
-    const base = `<base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1">`;
+    // ::highlight / ::selection = the light-blue mark on the sentence being read aloud
+    const base = `<base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1">
+      <style>::highlight(atsu){background:#bfe3ff;color:#000} .atsu-sel ::selection{background:#bfe3ff;color:#000}</style>`;
     const dark = `<style>
       html{background:#1e1e1e;color:#ddd}
       body{margin:0 auto;padding:10px 12px 60px;font:${fontPx}px/1.6 Georgia,"Times New Roman",serif;word-wrap:break-word;overflow-wrap:anywhere}
@@ -238,6 +240,7 @@
     // "back" steps to the browser history, which breaks the back swipe.
     const old = $("body"), fr = old.cloneNode(false);
     fr.srcdoc = doc;
+    fr.addEventListener("load", onFrameLoad);
     old.replaceWith(fr);
     $("btnRead").classList.toggle("on", readMode);
   }
@@ -276,10 +279,75 @@
                .replace(/[ \t\u00a0]+/g, " ").replace(/\s*\n\s*/g, "\n").trim();
     return (subject ? subject + "\n" : "") + body;
   }
+  // ---------- Read-aloud highlight ----------
+  // The email frame is "same origin" (but its own scripts still can't run), so the
+  // app can read its text and mark the sentence being spoken in light blue.
+  let segs = [];   // where each piece of text sits: { node, s (start in full text), len }
+  function buildSpeechParts() {
+    const fr = $("body"), doc = fr.contentDocument;
+    if (!doc || !doc.body) return AtsuVoice.split(emailToText());
+    const BLOCK = /^(P|DIV|H[1-6]|LI|TR|TD|TH|TABLE|BLOCKQUOTE|SECTION|ARTICLE|PRE|UL|OL|CENTER|HR|DT|DD|HEADER|FOOTER)$/;
+    const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => (n.nodeType === 1 && /^(STYLE|SCRIPT|NOSCRIPT|TITLE|HEAD)$/.test(n.tagName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT)
+    });
+    let S = ""; segs = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (n.nodeType === 1) { if (n.tagName === "BR" || BLOCK.test(n.tagName)) S += "\n"; continue; }
+      const keepLines = n.parentElement && n.parentElement.closest("pre,.plain");
+      const t = keepLines ? n.data : n.data.replace(/\s/g, " ");   // same length, so positions stay correct
+      if (!t) continue;
+      segs.push({ node: n, s: S.length, len: t.length });
+      S += t;
+    }
+    const where = (pos) => { for (const g of segs) if (pos >= g.s && pos < g.s + g.len) return [g.node, pos - g.s]; return null; };
+    const parts = AtsuVoice.split(S).map((p) => {
+      const a = where(p.start), b = where(p.end - 1);
+      if (a && b) { const r = doc.createRange(); r.setStart(a[0], a[1]); r.setEnd(b[0], b[1] + 1); p.range = r; }
+      return p;
+    });
+    if (cur.subject && !S.slice(0, 300).includes(cur.subject)) parts.unshift({ t: cur.subject, para: true });
+    return parts;
+  }
+  function highlight(p) {
+    const fr = $("body"), win = fr.contentWindow, doc = fr.contentDocument;
+    if (!win || !doc) return;
+    clearHighlight();
+    if (!p.range) return;
+    if (win.CSS && win.CSS.highlights && win.Highlight) win.CSS.highlights.set("atsu", new win.Highlight(p.range));
+    else { doc.documentElement.classList.add("atsu-sel"); const s = win.getSelection(); s.removeAllRanges(); s.addRange(p.range); }
+    const r = p.range.getBoundingClientRect();
+    if (r.top < 30 || r.bottom > win.innerHeight - 30) win.scrollBy({ top: r.top - win.innerHeight * 0.3, behavior: "smooth" });
+  }
+  function clearHighlight() {
+    const win = $("body").contentWindow;
+    if (!win) return;
+    try { win.CSS && win.CSS.highlights && win.CSS.highlights.delete("atsu"); win.getSelection().removeAllRanges(); } catch {}
+  }
+  function onFrameLoad() {
+    const doc = $("body").contentDocument;
+    if (!doc) return;
+    // Esc and F keep working even after clicking inside the email
+    doc.addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key.toLowerCase() === "f") onKey(e); });
+    // While the player is open: tap/click a sentence to read from there
+    doc.addEventListener("click", (e) => {
+      if (!AtsuVoice.isOpen() || e.target.closest("a")) return;
+      const c = doc.caretRangeFromPoint ? doc.caretRangeFromPoint(e.clientX, e.clientY)
+              : doc.caretPositionFromPoint ? (() => { const p = doc.caretPositionFromPoint(e.clientX, e.clientY); const r = doc.createRange(); r.setStart(p.offsetNode, p.offset); return r; })() : null;
+      if (!c) return;
+      const g = segs.find((x) => x.node === c.startContainer);
+      if (!g) return;
+      const pos = g.s + c.startOffset;
+      const i = AtsuVoice.parts().findIndex((p) => p.range && pos >= p.start && pos <= p.end);
+      if (i >= 0) AtsuVoice.jump(i);
+    });
+    // Page was re-drawn while reading (e.g. text size): keep the place
+    if (AtsuVoice.isOpen()) AtsuVoice.replace(buildSpeechParts());
+  }
+
   // 🔊 = built-in voice player. ↗ in the player = open in your Text Reader app instead.
   $("btnSpeak").onclick = () => {
     if (AtsuVoice.isOpen()) { AtsuVoice.close(); $("btnSpeak").classList.remove("on"); return; }
-    AtsuVoice.open(emailToText()); $("btnSpeak").classList.add("on");
+    AtsuVoice.open(buildSpeechParts(), { onSay: highlight, onClear: clearHighlight }); $("btnSpeak").classList.add("on");
   };
   $("vClose").addEventListener("click", () => $("btnSpeak").classList.remove("on"));
   $("vTR").onclick = () => {
@@ -385,7 +453,7 @@
   };
   $("rows").onclick = (e) => { const r = e.target.closest(".row"); if (r) openMsg(r.dataset.id).catch((er) => status(er.message)); };
   // PC keyboard: Esc = back, Up/Down = previous/next email
-  document.addEventListener("keydown", (e) => {
+  function onKey(e) {
     if (e.key === "Escape") return goBack();
     // F: full screen on/off while an email is open (Ctrl+F stays the browser's Find)
     const plainF = e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
@@ -400,7 +468,8 @@
     const i = rows.findIndex((r) => r.classList.contains("sel"));
     const next = rows[e.key === "ArrowDown" ? Math.min(rows.length - 1, i + 1) : Math.max(0, i - 1)];
     if (next && next !== rows[i]) { e.preventDefault(); next.scrollIntoView({ block: "nearest" }); openMsg(next.dataset.id).catch((er) => status(er.message)); }
-  });
+  }
+  document.addEventListener("keydown", onKey);
 
   // ---------- PC: drag the dividers to resize (remembered) ----------
   function makeSplit(handle, cssVar, key, getEl, min, maxShare) {

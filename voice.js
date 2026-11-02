@@ -15,6 +15,8 @@ window.AtsuVoice = (() => {
   };
 
   let parts = [], idx = 0, playing = false, gen = 0, timer = null;
+  let hooks = {};   // onSay(part, i) and onClear() - used by the app to highlight text
+  const say = (i) => { if (parts[i]) { show(`${i + 1}/${parts.length}  ${parts[i].t}`); hooks.onSay && hooks.onSay(parts[i], i); } };
   let style = load("style", "soft"), speed = load("speed", 1.0);
   let voiceEn = load("voiceEn", ""), voiceJa = load("voiceJa", "");
 
@@ -37,17 +39,36 @@ window.AtsuVoice = (() => {
     .sort((a, b) => rank(b) - rank(a) || (b.lang === "en-US") - (a.lang === "en-US"));
   const pick = (lang, name) => { const list = voices(lang); return list.find((v) => v.name === name) || list[0] || null; };
 
-  // Split into sentences; keep track of paragraph ends for longer pauses.
-  function split(text) {
+  // Split text into sentences, remembering where each one starts/ends in the text
+  // (so the app can highlight it). Paragraph ends get a longer pause.
+  function split(S) {
     const out = [];
-    text.split(/\n+/).forEach((para) => {
-      const s = para.replace(/([。！？!?])\s*/g, "$1\n").replace(/([.])\s+(?=[A-Z"'(぀-鿿])/g, "$1\n").split("\n")
-        .map((x) => x.trim()).filter((x) => /[\p{L}\p{N}]/u.test(x));
-      // very long sentences: cut at commas so the voice doesn't stop mid-way
+    const re = /[^\n]+/g; let m;
+    while ((m = re.exec(S))) {
+      const ps = m.index, para = m[0], cuts = [];
+      let a = 0;
+      for (let i = 0; i < para.length; i++) {
+        const c = para[i], n = para[i + 1];
+        const endJa = /[。！？]/.test(c) && !/[。！？」』）)]/.test(n || "");
+        const endEn = /[.!?]/.test(c) && (n === undefined || /\s/.test(n)) && !/[.!?]/.test(n || "");
+        if (endJa || endEn || (c === "」" && /[。！？]/.test(para[i - 1] || ""))) { cuts.push([a, i + 1]); a = i + 1; }
+      }
+      if (a < para.length) cuts.push([a, para.length]);
+      // very long sentences: cut after commas so the voice doesn't stop mid-way
       const pieces = [];
-      s.forEach((x) => { if (x.length <= 220) pieces.push(x); else x.split(/(?<=[、,;；])\s*/).forEach((y) => pieces.push(y)); });
-      pieces.forEach((x, i) => out.push({ t: x, para: i === pieces.length - 1 }));
-    });
+      cuts.forEach(([x, y]) => {
+        if (y - x <= 220) return pieces.push([x, y]);
+        let k = x;
+        for (let i = x; i < y; i++) if (/[、,;；]/.test(para[i]) && i - k > 40) { pieces.push([k, i + 1]); k = i + 1; }
+        if (k < y) pieces.push([k, y]);
+      });
+      const kept = pieces.map(([x, y]) => {
+        while (x < y && /\s/.test(para[x])) x++;
+        while (y > x && /\s/.test(para[y - 1])) y--;
+        return { start: ps + x, end: ps + y, t: para.slice(x, y) };
+      }).filter((p) => /[\p{L}\p{N}]/u.test(p.t.replace(/https?:\/\/\S+/g, "")));
+      kept.forEach((p, i) => out.push({ ...p, para: i === kept.length - 1 }));
+    }
     return out;
   }
 
@@ -65,10 +86,10 @@ window.AtsuVoice = (() => {
 
   function speakNext(g) {
     if (g !== gen || !playing) return;
-    if (idx >= parts.length) { playing = false; setBtn(); show("Finished"); return; }
+    if (idx >= parts.length) { playing = false; setBtn(); show("Finished"); idx = 0; hooks.onClear && hooks.onClear(); return; }
     const p = parts[idx], st = STYLES[style] || STYLES.soft;
     const ja = isJa(p.t);
-    const u = new SpeechSynthesisUtterance(p.t);
+    const u = new SpeechSynthesisUtterance(p.t.replace(/https?:\/\/\S+/g, " "));
     const v = pick(ja ? "ja" : "en", ja ? voiceJa : voiceEn);
     if (v) u.voice = v;
     u.lang = v ? v.lang : (ja ? "ja-JP" : "en-US");
@@ -82,7 +103,7 @@ window.AtsuVoice = (() => {
     };
     u.onend = next;
     u.onerror = (e) => { if (e.error !== "interrupted" && e.error !== "canceled") next(); };
-    show(`${idx + 1}/${parts.length}  ${p.t}`);
+    say(idx);
     synth.speak(u);
   }
 
@@ -95,23 +116,35 @@ window.AtsuVoice = (() => {
   }
   // Pause = stop now and remember the sentence (more reliable than synth.pause on phones).
   function pause() { playing = false; gen++; clearTimeout(timer); synth && synth.cancel(); setBtn(); }
-  function stop() { pause(); idx = 0; $("vBar").style.width = "0%"; }
+  function stop() { pause(); idx = 0; $("vBar").style.width = "0%"; hooks.onClear && hooks.onClear(); }
 
-  function open(text) {
+  // input: plain text, or a ready list of parts from the app. h: { onSay, onClear }
+  function open(input, h) {
     stop();
-    parts = split(text);
+    hooks = h || {};
+    parts = typeof input === "string" ? split(input) : input;
     $("player").hidden = false;
     fillSelects();
     play();
   }
-  function close() { stop(); $("player").hidden = true; }
+  function close() { stop(); $("player").hidden = true; hooks = {}; }
+  // The page was re-drawn (e.g. text size changed): swap in new parts, keep the place.
+  function replace(newParts) {
+    const curText = parts[idx] && parts[idx].t;
+    parts = newParts;
+    const same = curText ? parts.findIndex((p) => p.t === curText) : -1;
+    idx = same >= 0 ? same : Math.min(idx, Math.max(0, parts.length - 1));
+    if (!$("player").hidden) say(idx);
+  }
 
   // ---- controls ----
   function restartIfPlaying() { if (playing) play(); }
   $("vPlay").onclick = () => (playing ? pause() : play());
   $("vStop").onclick = () => { stop(); show("Stopped"); };
-  $("vPrev").onclick = () => { idx = Math.max(0, idx - 1); playing ? play() : show(`${idx + 1}/${parts.length}  ${parts[idx]?.t || ""}`); };
-  $("vNext").onclick = () => { idx = Math.min(parts.length - 1, idx + 1); playing ? play() : show(`${idx + 1}/${parts.length}  ${parts[idx]?.t || ""}`); };
+  // Jump to a sentence (used when you tap text in the email)
+  function jump(i) { idx = Math.max(0, Math.min(parts.length - 1, i)); playing ? play() : say(idx); }
+  $("vPrev").onclick = () => { idx = Math.max(0, idx - 1); playing ? play() : say(idx); };
+  $("vNext").onclick = () => { idx = Math.min(parts.length - 1, idx + 1); playing ? play() : say(idx); };
   $("vClose").onclick = close;
   $("vStyle").onchange = (e) => { style = e.target.value; save("style", style); restartIfPlaying(); };
   $("vEn").onchange = (e) => { voiceEn = e.target.value; save("voiceEn", voiceEn); restartIfPlaying(); };
@@ -121,5 +154,5 @@ window.AtsuVoice = (() => {
   if (synth) synth.onvoiceschanged = () => { if (!$("player").hidden) fillSelects(); };
   addEventListener("beforeunload", () => synth && synth.cancel());
 
-  return { open, close, stop, isOpen: () => !$("player").hidden };
+  return { open, close, stop, replace, jump, split, isOpen: () => !$("player").hidden, parts: () => parts };
 })();
