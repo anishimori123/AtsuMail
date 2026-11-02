@@ -7,7 +7,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 1. Open the app. You see `Demo mode` at top right and 5 emails in Inbox.
 2. Phone: tap `☰`. The folder list slides in. Tap `Sent`. It shows 1 email and the folder list closes.
 3. Go back to Inbox. Tap **The Weekly Market Letter**. It opens with dark background, big text, one column.
-4. Tap `A+` three times. Text gets bigger. Tap `A-` to go back.
+4. Tap `A+` three times. Text gets clearly bigger each time and a blue note shows the size (e.g. "Text size 7 / 11"). Tap `A-` to go back.
 5. Tap `Aa`. You see the original beige design. Tap `Aa` again. Back to dark.
 6. Tap `⛶`. Only the email is on screen. Scroll to the bottom. Tap the faint `✕` bottom right. Bars come back.
 7. Close the app and open it again. Open the same email. Text size and `Aa` setting are remembered.

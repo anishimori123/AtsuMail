@@ -223,8 +223,22 @@
   };
 
   $("btnRead").onclick = () => { readMode = !readMode; save("readMode", readMode); render(); };
-  $("btnBigger").onclick = () => { fontPx = Math.min(30, fontPx + 1); save("fontPx", fontPx); render(); };
-  $("btnSmaller").onclick = () => { fontPx = Math.max(11, fontPx - 1); save("fontPx", fontPx); render(); };
+  // Text sizes: each tap jumps one step (about 10-15% bigger/smaller)
+  const SIZES = [12, 14, 15, 17, 19, 21, 24, 27, 30, 34, 38];
+  function stepFont(dir) {
+    let i = SIZES.findIndex((s) => s >= fontPx); if (i < 0) i = SIZES.length - 1;
+    if (SIZES[i] !== fontPx && dir < 0) i++; // between steps: snap the right way
+    fontPx = SIZES[Math.max(0, Math.min(SIZES.length - 1, i + dir))];
+    save("fontPx", fontPx); render();
+    toast("Text size " + (SIZES.indexOf(fontPx) + 1) + " / " + SIZES.length);
+  }
+  let toastT;
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 1200);
+  }
+  $("btnBigger").onclick = () => stepFont(+1);
+  $("btnSmaller").onclick = () => stepFont(-1);
   $("btnFull").onclick = () => setFull(true);
   $("btnExitFull").onclick = () => setFull(false);
 

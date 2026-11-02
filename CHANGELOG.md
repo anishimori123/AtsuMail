@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.4 — 2026-11-01 — time spent: ~10 min
+
+**What changed**
+- A- / A+ now jump in clear steps (11 sizes: 12px to 38px) instead of 1px at a time.
+- A small blue note "Text size 6 / 11" shows for a second after each tap.
+
+**Why**
+- 1px steps were too small to notice, so the buttons looked broken.
+
+
 ## v0.5.3 — 2026-11-01 — time spent: ~5 min
 
 **What changed**

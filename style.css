@@ -77,6 +77,8 @@ body.full #btnExitFull { display: block; }
 #meta b { color: #fff; }
 #meta .d { color: #999; }
 #reader { position: relative; }
+#toast { position: absolute; z-index: 6; top: 40px; left: 50%; transform: translateX(-50%);
+  background: #007acc; color: #fff; padding: 4px 12px; font-size: 13px; pointer-events: none; }
 /* Invisible strip on the left edge of the email: swipe right here to go back */
 #edge, #edgeR { position: absolute; top: 30px; bottom: 0; width: 28px; z-index: 3; }
 body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
