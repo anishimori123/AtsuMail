@@ -91,7 +91,7 @@ Steps:
    Chrome: click the small **install icon** (a screen with a down arrow) at the right end of the address bar → **Install**.
 3. Success = AtsuMail opens in its own window with the pink envelope icon, and shows up in the Start menu. Right-click its taskbar icon → **Pin to taskbar**.
 
-PC keyboard: `↑` / `↓` = previous / next email, `Ctrl+F` = full screen on/off (when an email is open), `Esc` = leave full screen / close email.
+PC keyboard: `↑` / `↓` = previous / next email, `F` or `Ctrl+F` = full screen on/off (when an email is open), `Esc` = leave full screen / close email.
 
 PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
 

@@ -378,8 +378,9 @@
   // PC keyboard: Esc = back, Up/Down = previous/next email
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") return goBack();
-    // Ctrl+F (Cmd+F on Mac): full screen on/off while an email is open
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f" && !$("reader").hidden) {
+    // F or Ctrl+F (Cmd+F on Mac): full screen on/off while an email is open
+    const plainF = e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    if ((plainF || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f")) && !$("reader").hidden) {
       e.preventDefault();
       setFull(!document.body.classList.contains("full"));
       return;

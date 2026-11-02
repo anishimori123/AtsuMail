@@ -40,4 +40,4 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 20. Install it (README "Install on your Windows PC"). It opens in its own window with the pink envelope icon.
 21. Open an email on PC. Drag the thin bar between the list and the email left/right: the email gets wider/narrower. Close and reopen the app: the size is remembered. Double-click the bar: back to normal.
 22. Drag the bar between folders and list. Same behavior.
-23. PC: open an email, press Ctrl+F: full screen. Press Ctrl+F again: normal. Close the email and press Ctrl+F: the browser's Find box opens.
+23. PC: open an email, press F (or Ctrl+F): full screen. Press Ctrl+F again: normal. Close the email and press Ctrl+F: the browser's Find box opens.
