@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.5.3 — 2026-11-01 — time spent: ~5 min
+
+**What changed**
+- Reading mode text now uses the full width everywhere (removed the PC line-width limit).
+- Full screen on PC also hides the resize bars.
+
+**Why**
+- Full screen on PC showed empty space on the sides.
+
+
 ## v0.5.2 — 2026-11-01 — time spent: ~15 min
 
 **What changed**
@@ -29,7 +39,7 @@
 **What changed**
 - Landscape (phone on its side) now uses the phone layout: the email fills the full width, no empty side space.
 - While reading sideways, the top toolbar hides; only one thin bar stays, with a ← button.
-- Reading mode only limits line width on big PC screens (1000px+), not on phones.
+- Reading mode only limits line width on big PC screens (1000px+), not on phones. (Removed in v0.5.3.)
 - Text stays clear of the iPhone notch/rounded corners when sideways.
 
 **Why**

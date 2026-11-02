@@ -71,7 +71,7 @@ button:hover { background: #3a3a3a; }
   bottom: max(8px, env(safe-area-inset-bottom)); width: 36px; height: 36px;
   border-radius: 18px; opacity: .45; background: #333;
 }
-body.full #toolbar, body.full #metabar, body.full #status, body.full #list, body.full #folders { display: none !important; }
+body.full #toolbar, body.full #metabar, body.full #status, body.full #list, body.full #folders, body.full .split { display: none !important; }
 body.full #reader { border-left: 0; }
 body.full #btnExitFull { display: block; }
 #meta b { color: #fff; }

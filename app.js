@@ -162,7 +162,6 @@
     const dark = `<style>
       html{background:#1e1e1e;color:#ddd}
       body{margin:0 auto;padding:10px 12px 60px;font:${fontPx}px/1.6 Georgia,"Times New Roman",serif;word-wrap:break-word;overflow-wrap:anywhere}
-      @media (min-width:1000px){body{max-width:42em}} /* only limit line length on big PC screens */
       a{color:#6cb6ff} h1,h2,h3,h4,b,strong{color:#fff;line-height:1.3}
       img{max-width:100%!important;height:auto!important;display:block;margin:8px auto}
       table,tbody,thead,tr,td,th,center{display:block;width:auto!important}
