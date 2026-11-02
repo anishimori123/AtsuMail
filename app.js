@@ -161,7 +161,8 @@
     const base = `<base target="_blank"><meta name="viewport" content="width=device-width,initial-scale=1">`;
     const dark = `<style>
       html{background:#1e1e1e;color:#ddd}
-      body{margin:0 auto;padding:10px 12px 60px;max-width:42em;font:${fontPx}px/1.6 Georgia,"Times New Roman",serif;word-wrap:break-word;overflow-wrap:anywhere}
+      body{margin:0 auto;padding:10px 12px 60px;font:${fontPx}px/1.6 Georgia,"Times New Roman",serif;word-wrap:break-word;overflow-wrap:anywhere}
+      @media (min-width:1000px){body{max-width:42em}} /* only limit line length on big PC screens */
       a{color:#6cb6ff} h1,h2,h3,h4,b,strong{color:#fff;line-height:1.3}
       img{max-width:100%!important;height:auto!important;display:block;margin:8px auto}
       table,tbody,thead,tr,td,th,center{display:block;width:auto!important}
@@ -186,7 +187,7 @@
   // iPhone Safari doesn't allow this; use Add to Home Screen instead.
   function autoHideBrowserBar() {
     const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-    const phone = matchMedia("(max-width: 700px)").matches;
+    const phone = matchMedia("(max-width: 700px), (max-height: 500px)").matches;
     if (!phone || standalone || document.fullscreenElement) return;
     try { document.documentElement.requestFullscreen?.({ navigationUI: "hide" }).catch(() => {}); } catch {}
   }
@@ -274,6 +275,7 @@
   $("btnSignIn").onclick = () => tokenClient?.requestAccessToken();
   $("btnRefresh").onclick = () => loadAll();
   $("btnBack").onclick = () => goBack();
+  $("btnBack2").onclick = () => goBack();
   $("btnFolders").onclick = () => document.body.classList.toggle("show-folders");
   $("btnMore").onclick = () => loadList(true).catch((e) => status(e.message));
   $("folders").onclick = (e) => {

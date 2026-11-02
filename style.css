@@ -89,8 +89,9 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   padding-bottom: max(1px, env(safe-area-inset-bottom));
 }
 
-/* ---------- Phone ---------- */
-@media (max-width: 700px) {
+/* ---------- Phone (portrait AND landscape) ---------- */
+/* A phone on its side is wide but short, so "short screen" also counts as phone. */
+@media (max-width: 700px), (max-height: 500px) {
   #folders { position: absolute; z-index: 5; top: 30px; bottom: 16px; left: 0; width: 80%; display: none; box-shadow: 4px 0 8px #000; }
   body.show-folders #folders { display: block; }
   .row { flex-wrap: wrap; padding: 4px 6px; gap: 0 6px; }
@@ -102,8 +103,19 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   body.reading #list { display: none; }
   #reader { border-left: 0; }
   body.reading #status { display: none; }
+  #folders { width: min(80%, 320px); }
+  /* Keep text away from the notch / rounded corners when sideways */
+  #reader { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); background: #1e1e1e; }
+  #toolbar { padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); }
 }
-@media (min-width: 701px) {
+#btnBack2 { display: none; border-left: 0 !important; border-right: 1px solid #444 !important; }
+/* Phone on its side, reading: hide the top toolbar, keep one thin bar */
+@media (max-height: 500px) {
+  body.reading #toolbar { display: none; }
+  body.reading #btnBack2 { display: block; }
+  #metabar { padding-left: env(safe-area-inset-left); }
+}
+@media (min-width: 701px) and (min-height: 501px) {
   #btnFolders { display: none; }
   body.reading #list { flex: 0 0 42%; }
 }
