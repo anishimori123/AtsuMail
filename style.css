@@ -36,6 +36,8 @@ button:hover { background: #3a3a3a; }
 .folder::before { content: "\1F4C1  "; }
 .folder:hover { background: #2a2d2e; }
 .folder.sel { background: #094771; color: #fff; }
+/* "Inbox" in pink (also when selected) */
+.folder[data-id="INBOX"], .folder.sel[data-id="INBOX"] { color: #ff8fd1; }
 .folder .n { color: #888; }
 .folder.sub { padding-left: 30px; }
 

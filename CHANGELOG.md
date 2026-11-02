@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.3 — 2026-11-01 — time spent: ~3 min
+
+**What changed**
+- "Inbox" folder name is pink (`#ff8fd1`), also when selected.
+
+**Why**
+- Personal style; makes Inbox easy to spot.
+
 ## v0.3.2 — 2026-11-01 — time spent: ~5 min
 
 **What changed**
