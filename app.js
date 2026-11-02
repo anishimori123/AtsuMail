@@ -298,5 +298,31 @@
     if (next && next !== rows[i]) { e.preventDefault(); next.scrollIntoView({ block: "nearest" }); openMsg(next.dataset.id).catch((er) => status(er.message)); }
   });
 
+  // ---------- PC: drag the dividers to resize (remembered) ----------
+  function makeSplit(handle, cssVar, key, getEl, min, maxShare) {
+    const apply = (px) => px ? document.body.style.setProperty(cssVar, px + "px") : document.body.style.removeProperty(cssVar);
+    apply(load(key, null));
+    handle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      const x0 = e.clientX, w0 = getEl().getBoundingClientRect().width;
+      document.body.classList.add("dragging");
+      let w = w0;
+      const move = (ev) => {
+        const max = $("main").getBoundingClientRect().width * maxShare;
+        w = Math.round(Math.max(min, Math.min(max, w0 + ev.clientX - x0)));
+        apply(w);
+      };
+      const up = () => {
+        document.body.classList.remove("dragging");
+        removeEventListener("mousemove", move); removeEventListener("mouseup", up);
+        save(key, w);
+      };
+      addEventListener("mousemove", move); addEventListener("mouseup", up);
+    });
+    handle.addEventListener("dblclick", () => { apply(null); save(key, null); }); // reset
+  }
+  makeSplit($("split1"), "--foldW", "foldW", () => $("folders"), 120, 0.4);
+  makeSplit($("split2"), "--listW", "listW", () => $("list"), 200, 0.75);
+
   initAuth();
 })();

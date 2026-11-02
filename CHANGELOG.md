@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.5.2 — 2026-11-01 — time spent: ~15 min
+
+**What changed**
+- PC: drag the thin dividers to resize panes (like Windows Explorer):
+  - between folders and the email list
+  - between the email list and the open email
+  - double-click a divider to reset; sizes are remembered.
+- When the email list is narrow, each email shows on 2 lines (sender + date, then subject).
+
+**Why**
+- Make the reading pane as wide as you like on PC.
+
+
 ## v0.5.0 — 2026-11-01 — time spent: ~15 min
 
 **What changed**

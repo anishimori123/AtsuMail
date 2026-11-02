@@ -35,3 +35,5 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 18. Open the link on PC. You see folders on the left, list in the middle.
 19. Click an email: it opens on the right. Press ↓ / ↑: next / previous email opens. Press Esc: it closes.
 20. Install it (README "Install on your Windows PC"). It opens in its own window with the pink envelope icon.
+21. Open an email on PC. Drag the thin bar between the list and the email left/right: the email gets wider/narrower. Close and reopen the app: the size is remembered. Double-click the bar: back to normal.
+22. Drag the bar between folders and list. Same behavior.

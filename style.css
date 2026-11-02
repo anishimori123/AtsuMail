@@ -28,7 +28,7 @@ button:hover { background: #3a3a3a; }
 
 /* Folder tree */
 #folders {
-  width: 240px; flex-shrink: 0; overflow-y: auto;
+  width: var(--foldW, 240px); flex-shrink: 0; overflow-y: auto;
   background: #222; border-right: 1px solid #3c3c3c; padding: 2px 0;
 }
 /* Folder names are bigger than the rest (easier to tap on a phone) */
@@ -115,7 +115,27 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   body.reading #btnBack2 { display: block; }
   #metabar { padding-left: env(safe-area-inset-left); }
 }
+/* When the list is made narrow, show each email on 2 lines (sender+date, then subject) */
+#list { container-type: inline-size; }
+@container (max-width: 480px) {
+  .row { flex-wrap: wrap; padding: 3px 6px; gap: 0 6px; }
+  .c-from { width: auto; flex: 1; }
+  .c-date { width: auto; }
+  .c-subj { flex-basis: 100%; }
+  .row.head { display: none; }
+}
+
+/* Drag handles between panes (PC only) */
+.split { display: none; width: 5px; flex-shrink: 0; cursor: col-resize; background: #2a2a2a; }
+.split:hover, body.dragging .split { background: #007acc; }
+body.dragging { user-select: none; cursor: col-resize; }
+body.dragging iframe { pointer-events: none; }  /* so the email doesn't "eat" the mouse while dragging */
+
 @media (min-width: 701px) and (min-height: 501px) {
   #btnFolders { display: none; }
-  body.reading #list { flex: 0 0 42%; }
+  #folders { border-right: 0; }
+  #reader { border-left: 0; }
+  #split1 { display: block; }
+  body.reading #split2 { display: block; }
+  body.reading #list { flex: 0 0 var(--listW, 42%); }
 }

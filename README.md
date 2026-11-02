@@ -81,6 +81,8 @@ Steps:
 
 PC keyboard: `↑` / `↓` = previous / next email, `Esc` = close email.
 
+PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
+
 ## Known limits
 
 - You'll need to tap **Sign in** again about every hour (Google's sign-in for browser-only apps lasts 1 hour). Fixing this needs a small server; see CHANGELOG ideas.
