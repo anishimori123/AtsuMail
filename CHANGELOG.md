@@ -1,6 +1,34 @@
 # Changelog
 
-## v0.6.1 — 2026-11-01 — time spent: ~3 min
+## Summary
+
+| Version | Date | Time | What changed |
+|---|---|---|---|
+| v0.6.1 | 2026-11-01 | 3 min | Myojin sheet link saved |
+| v0.6.0 | 2026-11-01 | 5 min | Google Sheets view (SHEETS section) |
+| v0.5.5 | 2026-11-01 | 4 min | Smaller folder list on PC, flat folder icons |
+| v0.5.4 | 2026-11-01 | 3 min | Bigger A- / A+ text-size steps |
+| v0.5.3 | 2026-11-01 | 1 min | Full-width text in PC full screen |
+| v0.5.2 | 2026-11-01 | 4 min | Resizable panes on PC |
+| v0.5.0 | 2026-11-01 | 2 min | Install on PC, app icon, keyboard shortcuts |
+| v0.4.4 | 2026-11-01 | 4 min | Full-width landscape reading |
+| v0.4.2 | 2026-11-01 | 1 min | Swipe to leave full screen |
+| v0.4.0–0.4.1 | 2026-11-01 | 6 min | 🔊 read aloud via Text Reader, hide address bar on phones |
+| v0.3.3 | 2026-11-01 | 1 min | Pink Inbox |
+| v0.3.2 | 2026-11-01 | 3 min | Medium-size folder list |
+| v0.3.1 | 2026-11-01 | 3 min | Phones always load the newest version |
+| v0.3.0 | 2026-11-01 | 22 min | Swipe back from email, bigger folder list |
+| — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
+| v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
+| v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
+| **Total** | | **1 h 22 min** | |
+
+Time = clock time from the previous release to this one (includes waiting and testing).
+Add a new row at the top of this table for every release, and update the total.
+
+---
+
+## v0.6.1 — 2026-11-01 — time spent: 3 min
 
 **What changed**
 - Myojin sheet link saved in `config.js`. It shows after Google sign-in is set up; demo mode keeps showing the fake sheet.
@@ -9,7 +37,7 @@
 - Ready for when Gmail/Google is connected.
 
 
-## v0.6.0 — 2026-11-01 — time spent: ~30 min
+## v0.6.0 — 2026-11-01 — time spent: 5 min
 
 **What changed**
 - New **SHEETS** section at the bottom of the folder list. Shows Google Sheets (read-only) in a dark, Excel-like grid: column letters, row numbers, first row bold, numbers right-aligned, tabs at the bottom.
@@ -23,7 +51,7 @@
 - See the Myojin sheet in the same app as email.
 
 
-## v0.5.5 — 2026-11-01 — time spent: ~10 min
+## v0.5.5 — 2026-11-01 — time spent: 4 min
 
 **What changed**
 - PC: folder list text is smaller (13px) and the panel is narrower by default (180px). Phone keeps the bigger size for easy tapping.
@@ -33,7 +61,7 @@
 - Cleaner, more professional look on PC.
 
 
-## v0.5.4 — 2026-11-01 — time spent: ~10 min
+## v0.5.4 — 2026-11-01 — time spent: 3 min
 
 **What changed**
 - A- / A+ now jump in clear steps (11 sizes: 12px to 38px) instead of 1px at a time.
@@ -43,7 +71,7 @@
 - 1px steps were too small to notice, so the buttons looked broken.
 
 
-## v0.5.3 — 2026-11-01 — time spent: ~5 min
+## v0.5.3 — 2026-11-01 — time spent: 1 min
 
 **What changed**
 - Reading mode text now uses the full width everywhere (removed the PC line-width limit).
@@ -53,7 +81,7 @@
 - Full screen on PC showed empty space on the sides.
 
 
-## v0.5.2 — 2026-11-01 — time spent: ~15 min
+## v0.5.2 — 2026-11-01 — time spent: 4 min
 
 **What changed**
 - PC: drag the thin dividers to resize panes (like Windows Explorer):
@@ -66,7 +94,7 @@
 - Make the reading pane as wide as you like on PC.
 
 
-## v0.5.0 — 2026-11-01 — time spent: ~15 min
+## v0.5.0 — 2026-11-01 — time spent: 2 min
 
 **What changed**
 - Installable on Windows PC (Edge/Chrome → Install AtsuMail): own window, Start menu, taskbar icon.
@@ -77,7 +105,7 @@
 - Use the same app on PC and phone, one code base, free.
 
 
-## v0.4.4 — 2026-11-01 — time spent: ~15 min
+## v0.4.4 — 2026-11-01 — time spent: 4 min
 
 **What changed**
 - Landscape (phone on its side) now uses the phone layout: the email fills the full width, no empty side space.
@@ -89,7 +117,7 @@
 - Landscape showed the PC layout (folders + list + email) and wasted space.
 
 
-## v0.4.2 — 2026-11-01 — time spent: ~5 min
+## v0.4.2 — 2026-11-01 — time spent: 1 min
 
 **What changed**
 - In full screen, swiping from the right edge to the left (or the phone's back gesture) first returns to the normal email screen. Swipe again to go back to the list.
@@ -98,7 +126,7 @@
 - Faster than finding the small ✕ button.
 
 
-## v0.4.0 / v0.4.1 — 2026-11-01 — time spent: ~30 min
+## v0.4.0 / v0.4.1 — 2026-11-01 — time spent: 6 min
 
 **What changed**
 - 🔊 button on an open email: sends the email text to Text Reader (`../text_reader/`) and opens it in a new tab. Tap PLAY there to listen. Web addresses and images are left out.
@@ -111,7 +139,7 @@
 - More of the screen for the email text.
 
 
-## v0.3.3 — 2026-11-01 — time spent: ~3 min
+## v0.3.3 — 2026-11-01 — time spent: 1 min
 
 **What changed**
 - "Inbox" folder name is pink (`#ff8fd1`), also when selected.
@@ -119,7 +147,7 @@
 **Why**
 - Personal style; makes Inbox easy to spot.
 
-## v0.3.2 — 2026-11-01 — time spent: ~5 min
+## v0.3.2 — 2026-11-01 — time spent: 3 min
 
 **What changed**
 - Folder text is now medium size (20px, was 26px; original was 13px). Folder panel width 240px on PC.
@@ -127,7 +155,7 @@
 **Why**
 - 2x was too big; this sits between the first size and the 2x size.
 
-## v0.3.1 — 2026-11-01 — time spent: ~5 min
+## v0.3.1 — 2026-11-01 — time spent: 3 min
 
 **What changed**
 - Added a version tag (`?v=0.3.1`) to the style and script links in `index.html`. Change it on every release.
@@ -135,7 +163,7 @@
 **Why**
 - Phones kept showing the old version for up to 10 minutes after an update (saved copy). A new tag forces a fresh download.
 
-## v0.3.0 — 2026-11-01 — time spent: ~20 min
+## v0.3.0 — 2026-11-01 — time spent: 22 min
 
 **What changed**
 - Swipe to go back from an email to the list:
@@ -151,7 +179,7 @@
 - Tapping the small back button on a phone is slow; swiping is faster with one hand.
 - Folder names were too small to tap comfortably.
 
-## v0.2.0 — 2026-11-01 — time spent: ~20 min
+## v0.2.0 — 2026-11-01 — time spent: 1 min
 
 **What changed**
 - Reading mode (`Aa`, on by default): strips newsletter colors and layout, shows one dark column with large serif text, removes invisible tracking pixels.
@@ -163,7 +191,7 @@
 **Why**
 - Main use is reading long email magazines on a phone, so the text should fill the whole screen and be comfortable to read in dark mode.
 
-## v0.1.0 — 2026-11-01 — time spent: ~30 min
+## v0.1.0 — 2026-11-01 — time spent: 3 min
 
 **What changed**
 - First version: read-only Gmail reader that runs in the browser.
