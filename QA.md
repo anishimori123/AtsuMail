@@ -30,3 +30,8 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 15. Open a Japanese email. Japanese text shows correctly (no garbled letters).
 16. Wait over 1 hour, tap `↻`. You'll see "Session expired". Tap `Sign in` again and it works. (This is expected for now.)
 17. Phone: Add to Home Screen, open from the icon. No browser bars.
+
+## Part C — PC (Windows, Edge or Chrome)
+18. Open the link on PC. You see folders on the left, list in the middle.
+19. Click an email: it opens on the right. Press ↓ / ↑: next / previous email opens. Press Esc: it closes.
+20. Install it (README "Install on your Windows PC"). It opens in its own window with the pink envelope icon.

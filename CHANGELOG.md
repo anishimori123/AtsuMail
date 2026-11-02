@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.0 — 2026-11-01 — time spent: ~15 min
+
+**What changed**
+- Installable on Windows PC (Edge/Chrome → Install AtsuMail): own window, Start menu, taskbar icon.
+- App icon (pink envelope on dark, blue strip) for PC, Android and iPhone Home Screen.
+- PC keyboard: ↑/↓ opens previous/next email, Esc closes it.
+
+**Why**
+- Use the same app on PC and phone, one code base, free.
+
+
 ## v0.4.4 — 2026-11-01 — time spent: ~15 min
 
 **What changed**

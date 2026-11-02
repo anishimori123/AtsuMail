@@ -287,7 +287,16 @@
     loadList().catch((er) => status(er.message));
   };
   $("rows").onclick = (e) => { const r = e.target.closest(".row"); if (r) openMsg(r.dataset.id).catch((er) => status(er.message)); };
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") goBack(); });
+  // PC keyboard: Esc = back, Up/Down = previous/next email
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") return goBack();
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    const rows = [...document.querySelectorAll("#rows .row")];
+    if (!rows.length) return;
+    const i = rows.findIndex((r) => r.classList.contains("sel"));
+    const next = rows[e.key === "ArrowDown" ? Math.min(rows.length - 1, i + 1) : Math.max(0, i - 1)];
+    if (next && next !== rows[i]) { e.preventDefault(); next.scrollIntoView({ block: "nearest" }); openMsg(next.dataset.id).catch((er) => status(er.message)); }
+  });
 
   initAuth();
 })();

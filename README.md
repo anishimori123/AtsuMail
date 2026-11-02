@@ -26,7 +26,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `app.js` | Talks to Gmail and shows the mail |
 | `config.js` | Your settings (Google Client ID goes here) |
 | `demo.js` | Fake emails, used when no Client ID is set |
-| `manifest.json` | Lets you "Add to Home Screen" on your phone like an app |
+| `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
 
 ## Try it (demo mode, no Google needed)
@@ -71,6 +71,15 @@ Steps:
 2. Source: **Deploy from a branch**, Branch: `main`, folder `/ (root)` → **Save**.
 3. Wait 1–2 minutes. Your app is at `https://anishimori123.github.io/AtsuMail/`.
 4. On your phone, open that link → browser menu → **Add to Home Screen**.
+
+## Install on your Windows PC (free, like a real program)
+
+1. Open `https://anishimori123.github.io/AtsuMail/` in **Edge** or **Chrome**.
+2. Edge: click **⋯** (top right) → **Apps** → **Install AtsuMail**.
+   Chrome: click the small **install icon** (a screen with a down arrow) at the right end of the address bar → **Install**.
+3. Success = AtsuMail opens in its own window with the pink envelope icon, and shows up in the Start menu. Right-click its taskbar icon → **Pin to taskbar**.
+
+PC keyboard: `↑` / `↓` = previous / next email, `Esc` = close email.
 
 ## Known limits
 
