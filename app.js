@@ -82,7 +82,7 @@
     const s = SHEETS[i], id = sheetId(s.url);
     status("Loading sheet...");
     let tabs;
-    if (!id && DEMO) tabs = Object.keys(ATSU_DEMO.sheet);
+    if (DEMO) tabs = Object.keys(ATSU_DEMO.sheet); // demo mode always shows the fake sheet
     else if (!id) { $("sheetgrid").innerHTML = `<p class="hint">Paste the link of "${esc(s.name)}" into <b>config.js</b> (SHEETS) to show it here.</p>`; status("No sheet link yet"); return; }
     else {
       const meta = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}?fields=properties.title,sheets.properties(title,hidden)`);
@@ -97,7 +97,7 @@
     const s = SHEETS[curSheet], id = sheetId(s.url);
     status("Loading " + tab + "...");
     let rows;
-    if (!id && DEMO) rows = ATSU_DEMO.sheet[tab] || [];
+    if (DEMO) rows = ATSU_DEMO.sheet[tab] || [];
     else {
       const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent("'" + tab.replace(/'/g, "''") + "'")}`);
       rows = res.values || [];

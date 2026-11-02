@@ -15,6 +15,6 @@ window.ATSU_CONFIG = {
   // Paste the sheet's link (copy it from the browser address bar while the sheet is open).
   // You can add more lines like: { name: "Budget", url: "https://docs.google.com/spreadsheets/d/..." },
   SHEETS: [
-    { name: "Myojin", url: "" }
+    { name: "Myojin", url: "https://docs.google.com/spreadsheets/d/1tOl09Ill4jKm9hig-9r-oT2gvQVX_Dwg7Z9WKoGEglM/edit" }
   ]
 };

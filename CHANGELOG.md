@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.6.1 — 2026-11-01 — time spent: ~3 min
+
+**What changed**
+- Myojin sheet link saved in `config.js`. It shows after Google sign-in is set up; demo mode keeps showing the fake sheet.
+
+**Why**
+- Ready for when Gmail/Google is connected.
+
+
 ## v0.6.0 — 2026-11-01 — time spent: ~30 min
 
 **What changed**
