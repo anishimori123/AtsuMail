@@ -28,16 +28,16 @@ button:hover { background: #3a3a3a; }
 
 /* Folder tree */
 #folders {
-  width: 300px; flex-shrink: 0; overflow-y: auto;
+  width: 240px; flex-shrink: 0; overflow-y: auto;
   background: #222; border-right: 1px solid #3c3c3c; padding: 2px 0;
 }
-/* Folder names are 2x bigger than the rest (easier to tap on a phone) */
-.folder { font-size: 26px; padding: 6px 12px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Folder names are bigger than the rest (easier to tap on a phone) */
+.folder { font-size: 20px; padding: 4px 10px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .folder::before { content: "\1F4C1  "; }
 .folder:hover { background: #2a2d2e; }
 .folder.sel { background: #094771; color: #fff; }
 .folder .n { color: #888; }
-.folder.sub { padding-left: 40px; }
+.folder.sub { padding-left: 30px; }
 
 /* Message list - "Details" view */
 #list { flex: 1; overflow-y: auto; min-width: 0; }

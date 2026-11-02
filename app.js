@@ -61,7 +61,7 @@
     $("folders").innerHTML = [...sys, ...user].map((l) => {
       const depth = l.type === "system" ? 0 : l.name.split("/").length - 1;
       const name = l.type === "system" ? prettyName(l.name) : l.name.split("/").pop();
-      return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${12 + depth * 28}px` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
+      return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${10 + depth * 20}px` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
     }).join("");
   }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.2 — 2026-11-01 — time spent: ~5 min
+
+**What changed**
+- Folder text is now medium size (20px, was 26px; original was 13px). Folder panel width 240px on PC.
+
+**Why**
+- 2x was too big; this sits between the first size and the 2x size.
+
 ## v0.3.1 — 2026-11-01 — time spent: ~5 min
 
 **What changed**
@@ -17,7 +25,7 @@
   - Or swipe sideways on the thin info bar at the top of the email.
   - The phone's own back gesture/button also closes the email now (instead of leaving the app).
 - In the list: swipe right to show folders, swipe left to hide them.
-- Folder list is 2x bigger (text 26px, more space between folders), easier to tap.
+- Folder list is bigger (see v0.3.2 for final size), easier to tap.
 - Fix: opening several emails no longer adds extra hidden "back" steps.
 
 **Why**
