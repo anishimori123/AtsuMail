@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.1 — 2026-11-01 — time spent: ~5 min
+
+**What changed**
+- Added a version tag (`?v=0.3.1`) to the style and script links in `index.html`. Change it on every release.
+
+**Why**
+- Phones kept showing the old version for up to 10 minutes after an update (saved copy). A new tag forces a fresh download.
+
 ## v0.3.0 — 2026-11-01 — time spent: ~20 min
 
 **What changed**
