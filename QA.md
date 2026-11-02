@@ -19,6 +19,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9e. Android: opening an email hides the address bar. Going back to the list shows it again.
 9f. Open an email, tap ⛶. Swipe from the right edge to the left: back to the normal email screen. Swipe again: back to the list.
 9g. Turn the phone sideways and open an email. It fills the full width with one thin bar on top. Tap ← in that bar to go back.
+9i. On the list, use the phone's back gesture (swipe in from the left edge). The folder screen opens (the app does NOT close). Do it again: folders close.
 9c. On the list, swipe right. Folders slide in, with big text. Swipe left. They hide.
 9h. In the folder list, under SHEETS, tap **Myojin**. A dark table shows with tabs at the bottom (Sheet1, Log). Tap **Log**: it switches. Tap **Inbox**: back to email.
 

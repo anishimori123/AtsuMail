@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.6.2 | 2026-11-01 | 3 min | Phone: back gesture / swipe on the list opens the folder screen |
 | v0.6.1 | 2026-11-01 | 3 min | Myojin sheet link saved |
 | v0.6.0 | 2026-11-01 | 5 min | Google Sheets view (SHEETS section) |
 | v0.5.5 | 2026-11-01 | 4 min | Smaller folder list on PC, flat folder icons |
@@ -21,12 +22,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **1 h 22 min** | |
+| **Total** | | **1 h 25 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.6.2 — 2026-11-01 — time spent: 3 min
+
+**What changed**
+- Phone: on the email list, the phone's own back gesture (or swipe from the left edge) now opens the folder screen instead of leaving AtsuMail. Do it again to close the folders.
+- Swiping left-to-right on the list still opens folders too.
+
+**Why**
+- Swiping near the left edge was caught by the phone as "back" and could close the app.
 
 ## v0.6.1 — 2026-11-01 — time spent: 3 min
 

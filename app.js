@@ -317,7 +317,19 @@
     if (document.body.classList.contains("full")) { setFull(false); return; }
     if (history.state && history.state.atsuRead) history.back(); else closeReader();
   }
-  window.addEventListener("popstate", () => { if (!$("reader").hidden) closeReader(); });
+  // Phone: on the email list, the phone's back gesture opens/closes the folder screen
+  // instead of leaving AtsuMail. (We keep one extra "page" in history to catch it.)
+  const isPhone = () => matchMedia("(max-width: 700px), (max-height: 500px)").matches;
+  const armBack = () => { if (!(history.state && history.state.atsuList)) history.pushState({ atsuList: 1 }, ""); };
+  if (isPhone()) { history.replaceState({ atsuBase: 1 }, ""); armBack(); }
+  window.addEventListener("popstate", () => {
+    if (!$("reader").hidden) { closeReader(); return; }
+    if (!isPhone()) return;
+    if (history.state && history.state.atsuBase) {
+      document.body.classList.toggle("show-folders");
+      armBack();
+    }
+  });
 
   // Swipe detector: calls fn("right"|"left") for a mostly-sideways swipe.
   function onSwipe(el, fn) {
