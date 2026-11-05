@@ -23,6 +23,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9g. Turn the phone sideways and open an email. It fills the full width with one thin bar on top. Tap ← in that bar to go back.
 9i. On the list, use the phone's back gesture (swipe in from the left edge). The folder screen opens (the app does NOT close). Do it again: folders close.
 9c. On the list, swipe right. Folders slide in, with big text. Swipe left. They hide.
+9h0. Sheet full screen: open Myojin, press F (PC) or tap ⛶ on the tab bar (phone). Only the sheet and tabs show. F / ⛶ / back gesture returns.
 9h. In the folder list, under SHEETS, tap **Myojin**. A dark table shows with tabs at the bottom (Sheet1, Log). Tap **Log**: it switches. Tap **Inbox**: back to email.
 
 ## Part B — Real Gmail (after you add your Client ID)

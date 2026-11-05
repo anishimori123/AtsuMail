@@ -188,10 +188,12 @@
     status(`${s.name} › ${tab} · ${nRows} rows`);
   }
   function closeSheet() {
+    if (document.body.classList.contains("sheetmode")) setFull(false);
     curSheet = null;
     document.body.classList.remove("sheetmode");
     $("sheetview").hidden = true;
   }
+  $("btnSheetFull").onclick = () => setFull(!document.body.classList.contains("full"));
   $("sheettabs").onclick = (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.tab).catch((er) => status(er.message)); };
   // Phone: tap a cell to see its full text
   $("sheetgrid").onclick = (e) => { const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
@@ -483,9 +485,9 @@
   // Opening an email adds a "page" to the browser history, so the phone's
   // normal back gesture/button closes the email instead of leaving the app.
   function goBack() {
-    if ($("reader").hidden) return;
-    // In full screen, the first swipe/back only leaves full screen.
+    // In full screen (email or sheet), the first swipe/back only leaves full screen.
     if (document.body.classList.contains("full")) { setFull(false); return; }
+    if ($("reader").hidden) return;
     if (history.state && history.state.atsuRead) history.back(); else closeReader();
   }
   // Phone: on the email list, the phone's back gesture opens/closes the folder screen
@@ -495,6 +497,7 @@
   if (isPhone()) { history.replaceState({ atsuBase: 1 }, ""); armBack(); }
   window.addEventListener("popstate", () => {
     if (!$("reader").hidden) { closeReader(); return; }
+    if (document.body.classList.contains("full")) { setFull(false); armBack(); return; }
     if (!isPhone()) return;
     if (history.state && history.state.atsuBase) {
       document.body.classList.toggle("show-folders");
@@ -550,7 +553,7 @@
     if (e.key === "Escape") return goBack();
     // F: full screen on/off while an email is open (Ctrl+F stays the browser's Find)
     const plainF = e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
-    if (plainF && !$("reader").hidden) {
+    if (plainF && (!$("reader").hidden || document.body.classList.contains("sheetmode"))) {
       e.preventDefault();
       setFull(!document.body.classList.contains("full"));
       return;

@@ -159,7 +159,10 @@ body.sheetmode #list, body.sheetmode #reader, body.sheetmode #split2 { display: 
 #sheetgrid tbody tr:hover td { filter: brightness(1.15); }
 #sheetgrid td.num { text-align: right; font-variant-numeric: tabular-nums; }
 #sheetgrid .hint { padding: 12px; color: #aaa; }
-#sheettabs { display: flex; gap: 2px; overflow-x: auto; background: #252526; border-top: 1px solid #3c3c3c; padding: 2px 4px; }
+#sheetbar { display: flex; background: #252526; border-top: 1px solid #3c3c3c; padding-bottom: env(safe-area-inset-bottom); }
+#sheettabs { flex: 1; display: flex; gap: 2px; overflow-x: auto; padding: 2px 4px; }
+#btnSheetFull { border: 0; border-left: 1px solid #3c3c3c; padding: 2px 12px; }
+body.full #btnSheetFull { color: #ff8fd1; }
 #sheettabs button { border: 0; background: #2d2d2d; padding: 3px 12px; white-space: nowrap; }
 #sheettabs button.on { background: #1e1e1e; color: #fff; border-bottom: 2px solid #34a853; }
 

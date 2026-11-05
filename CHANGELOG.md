@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.9.1 | 2026-11-04 | 4 min | Full screen for sheets (F key or ⛶ on the tab bar) |
 | v0.9.0 | 2026-11-04 | 6 min | Sheets show the sheet's own colors, bold, alignment, merged cells, column widths |
 | v0.8.3 | 2026-11-04 | 4 min | Pixel landscape: camera-side gap reduced to a thin margin |
 | v0.8.2 | 2026-11-04 | 8 min | Phone sideways: no blank strip by the camera; only text keeps clear of it |
@@ -32,12 +33,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 25 min** | |
+| **Total** | | **2 h 29 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.9.1 — 2026-11-04 — time spent: 4 min
+
+**What changed**
+- Sheets can go full screen like emails: press **F** (PC) or tap **⛶** at the right end of the tab bar (phone). Only the sheet and its tabs stay on screen.
+- Leave full screen: F again, ⛶ again (it turns pink while on), Esc, or the phone's back gesture.
+
+**Why**
+- More room to read the Myojin sheet.
 
 ## v0.9.0 — 2026-11-04 — time spent: 6 min
 
