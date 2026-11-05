@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.10.1 | 2026-11-04 | 14 min | Fix: phone back gesture closes and stops the YouTube video first |
 | v0.10.0 | 2026-11-04 | 9 min | Watch later: save YouTube/other links, play YouTube inside AtsuMail, synced via Google Sheet |
 | v0.9.2 | 2026-11-04 | 4 min | Sheet links (whole-cell, =HYPERLINK, part of text) work |
 | v0.9.1 | 2026-11-04 | 4 min | Full screen for sheets (F key or ⛶ on the tab bar) |
@@ -35,12 +36,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 42 min** | |
+| **Total** | | **2 h 56 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.10.1 — 2026-11-04 — time spent: 14 min
+
+**What changed**
+- Phone: the back gesture while a video plays now closes the video and stops it. A second back opens the folders.
+- Uses a fresh video frame each time (changing the old one added hidden "back" steps).
+
+**Why**
+- Bug: back opened the folders while the video kept playing behind them.
 
 ## v0.10.0 — 2026-11-04 — time spent: 9 min
 

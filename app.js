@@ -314,13 +314,21 @@
     const id = ytId(x.url);
     if (!id) { window.open(x.url, "_blank", "noopener"); return; }
     const start = ytStart(x.url);
-    $("wframe").src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${start ? "&start=" + start : ""}`;
+    setVideo(`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${start ? "&start=" + start : ""}`);
     $("wopen").href = x.url; $("wtitle").textContent = x.title;
     $("wplayer").hidden = false; $("wmain").hidden = true;
   }
+  // Use a fresh video frame each time: changing an existing frame's address adds
+  // hidden "back" steps to the browser history, which breaks the phone's back gesture.
+  function setVideo(url) {
+    const old = $("wframe"), fr = old.cloneNode(false);
+    fr.removeAttribute("src");
+    if (url) fr.src = url;
+    old.replaceWith(fr);
+  }
   function closePlayer() {
     if ($("wplayer").hidden) return;
-    $("wframe").src = "about:blank";   // stops the video
+    setVideo("");   // removes the player = stops the video
     $("wplayer").hidden = true; $("wmain").hidden = false;
   }
   async function addLink() {
@@ -659,6 +667,7 @@
   window.addEventListener("popstate", () => {
     if (!$("reader").hidden) { closeReader(); return; }
     if (document.body.classList.contains("full")) { setFull(false); armBack(); return; }
+    if (!$("wplayer").hidden) { closePlayer(); armBack(); return; }   // back closes (and stops) the video first
     if (!isPhone()) return;
     if (history.state && history.state.atsuBase) {
       document.body.classList.toggle("show-folders");
