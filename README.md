@@ -86,6 +86,15 @@ Steps:
 3. Wait 1–2 minutes. Your app is at `https://anishimori123.github.io/AtsuMail/`.
 4. On your phone, open that link → browser menu → **Add to Home Screen**.
 
+## Watch later (YouTube and other links)
+
+- Under **WATCH LATER** in the folder list. Paste a link, optional title, press **Add** (or Enter).
+- YouTube links get the video's title and picture, and **play inside AtsuMail** (starts at the `t=` time if the link has one). `F` / ⛶ = full screen.
+- Other links (X, news, ...) are saved too and open in a new tab.
+- Saved in a Google Sheet "AtsuMail Watch Later" in your Drive, so phone and PC share the list. You can also open/edit it in Google Sheets.
+- Setup once: Google Cloud → enable **Google Drive API**, Data Access → add `https://www.googleapis.com/auth/drive.file`, then sign in again and tick the Drive box. (drive.file = AtsuMail only sees files it created.)
+- Some YouTube videos don't allow playing on other sites → use "YouTube ↗".
+
 ## Install on your Windows PC (free, like a real program)
 
 1. Open `https://anishimori123.github.io/AtsuMail/` in **Edge** or **Chrome**.

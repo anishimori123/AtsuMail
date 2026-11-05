@@ -35,6 +35,11 @@ window.ATSU_DEMO = {
       text: "Daily report\n------------\nTrades: 4\nP/L: +1.2%\n" },
     { id: "m5", labels: ["SENT"], from: "me", subject: "Re: meeting", snippet: "Sounds good", date: Date.now() - 9 * 86400e3, text: "Sounds good, see you then." }
   ],
+  // Fake Watch later list (demo mode saves changes on this device only)
+  watch: [
+    { added: "2026-11-04", title: "Demo: a YouTube video", url: "https://www.youtube.com/watch?v=jNQXAC9IVRw", kind: "youtube" },
+    { added: "2026-11-03", title: "Demo: a normal web link", url: "https://example.com/", kind: "link" }
+  ],
   // Fake sheet so the Sheets view can be tried without Google
   sheet: {
     "Sheet1": [["Date", "Item", "Amount", "Note"], ["2026-10-01", "Offering", "5,000", ""], ["2026-10-08", "Supplies", "1,200", "Candles"], ["2026-10-15", "Offering", "3,000", ""], ["2026-10-22", "Repair", "8,500", "Roof, east side"], ["2026-10-29", "Offering", "4,000", ""]],

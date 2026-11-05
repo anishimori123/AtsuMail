@@ -38,16 +38,21 @@
     status("Click Sign in to connect Gmail");
   }
 
-  async function gapi(path) {
+  async function gapi(path, opts = {}) {
     if (!token) throw new Error("Not signed in");
-    const r = await fetch(path.startsWith("http") ? path : API + path, { headers: { Authorization: "Bearer " + token } });
+    const headers = { Authorization: "Bearer " + token };
+    if (opts.body !== undefined) headers["Content-Type"] = "application/json";
+    const r = await fetch(path.startsWith("http") ? path : API + path, {
+      method: opts.method || "GET", headers, body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined
+    });
     if (r.status === 401) { token = null; $("btnSignIn").textContent = "Sign in"; throw new Error("Session expired - click Sign in again"); }
     if (!r.ok) {
       // Show Google's own reason (e.g. "API not enabled", "insufficient permission", "no access to this file")
       let why = ""; try { why = (await r.json()).error.message || ""; } catch {}
-      throw new Error((path.includes("sheets.googleapis") ? "Sheets" : "Gmail") + " error " + r.status + (why ? ": " + why.slice(0, 220) : ""));
+      const who = path.includes("sheets.googleapis") ? "Sheets" : path.includes("/drive/") ? "Drive" : "Gmail";
+      throw new Error(who + " error " + r.status + (why ? ": " + why.slice(0, 220) : ""));
     }
-    return r.json();
+    return r.status === 204 ? {} : r.json();
   }
 
   // ---------- Folders (Gmail labels) ----------
@@ -67,7 +72,7 @@
       const depth = l.type === "system" ? 0 : l.name.split("/").length - 1;
       const name = l.type === "system" ? prettyName(l.name) : l.name.split("/").pop();
       return `<div class="folder ${depth ? "sub" : ""} ${l.id === curLabel ? "sel" : ""}" style="${depth > 1 ? `padding-left:${10 + depth * 1.2}em` : ""}" data-id="${esc(l.id)}" data-name="${esc(l.type === "system" ? prettyName(l.name) : l.name)}">${esc(name)}${l.unread ? ` <span class="n">(${l.unread})</span>` : ""}</div>`;
-    }).join("") + sheetFolders();
+    }).join("") + sheetFolders() + watchFolder();
   }
 
   // ---------- Google Sheets (read-only) ----------
@@ -226,6 +231,132 @@
   $("sheettabs").onclick = (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.tab).catch((er) => status(er.message)); };
   // Phone: tap a cell to see its full text
   $("sheetgrid").onclick = (e) => { if (e.target.closest("a")) return; const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
+
+  // ---------- Watch Later (YouTube + other links) ----------
+  // Saved in a Google Sheet "AtsuMail Watch Later" in your Drive, so phone and PC share it.
+  // Permission "drive.file" = AtsuMail can only see files it created itself.
+  // Demo mode: saved on this device only.
+  const WL_NAME = "AtsuMail Watch Later", WL_TAB = "Watch Later";
+  let wlId = null, wl = [], wlLoaded = false;
+  const ytId = (u) => {
+    const m = String(u).match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/|embed\/|v\/))([\w-]{11})/i);
+    return m ? m[1] : "";
+  };
+  const ytStart = (u) => { const m = String(u).match(/[?&#]t=(\d+h)?(\d+m)?(\d+)s?/); if (!m) return 0; return (parseInt(m[1]) || 0) * 3600 + (parseInt(m[2]) || 0) * 60 + (parseInt(m[3]) || 0); };
+  const hostOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
+  function watchFolder() {
+    return `<div class="tree-head">Watch later</div><div class="folder watch" data-watch="1" data-name="Watch later">Watch later${wlLoaded ? ` <span class="n">(${wl.length})</span>` : ""}</div>`;
+  }
+  function wlCount() { const f = document.querySelector(".folder.watch"); if (f) f.innerHTML = `Watch later <span class="n">(${wl.length})</span>`; }
+
+  // --- storage ---
+  async function wlFind() {
+    if (wlId) return wlId;
+    const q = encodeURIComponent(`name='${WL_NAME}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`);
+    const res = await gapi(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)&spaces=drive&orderBy=createdTime`);
+    if (res.files && res.files.length) return (wlId = res.files[0].id);
+    const made = await gapi("https://sheets.googleapis.com/v4/spreadsheets", { method: "POST", body: { properties: { title: WL_NAME }, sheets: [{ properties: { title: WL_TAB } }] } });
+    wlId = made.spreadsheetId;
+    await wlWrite([]);
+    return wlId;
+  }
+  async function wlRead() {
+    if (DEMO) { try { wl = JSON.parse(localStorage.getItem("atsu.wl") || "null") || ATSU_DEMO.watch.slice(); } catch { wl = ATSU_DEMO.watch.slice(); } return; }
+    const id = await wlFind();
+    const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent("'" + WL_TAB + "'!A2:D")}`);
+    wl = (res.values || []).filter((r) => r[2]).map((r) => ({ added: r[0] || "", title: r[1] || r[2], url: r[2], kind: r[3] || (ytId(r[2]) ? "youtube" : "link") }));
+  }
+  async function wlWrite(list) {
+    if (DEMO) { try { localStorage.setItem("atsu.wl", JSON.stringify(list)); } catch {} return; }
+    const range = encodeURIComponent("'" + WL_TAB + "'!A1:D");
+    await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${wlId}/values/${range}:clear`, { method: "POST", body: {} });
+    const values = [["Added", "Title", "Link", "Type"], ...list.map((x) => [x.added, x.title, x.url, x.kind])];
+    await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${wlId}/values/${encodeURIComponent("'" + WL_TAB + "'!A1")}?valueInputOption=RAW`, { method: "PUT", body: { values } });
+  }
+  async function wlTitle(url) {
+    if (ytId(url)) {   // YouTube's public title lookup (no account needed)
+      try { const r = await fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent(url)); if (r.ok) return (await r.json()).title; } catch {}
+      try { const r = await fetch("https://noembed.com/embed?url=" + encodeURIComponent(url)); if (r.ok) { const j = await r.json(); if (j.title) return j.title; } } catch {}
+      return "YouTube video";
+    }
+    return hostOf(url) || url;
+  }
+
+  // --- screens ---
+  function renderWatch() {
+    const html = wl.map((x, i) => {
+      const id = ytId(x.url);
+      const thumb = id ? `<img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg" alt="" loading="lazy">` : `<div class="wl-ico">&#8599;</div>`;
+      return `<div class="wl-row" data-i="${i}">${thumb}<div class="wl-txt"><div class="wl-title">${esc(x.title)}</div>` +
+        `<div class="wl-sub">${id ? "YouTube" : esc(hostOf(x.url))} &middot; ${esc(x.added)}</div></div>` +
+        `<button class="wl-del" data-del="${i}" title="Remove">&#x2715;</button></div>`;
+    }).join("");
+    $("wlist").innerHTML = html || `<p class="hint">Nothing saved yet. Paste a YouTube (or any) link above and press <b>Add</b>.</p>`;
+    wlCount();
+  }
+  async function openWatch() {
+    document.body.classList.add("watchmode");
+    $("watchview").hidden = false; closePlayer();
+    status("Loading Watch later...");
+    if (!DEMO && token && grantedScopes && !grantedScopes.includes("drive.file")) {
+      $("wlist").innerHTML = `<p class="hint">Watch later needs one more Google permission.<br>Click <b>Sign in</b> again and <b>tick</b> the box about Google Drive files used with this app.</p>`;
+      status("Drive permission not given"); return;
+    }
+    await wlRead(); wlLoaded = true; renderWatch();
+    status(`Watch later · ${wl.length} saved`);
+  }
+  function closeWatch() {
+    if (document.body.classList.contains("watchmode")) setFull(false);
+    document.body.classList.remove("watchmode");
+    $("watchview").hidden = true; closePlayer();
+  }
+  function playItem(x) {
+    const id = ytId(x.url);
+    if (!id) { window.open(x.url, "_blank", "noopener"); return; }
+    const start = ytStart(x.url);
+    $("wframe").src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${start ? "&start=" + start : ""}`;
+    $("wopen").href = x.url; $("wtitle").textContent = x.title;
+    $("wplayer").hidden = false; $("wmain").hidden = true;
+  }
+  function closePlayer() {
+    if ($("wplayer").hidden) return;
+    $("wframe").src = "about:blank";   // stops the video
+    $("wplayer").hidden = true; $("wmain").hidden = false;
+  }
+  async function addLink() {
+    let url = $("wurl").value.trim();
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    if (!hostOf(url)) { toast("That doesn't look like a link"); return; }
+    $("wadd").disabled = true; status("Adding...");
+    try {
+      const title = $("wname").value.trim() || await wlTitle(url);
+      const d = new Date(), added = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      if (!DEMO) await wlRead();            // get the newest list first (maybe changed on the other device)
+      wl.unshift({ added, title, url, kind: ytId(url) ? "youtube" : "link" });
+      await wlWrite(wl);
+      $("wurl").value = ""; $("wname").value = "";
+      renderWatch(); toast("Added: " + title.slice(0, 40)); status(`Watch later · ${wl.length} saved`);
+    } catch (e) { status(e.message); }
+    $("wadd").disabled = false;
+  }
+  async function removeAt(i) {
+    const x = wl[i]; if (!x) return;
+    if (!confirm(`Remove "${x.title}" from Watch later?`)) return;
+    try {
+      if (!DEMO) { await wlRead(); i = wl.findIndex((y) => y.url === x.url && y.added === x.added); if (i < 0) { renderWatch(); return; } }
+      wl.splice(i, 1); await wlWrite(wl); renderWatch(); status(`Watch later · ${wl.length} saved`);
+    } catch (e) { status(e.message); }
+  }
+  $("wadd").onclick = () => addLink();
+  $("wurl").addEventListener("keydown", (e) => { if (e.key === "Enter") addLink(); });
+  $("wname").addEventListener("keydown", (e) => { if (e.key === "Enter") addLink(); });
+  $("wlist").onclick = (e) => {
+    const del = e.target.closest("[data-del]"); if (del) { removeAt(+del.dataset.del); return; }
+    const row = e.target.closest(".wl-row"); if (row) playItem(wl[+row.dataset.i]);
+  };
+  $("wback").onclick = () => closePlayer();
+  $("wfull").onclick = () => setFull(!document.body.classList.contains("full"));
 
   // ---------- Message list ----------
   const header = (m, n) => (m.payload?.headers || []).find((h) => h.name.toLowerCase() === n)?.value || "";
@@ -516,6 +647,7 @@
   function goBack() {
     // In full screen (email or sheet), the first swipe/back only leaves full screen.
     if (document.body.classList.contains("full")) { setFull(false); return; }
+    if (!$("wplayer").hidden) { closePlayer(); return; }
     if ($("reader").hidden) return;
     if (history.state && history.state.atsuRead) history.back(); else closeReader();
   }
@@ -560,7 +692,8 @@
 
   // ---------- Clicks ----------
   $("btnSignIn").onclick = () => tokenClient?.requestAccessToken();
-  $("btnRefresh").onclick = () => (curSheet !== null ? openSheet(curSheet).catch((er) => status(er.message)) : loadAll());
+  $("btnRefresh").onclick = () => (document.body.classList.contains("watchmode") ? openWatch().catch((er) => status(er.message))
+    : curSheet !== null ? openSheet(curSheet).catch((er) => status(er.message)) : loadAll());
   $("btnBack").onclick = () => goBack();
   $("btnBack2").onclick = () => goBack();
   $("btnFolders").onclick = () => document.body.classList.toggle("show-folders");
@@ -571,6 +704,8 @@
     document.querySelectorAll(".folder").forEach((x) => x.classList.toggle("sel", x === f));
     document.body.classList.remove("show-folders");
     goBack();
+    if (f.dataset.watch !== undefined) { closeSheet(); openWatch().catch((er) => status(er.message)); return; }
+    closeWatch();
     if (f.dataset.sheet !== undefined) { openSheet(+f.dataset.sheet).catch((er) => status(er.message)); return; }
     closeSheet();
     curLabel = f.dataset.id;
@@ -582,7 +717,7 @@
     if (e.key === "Escape") return goBack();
     // F: full screen on/off while an email is open (Ctrl+F stays the browser's Find)
     const plainF = e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey && !e.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
-    if (plainF && (!$("reader").hidden || document.body.classList.contains("sheetmode"))) {
+    if (plainF && (!$("reader").hidden || /sheetmode|watchmode/.test(document.body.className))) {
       e.preventDefault();
       setFull(!document.body.classList.contains("full"));
       return;

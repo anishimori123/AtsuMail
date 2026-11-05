@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1e1e1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>AtsuMail</title>
-<link rel="stylesheet" href="style.css?v=0.9.2">
+<link rel="stylesheet" href="style.css?v=0.10.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -73,6 +73,27 @@
       <button id="btnExitFull" title="Exit full screen">&#x2715;</button>
     </section>
 
+    <!-- Watch later: saved YouTube videos and links -->
+    <section id="watchview" hidden>
+      <div id="wmain">
+        <div class="wbar">
+          <input id="wurl" type="url" placeholder="Paste a YouTube or any link" autocomplete="off">
+          <input id="wname" type="text" placeholder="Title (optional)" autocomplete="off">
+          <button id="wadd">Add</button>
+        </div>
+        <div id="wlist"></div>
+      </div>
+      <div id="wplayer" hidden>
+        <div class="wbar">
+          <button id="wback" title="Back to list">&larr;</button>
+          <span id="wtitle"></span>
+          <a id="wopen" target="_blank" rel="noopener" title="Open on YouTube">YouTube &#8599;</a>
+          <button id="wfull" title="Full screen (F)">&#x26F6;</button>
+        </div>
+        <iframe id="wframe" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </section>
+
     <!-- Google Sheet view (read-only) -->
     <section id="sheetview" hidden>
       <div id="sheetgrid"></div>
@@ -86,10 +107,10 @@
   <div id="toast" hidden></div>
   <div id="status">Ready</div>
 
-  <script src="config.js?v=0.9.2"></script>
+  <script src="config.js?v=0.10.0"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="demo.js?v=0.9.2"></script>
-  <script src="voice.js?v=0.9.2"></script>
-  <script src="app.js?v=0.9.2"></script>
+  <script src="demo.js?v=0.10.0"></script>
+  <script src="voice.js?v=0.10.0"></script>
+  <script src="app.js?v=0.10.0"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.10.0 | 2026-11-04 | 9 min | Watch later: save YouTube/other links, play YouTube inside AtsuMail, synced via Google Sheet |
 | v0.9.2 | 2026-11-04 | 4 min | Sheet links (whole-cell, =HYPERLINK, part of text) work |
 | v0.9.1 | 2026-11-04 | 4 min | Full screen for sheets (F key or ⛶ on the tab bar) |
 | v0.9.0 | 2026-11-04 | 6 min | Sheets show the sheet's own colors, bold, alignment, merged cells, column widths |
@@ -34,12 +35,28 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 33 min** | |
+| **Total** | | **2 h 42 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.10.0 — 2026-11-04 — time spent: 9 min
+
+**What changed**
+- New **WATCH LATER** section (under SHEETS): paste a link + optional title → Add.
+  - YouTube: title and picture fetched automatically; the video plays inside AtsuMail (respects `t=` start time). "YouTube ↗" opens it on YouTube.
+  - Other links (X posts, news...) are saved too and open in a new tab.
+  - ✕ removes an item (asks first). ↻ reloads the list.
+  - **F** / ⛶ full screen for the list and the video; back gesture / Esc leaves full screen, then closes the video.
+- Saved in a Google Sheet "AtsuMail Watch Later" that AtsuMail creates in your Drive → same list on phone and PC.
+- New permission `drive.file` (AtsuMail can only see files it created). Needs Google Drive API turned on.
+- Demo mode: sample list, saved on the device only.
+- New file content: watch-later code in `app.js`; privacy page updated.
+
+**Why**
+- Save videos to watch later (e.g. on the commute) right inside AtsuMail.
 
 ## v0.9.2 — 2026-11-04 — time spent: 4 min
 
