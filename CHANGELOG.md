@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.9.0 | 2026-11-04 | 6 min | Sheets show the sheet's own colors, bold, alignment, merged cells, column widths |
 | v0.8.3 | 2026-11-04 | 4 min | Pixel landscape: camera-side gap reduced to a thin margin |
 | v0.8.2 | 2026-11-04 | 8 min | Phone sideways: no blank strip by the camera; only text keeps clear of it |
 | v0.8.1 | 2026-11-04 | 5 min | Clearer error messages from Google; detects missing Sheets permission |
@@ -31,12 +32,23 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 19 min** | |
+| **Total** | | **2 h 25 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.9.0 — 2026-11-04 — time spent: 6 min
+
+**What changed**
+- Sheets now show the sheet's own formatting: cell background colors, text colors, bold / italic / underline / strike-through, left-center-right alignment, merged cells, column widths. Conditional-format colors are included.
+- White (uncolored) cells stay dark to match the app; any color you set is shown as-is. Dark text colors are brightened so they can be read on dark.
+- Empty rows/columns at the end are cut off.
+- Same read-only permission; nothing new to approve.
+
+**Why**
+- The Pairs tab looked plain; the original sheet's colors make it easier to read.
 
 ## v0.8.3 — 2026-11-04 — time spent: 4 min
 

@@ -150,13 +150,13 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 body.sheetmode #list, body.sheetmode #reader, body.sheetmode #split2 { display: none !important; }
 #sheetview { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 #sheetgrid { flex: 1; overflow: auto; }
-#sheetgrid table { border-collapse: collapse; font-size: 13px; }
-#sheetgrid th, #sheetgrid td { border: 1px solid #333; padding: 3px 7px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+#sheetgrid table { border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+#sheetgrid th, #sheetgrid td { border: 1px solid #333; padding: 3px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #sheetgrid thead th { position: sticky; top: 0; background: #252526; color: #999; font-weight: normal; z-index: 2; }
 #sheetgrid th.rn { position: sticky; left: 0; background: #252526; color: #888; font-weight: normal; text-align: right; min-width: 32px; z-index: 1; }
 #sheetgrid thead th.rn { z-index: 3; }
-#sheetgrid tbody tr:first-child td { color: #fff; font-weight: bold; }
-#sheetgrid tbody tr:hover td { background: #2a2d2e; }
+#sheetgrid table:not(.fmt) tbody tr:first-child td { color: #fff; font-weight: bold; }
+#sheetgrid tbody tr:hover td { filter: brightness(1.15); }
 #sheetgrid td.num { text-align: right; font-variant-numeric: tabular-nums; }
 #sheetgrid .hint { padding: 12px; color: #aaa; }
 #sheettabs { display: flex; gap: 2px; overflow-x: auto; background: #252526; border-top: 1px solid #3c3c3c; padding: 2px 4px; }

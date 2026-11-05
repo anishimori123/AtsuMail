@@ -100,29 +100,92 @@
     $("sheettabs").innerHTML = tabs.map((t) => `<button data-tab="${esc(t)}">${esc(t)}</button>`).join("");
     await openTab(tabs[0]);
   }
+  // Fetch one tab WITH its formatting (colors, bold, alignment, merged cells, column widths).
+  async function loadGrid(id, tab) {
+    const fields = "sheets(merges,data(columnMetadata(pixelSize),rowData(values(formattedValue," +
+      "effectiveFormat(backgroundColor,horizontalAlignment,textFormat(foregroundColor,bold,italic,strikethrough,underline))))))";
+    const range = encodeURIComponent("'" + tab.replace(/'/g, "''") + "'");
+    const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}?ranges=${range}&includeGridData=true&fields=${encodeURIComponent(fields)}`);
+    const sh = (res.sheets || [])[0] || {}, d = (sh.data || [])[0] || {};
+    return {
+      rows: (d.rowData || []).map((r) => (r.values || []).map((c) => ({ v: c.formattedValue ?? "", f: c.effectiveFormat || {} }))),
+      widths: (d.columnMetadata || []).map((m) => m.pixelSize || 100),
+      merges: sh.merges || []
+    };
+  }
+  // Demo: turn the fake text table into the same shape, with a little color.
+  function demoGrid(tab) {
+    const rows = (ATSU_DEMO.sheet[tab] || []).map((r, ri) => r.map((v, ci) => ({ v, f: ri === 0
+      ? { backgroundColor: { red: 0.79, green: 0.89, blue: 1 }, textFormat: { bold: true }, horizontalAlignment: "CENTER" }
+      : (ci === 2 && parseFloat(String(v).replace(/,/g, "")) >= 5000 ? { textFormat: { foregroundColor: { red: 0.85, green: 0.1, blue: 0.1 }, bold: true } } : {}) })));
+    return { rows, widths: [], merges: [] };
+  }
+
+  const rgb = (c) => `rgb(${Math.round((c.red || 0) * 255)},${Math.round((c.green || 0) * 255)},${Math.round((c.blue || 0) * 255)})`;
+  const isWhite = (c) => !c || ((c.red ?? 0) > 0.98 && (c.green ?? 0) > 0.98 && (c.blue ?? 0) > 0.98);
+  const lum = (c) => 0.299 * (c.red || 0) + 0.587 * (c.green || 0) + 0.114 * (c.blue || 0);
+
+  // Style for one cell. White (= no color) cells stay dark like the app;
+  // any color you set in the sheet is shown as-is.
+  function cellStyle(f) {
+    const st = [], tf = f.textFormat || {}, bg = f.backgroundColor, fg = tf.foregroundColor;
+    if (!isWhite(bg)) {
+      st.push("background:" + rgb(bg));
+      st.push("color:" + (fg ? rgb(fg) : "#000"));
+    } else if (fg && lum(fg) > 0.3) st.push("color:" + rgb(fg));      // colored text on dark: keep if readable
+    else if (fg && (fg.red || fg.green || fg.blue) && lum(fg) <= 0.3) {  // dark colored text: brighten so it shows on dark
+      st.push(`color:rgb(${[fg.red, fg.green, fg.blue].map((x) => Math.round(110 + (x || 0) * 145)).join(",")})`);
+    }
+    if (tf.bold) st.push("font-weight:bold");
+    if (tf.italic) st.push("font-style:italic");
+    const deco = [tf.underline && "underline", tf.strikethrough && "line-through"].filter(Boolean).join(" ");
+    if (deco) st.push("text-decoration:" + deco);
+    if (f.horizontalAlignment) st.push("text-align:" + f.horizontalAlignment.toLowerCase());
+    return st.join(";");
+  }
+
   async function openTab(tab) {
     curTab = tab;
     document.querySelectorAll("#sheettabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
     const s = SHEETS[curSheet], id = sheetId(s.url);
     status("Loading " + tab + "...");
-    let rows;
-    if (DEMO) rows = ATSU_DEMO.sheet[tab] || [];
-    else {
-      const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent("'" + tab.replace(/'/g, "''") + "'")}`);
-      rows = res.values || [];
-    }
-    const cols = Math.max(1, ...rows.map((r) => r.length));
+    const grid = DEMO ? demoGrid(tab) : await loadGrid(id, tab);
+
+    // Cut off empty rows/columns at the end (Google sends the whole 1000-row sheet)
+    const used = (c) => c && (c.v !== "" || !isWhite(c.f.backgroundColor));
+    let nRows = 0, nCols = 0;
+    grid.rows.forEach((r, ri) => r.forEach((c, ci) => { if (used(c)) { nRows = Math.max(nRows, ri + 1); nCols = Math.max(nCols, ci + 1); } }));
+    nRows = Math.min(nRows, 3000); nCols = Math.max(1, nCols);
+
+    // Merged cells: the top-left cell spans, the others are skipped
+    const span = {}, hidden = new Set();
+    grid.merges.forEach((m) => {
+      const r0 = m.startRowIndex || 0, c0 = m.startColumnIndex || 0, r1 = m.endRowIndex, c1 = m.endColumnIndex;
+      span[r0 + "," + c0] = [r1 - r0, c1 - c0];
+      for (let r = r0; r < r1; r++) for (let c = c0; c < c1; c++) if (r !== r0 || c !== c0) hidden.add(r + "," + c);
+    });
+
     const colName = (n) => { let s = ""; n++; while (n) { n--; s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26); } return s; };
     const num = (v) => /^[-+]?[\d,]+(\.\d+)?%?$|^[$¥€£]/.test(String(v).trim());
-    let h = `<table><thead><tr><th class="rn"></th>${Array.from({ length: cols }, (_, c) => `<th>${colName(c)}</th>`).join("")}</tr></thead><tbody>`;
-    rows.forEach((r, ri) => {
+    const widths = Array.from({ length: nCols }, (_, c) => Math.max(40, Math.min(420, grid.widths[c] || 100)));
+    const fmt = grid.rows.some((r) => r.some((c) => Object.keys(c.f).length));
+    let h = `<table class="${fmt ? "fmt" : ""}" style="width:${44 + widths.reduce((a, b) => a + b, 0)}px">` +
+      `<colgroup><col style="width:44px">${widths.map((w) => `<col style="width:${w}px">`).join("")}</colgroup>` +
+      `<thead><tr><th class="rn"></th>${widths.map((_, c) => `<th>${colName(c)}</th>`).join("")}</tr></thead><tbody>`;
+    for (let ri = 0; ri < nRows; ri++) {
+      const r = grid.rows[ri] || [];
       h += `<tr><th class="rn">${ri + 1}</th>`;
-      for (let c = 0; c < cols; c++) { const v = r[c] ?? ""; h += `<td class="${num(v) ? "num" : ""}" title="${esc(v)}">${esc(v)}</td>`; }
+      for (let c = 0; c < nCols; c++) {
+        if (hidden.has(ri + "," + c)) continue;
+        const cell = r[c] || { v: "", f: {} }, sp = span[ri + "," + c];
+        const attrs = sp ? `${sp[0] > 1 ? ` rowspan="${sp[0]}"` : ""}${sp[1] > 1 ? ` colspan="${sp[1]}"` : ""}` : "";
+        h += `<td${attrs} class="${num(cell.v) ? "num" : ""}" style="${cellStyle(cell.f)}" title="${esc(cell.v)}">${esc(cell.v)}</td>`;
+      }
       h += "</tr>";
-    });
+    }
     $("sheetgrid").innerHTML = h + "</tbody></table>";
     $("sheetgrid").scrollTo(0, 0);
-    status(`${s.name} › ${tab} · ${rows.length} rows`);
+    status(`${s.name} › ${tab} · ${nRows} rows`);
   }
   function closeSheet() {
     curSheet = null;
