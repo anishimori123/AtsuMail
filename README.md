@@ -29,6 +29,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `voice.js` | Built-in voice reader (uses your device's voices) |
 | `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
+| `privacy.html` | Privacy policy (Google requires it for sign-in) |
 
 ## Try it (demo mode, no Google needed)
 

@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.7.3 | 2026-11-04 | 10 min | Privacy policy page (needed for Google sign-in setup) |
 | v0.7.2 | 2026-11-01 | 11 min | Light-blue highlight on the sentence being read; tap a sentence to read from there |
 | v0.7.0 | 2026-11-01 | 7 min | Built-in voice reader (EN + JA, Soft / Radio DJ / News); F key only for full screen |
 | v0.6.4 | 2026-11-01 | 2 min | PC: plain F key also toggles full screen |
@@ -26,12 +27,20 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **1 h 47 min** | |
+| **Total** | | **1 h 57 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.7.3 — 2026-11-04 — time spent: 10 min
+
+**What changed**
+- Added `privacy.html` (privacy policy): read-only, runs only in your browser, no server, no data shared.
+
+**Why**
+- Google requires a home page and privacy policy link before the app can be switched to "In production" (needed because Google would not accept the Gmail address as a test user).
 
 ## v0.7.2 — 2026-11-01 — time spent: 11 min
 
