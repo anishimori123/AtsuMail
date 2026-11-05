@@ -37,7 +37,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 13. Open 3 real email magazines. Reading mode looks clean? Note any that look broken (sender name + screenshot).
 14. Open 1 receipt/order email. If reading mode looks odd, `Aa` shows the original correctly.
 15. Open a Japanese email. Japanese text shows correctly (no garbled letters).
-16. Wait over 1 hour, tap `↻`. You'll see "Session expired". Tap `Sign in` again and it works. (This is expected for now.)
+16. Sign in, close the app, reopen it: still signed in (no Google window). After 1 hour: the button is pink "Tap to continue"; one tap renews with no account picker. Or tap a folder: it renews by itself.
 16b. Watch later with Google: add a video on the phone, tap ↻ on the PC: it shows there too. A sheet "AtsuMail Watch Later" exists in your Google Drive.
 16a. Tap **Myojin** (link already saved in config.js). Open the **Pairs** tab: colors, bold and merged cells look like the real sheet. Links are blue and open in a new tab. Your real sheet shows, with all its tabs.
 17. Phone: Add to Home Screen, open from the icon. No browser bars.

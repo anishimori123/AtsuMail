@@ -114,7 +114,7 @@ PC resizing: drag the thin bars between the panes (they turn blue). Double-click
 
 ## Known limits
 
-- You'll need to tap **Sign in** again about every hour (Google's sign-in for browser-only apps lasts 1 hour). Fixing this needs a small server; see CHANGELOG ideas.
+- Google's sign-in pass lasts 1 hour. AtsuMail remembers it when you reopen the app; after the hour, tap the pink **Tap to continue** once (or just tap a folder) to renew. Staying signed in for days would need a small server; see CHANGELOG ideas.
 - On iPhone, the browser itself can't go fully full screen. Use **Add to Home Screen**: then the Safari bars disappear too.
 - Reading mode is great for newsletters but can make receipts or emails with data tables look odd. Tap `Aa` to see the original.
 

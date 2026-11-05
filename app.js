@@ -22,30 +22,76 @@
   const fromName = (f) => (f || "").replace(/<.*>/, "").replace(/"/g, "").trim() || f;
 
   // ---------- Google sign-in ----------
+  // Sign-in is remembered on this device until Google's 1-hour pass runs out.
+  // After that, one tap renews it (no account picker), or it renews by itself
+  // right after you tap something (browsers only allow the Google window after a tap).
+  let tokenExp = 0, renewWaiters = [], firstLoadDone = false;
+  const saveTok = () => { try { localStorage.setItem("atsu.tok", JSON.stringify({ token, scope: grantedScopes, exp: tokenExp })); } catch {} };
+  const clearTok = () => { token = null; tokenExp = 0; try { localStorage.removeItem("atsu.tok"); } catch {} };
+  const hint = () => { try { return localStorage.getItem("atsu.email") || ""; } catch { return ""; } };
+  function setSignedIn(on) {
+    $("btnSignIn").textContent = on ? "Signed in" : (hint() ? "Tap to continue" : "Sign in");
+    $("btnSignIn").classList.toggle("renew", !on && !!hint());
+  }
+  function renew(prompt) {
+    if (!tokenClient) return Promise.reject(new Error("Google sign-in not ready yet"));
+    return new Promise((resolve, reject) => {
+      renewWaiters.push({ resolve, reject });
+      tokenClient.requestAccessToken({ prompt: prompt ?? (hint() ? "" : undefined), login_hint: hint() || undefined });
+    });
+  }
+  // Used before every Google request: renews the pass if it has run out.
+  async function ensureToken() {
+    if (DEMO) return;
+    if (token && Date.now() < tokenExp - 60000) return;
+    if (token || hint()) { clearTok(); setSignedIn(false); status("Renewing sign-in..."); await renew(""); return; }
+    throw new Error("Not signed in - tap Sign in");
+  }
   function initAuth() {
     if (DEMO) { $("btnSignIn").textContent = "Demo mode"; $("btnSignIn").disabled = true; status("DEMO mode - add your Client ID in config.js to see real mail"); loadAll(); return; }
     if (!window.google?.accounts?.oauth2) { setTimeout(initAuth, 200); return; }
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CFG.CLIENT_ID, scope: CFG.SCOPE,
       callback: (r) => {
-        if (r.error) { status("Sign-in failed: " + r.error); return; }
+        const waiters = renewWaiters; renewWaiters = [];
+        if (r.error) { status("Sign-in failed: " + r.error); setSignedIn(false); waiters.forEach((w) => w.reject(new Error("Sign-in failed"))); return; }
         token = r.access_token;
         grantedScopes = r.scope || "";
-        $("btnSignIn").textContent = "Signed in";
-        loadAll();
+        tokenExp = Date.now() + (Number(r.expires_in) || 3599) * 1000;
+        saveTok(); setSignedIn(true);
+        if (waiters.length && firstLoadDone) status("Signed in again");
+        waiters.forEach((w) => w.resolve());
+        if (!firstLoadDone || !waiters.length) loadAll();
+        // remember which account, so next time Google skips the account picker
+        gapi("/profile").then((p) => { try { localStorage.setItem("atsu.email", p.emailAddress); } catch {} }).catch(() => {});
+      },
+      error_callback: (e) => {
+        const waiters = renewWaiters; renewWaiters = [];
+        status(e && e.type === "popup_failed_to_open" ? "Tap Sign in to continue (the Google window was blocked)" : "Sign-in closed - tap Sign in");
+        setSignedIn(false); waiters.forEach((w) => w.reject(new Error("Sign-in not finished")));
       }
     });
-    status("Click Sign in to connect Gmail");
+    // Still signed in from before (same hour)? Use it straight away.
+    try {
+      const s = JSON.parse(localStorage.getItem("atsu.tok") || "null");
+      if (s && s.token && s.exp > Date.now() + 60000) {
+        token = s.token; grantedScopes = s.scope || ""; tokenExp = s.exp;
+        setSignedIn(true); loadAll(); return;
+      }
+    } catch {}
+    setSignedIn(false);
+    status(hint() ? "Tap \"Tap to continue\" to renew your Google sign-in" : "Click Sign in to connect Gmail");
   }
 
+
   async function gapi(path, opts = {}) {
-    if (!token) throw new Error("Not signed in");
+    await ensureToken();
     const headers = { Authorization: "Bearer " + token };
     if (opts.body !== undefined) headers["Content-Type"] = "application/json";
     const r = await fetch(path.startsWith("http") ? path : API + path, {
       method: opts.method || "GET", headers, body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined
     });
-    if (r.status === 401) { token = null; $("btnSignIn").textContent = "Sign in"; throw new Error("Session expired - click Sign in again"); }
+    if (r.status === 401) { clearTok(); setSignedIn(false); throw new Error("Sign-in ran out - tap \"Tap to continue\""); }
     if (!r.ok) {
       // Show Google's own reason (e.g. "API not enabled", "insufficient permission", "no access to this file")
       let why = ""; try { why = (await r.json()).error.message || ""; } catch {}
@@ -713,11 +759,12 @@
   onSwipe($("folders"), (d) => { if (d === "left") document.body.classList.remove("show-folders"); });
 
   async function loadAll() {
+    firstLoadDone = true;
     try { await loadLabels(); await loadList(); } catch (e) { status(e.message); }
   }
 
   // ---------- Clicks ----------
-  $("btnSignIn").onclick = () => tokenClient?.requestAccessToken();
+  $("btnSignIn").onclick = () => { if (!DEMO) renew().catch(() => {}); };
   $("btnRefresh").onclick = () => (document.body.classList.contains("watchmode") ? openWatch().catch((er) => status(er.message))
     : curSheet !== null ? openSheet(curSheet).catch((er) => status(er.message)) : loadAll());
   $("btnBack").onclick = () => goBack();

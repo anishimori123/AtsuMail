@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.11.0 | 2026-11-04 | 6 min | Stays signed in for the hour after reopening; one-tap / automatic renewal |
 | v0.10.2 | 2026-11-04 | 5 min | Phone: double-tap an email or sheet = full screen on/off |
 | v0.10.1 | 2026-11-04 | 14 min | Fix: phone back gesture closes and stops the YouTube video first |
 | v0.10.0 | 2026-11-04 | 9 min | Watch later: save YouTube/other links, play YouTube inside AtsuMail, synced via Google Sheet |
@@ -37,12 +38,24 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **3 h 1 min** | |
+| **Total** | | **3 h 7 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.11.0 — 2026-11-04 — time spent: 6 min
+
+**What changed**
+- Sign-in is remembered on the device: closing/reopening AtsuMail within Google's 1-hour pass needs no sign-in.
+- When the pass runs out, the button turns pink "**Tap to continue**": one tap renews it, with no account picker (Google remembers your account).
+- If it runs out while you're using the app, the next tap on a folder/email renews it automatically and carries on.
+- Privacy page updated (sign-in pass + email address kept in your own browser until it expires).
+
+**Why**
+- Signing in again every time the app was reopened was annoying, especially on the phone.
+- Fully "stay signed in forever" needs a small server (refresh key); not done, see ideas.
 
 ## v0.10.2 — 2026-11-04 — time spent: 5 min
 
@@ -385,7 +398,7 @@ Add a new row at the top of this table for every release, and update the total.
 - Started read-only so nothing can be broken or deleted by mistake while learning.
 
 ## Ideas for later
-- Stay signed in longer (needs a small free server, e.g. Cloudflare Workers).
+- Stay signed in for days (needs a small free server, e.g. Cloudflare Workers, to keep a refresh key safely).
 - Mark as read / archive / delete (needs a bigger Gmail permission).
 - Search box.
 - "Force dark" switch for designed emails.
