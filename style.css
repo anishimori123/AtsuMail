@@ -70,7 +70,7 @@ button:hover { background: #3a3a3a; }
 
 /* Full screen: only the email is left */
 #btnExitFull {
-  display: none; position: fixed; z-index: 10; right: 8px;
+  display: none; position: fixed; z-index: 10; right: max(8px, env(safe-area-inset-right));
   bottom: max(8px, env(safe-area-inset-bottom)); width: 36px; height: 36px;
   border-radius: 18px; opacity: .45; background: #333;
 }
@@ -110,7 +110,6 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
   body.reading #status { display: none; }
   #folders { width: min(80%, 320px); }
   /* Keep text away from the notch / rounded corners when sideways */
-  #reader { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); background: #1e1e1e; }
   #toolbar { padding-left: max(4px, env(safe-area-inset-left)); padding-right: max(4px, env(safe-area-inset-right)); }
 }
 #btnBack2 { display: none; border-left: 0 !important; border-right: 1px solid #444 !important; }
@@ -118,7 +117,7 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 @media (max-height: 500px) {
   body.reading #toolbar { display: none; }
   body.reading #btnBack2 { display: block; }
-  #metabar { padding-left: env(safe-area-inset-left); }
+  #metabar { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 }
 /* When the list is made narrow, show each email on 2 lines (sender+date, then subject) */
 #list { container-type: inline-size; }
@@ -131,7 +130,7 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 }
 
 /* ---------- Voice player ---------- */
-#player { background: #252526; border-top: 1px solid #3c3c3c; padding: 2px 4px 4px; font-size: 12px;
+#player { background: #252526; border-top: 1px solid #3c3c3c; padding: 2px max(4px, env(safe-area-inset-right)) 4px max(4px, env(safe-area-inset-left)); font-size: 12px;
   padding-bottom: max(4px, env(safe-area-inset-bottom)); }
 #player .vrow { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-top: 3px; }
 #player button { padding: 3px 7px; min-width: 28px; }

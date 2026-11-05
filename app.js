@@ -332,9 +332,28 @@
     if (!win) return;
     try { win.CSS && win.CSS.highlights && win.CSS.highlights.delete("atsu"); win.getSelection().removeAllRanges(); } catch {}
   }
+  // Phone sideways: the email fills the whole width (even next to the camera),
+  // but the TEXT is pushed away from the camera side so nothing hides behind it.
+  function safeInsets() {
+    const d = document.createElement("div");
+    d.style.cssText = "position:fixed;visibility:hidden;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)";
+    document.body.append(d);
+    const cs = getComputedStyle(d), r = [parseFloat(cs.paddingLeft) || 0, parseFloat(cs.paddingRight) || 0];
+    d.remove(); return r;
+  }
+  function applyInsets() {
+    const doc = $("body").contentDocument;
+    if (!doc || !doc.body) return;
+    const [L, R] = safeInsets(), pad = (!cur.html || readMode) ? 12 : 0;
+    doc.body.style.paddingLeft = (pad + L) + "px";
+    doc.body.style.paddingRight = (pad + R) + "px";
+  }
+  addEventListener("resize", () => { if (!$("reader").hidden) setTimeout(applyInsets, 150); });
+
   function onFrameLoad() {
     const doc = $("body").contentDocument;
     if (!doc) return;
+    applyInsets();
     // Esc and F keep working even after clicking inside the email
     doc.addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key.toLowerCase() === "f") onKey(e); });
     // While the player is open: tap/click a sentence to read from there

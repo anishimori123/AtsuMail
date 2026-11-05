@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.8.2 | 2026-11-04 | 8 min | Phone sideways: no blank strip by the camera; only text keeps clear of it |
 | v0.8.1 | 2026-11-04 | 5 min | Clearer error messages from Google; detects missing Sheets permission |
 | v0.8.0 | 2026-11-04 | 5 min | Connected to Google: real Gmail + Myojin sheet (sign in required) |
 | v0.7.3 | 2026-11-04 | 10 min | Privacy policy page (needed for Google sign-in setup) |
@@ -29,12 +30,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 7 min** | |
+| **Total** | | **2 h 15 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.8.2 — 2026-11-04 — time spent: 8 min
+
+**What changed**
+- Phone sideways: the email now fills the whole width, also next to the camera. Only the text is moved away from the camera side (and moves again when you rotate).
+- Player bar and full-screen ✕ button also stay clear of the camera.
+
+**Why**
+- In landscape full screen there was a blank black strip on the camera side.
 
 ## v0.8.1 — 2026-11-04 — time spent: 5 min
 
