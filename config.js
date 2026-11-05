@@ -5,7 +5,7 @@
 // NEVER put a "Client secret" in this file. This app does not need one.
 // Leave it empty ("") to run in DEMO mode with fake emails.
 window.ATSU_CONFIG = {
-  CLIENT_ID: "",
+  CLIENT_ID: "1085569765762-iks35g5b25to0umjqejvvr3l0boqnf5s.apps.googleusercontent.com",
   // Read-only access: the app can read your mail and sheets but cannot send, delete or change anything.
   SCOPE: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/spreadsheets.readonly",
   PAGE_SIZE: 50,
