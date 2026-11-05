@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.8.1 | 2026-11-04 | 5 min | Clearer error messages from Google; detects missing Sheets permission |
 | v0.8.0 | 2026-11-04 | 5 min | Connected to Google: real Gmail + Myojin sheet (sign in required) |
 | v0.7.3 | 2026-11-04 | 10 min | Privacy policy page (needed for Google sign-in setup) |
 | v0.7.2 | 2026-11-01 | 11 min | Light-blue highlight on the sentence being read; tap a sentence to read from there |
@@ -28,12 +29,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 2 min** | |
+| **Total** | | **2 h 7 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.8.1 — 2026-11-04 — time spent: 5 min
+
+**What changed**
+- Errors now show Google's own reason (e.g. API not enabled / no permission / no access to the file).
+- If you signed in without ticking "See your Google Sheets", the Sheets view says so and how to fix it.
+
+**Why**
+- Myojin sheet showed "Sheets error 403" without saying why.
 
 ## v0.8.0 — 2026-11-04 — time spent: 5 min
 

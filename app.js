@@ -5,7 +5,7 @@
   const API = "https://gmail.googleapis.com/gmail/v1/users/me";
   const $ = (id) => document.getElementById(id);
 
-  let token = null, tokenClient = null;
+  let token = null, tokenClient = null, grantedScopes = "";
   let curLabel = "INBOX", nextPage = null, curMsgId = null;
   const SYS_ORDER = ["INBOX", "STARRED", "IMPORTANT", "SENT", "DRAFT", "SPAM", "TRASH"];
 
@@ -30,6 +30,7 @@
       callback: (r) => {
         if (r.error) { status("Sign-in failed: " + r.error); return; }
         token = r.access_token;
+        grantedScopes = r.scope || "";
         $("btnSignIn").textContent = "Signed in";
         loadAll();
       }
@@ -41,7 +42,11 @@
     if (!token) throw new Error("Not signed in");
     const r = await fetch(path.startsWith("http") ? path : API + path, { headers: { Authorization: "Bearer " + token } });
     if (r.status === 401) { token = null; $("btnSignIn").textContent = "Sign in"; throw new Error("Session expired - click Sign in again"); }
-    if (!r.ok) throw new Error((path.includes("sheets.googleapis") ? "Sheets" : "Gmail") + " error " + r.status + (r.status === 403 ? " (is the Sheets API turned on, and can your account open this sheet?)" : ""));
+    if (!r.ok) {
+      // Show Google's own reason (e.g. "API not enabled", "insufficient permission", "no access to this file")
+      let why = ""; try { why = (await r.json()).error.message || ""; } catch {}
+      throw new Error((path.includes("sheets.googleapis") ? "Sheets" : "Gmail") + " error " + r.status + (why ? ": " + why.slice(0, 220) : ""));
+    }
     return r.json();
   }
 
@@ -83,6 +88,10 @@
     status("Loading sheet...");
     let tabs;
     if (DEMO) tabs = Object.keys(ATSU_DEMO.sheet); // demo mode always shows the fake sheet
+    else if (token && grantedScopes && !grantedScopes.includes("spreadsheets")) {
+      $("sheetgrid").innerHTML = `<p class="hint">You signed in without the <b>"See your Google Sheets"</b> permission.<br>Click <b>Sign in</b> again and make sure that box is <b>ticked</b> on Google's screen.</p>`;
+      status("Sheets permission not given"); return;
+    }
     else if (!id) { $("sheetgrid").innerHTML = `<p class="hint">Paste the link of "${esc(s.name)}" into <b>config.js</b> (SHEETS) to show it here.</p>`; status("No sheet link yet"); return; }
     else {
       const meta = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}?fields=properties.title,sheets.properties(title,hidden)`);
