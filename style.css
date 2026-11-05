@@ -117,7 +117,7 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 @media (max-height: 500px) {
   body.reading #toolbar { display: none; }
   body.reading #btnBack2 { display: block; }
-  #metabar { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  #metabar { padding-left: min(env(safe-area-inset-left), 10px); padding-right: min(env(safe-area-inset-right), 10px); }
 }
 /* When the list is made narrow, show each email on 2 lines (sender+date, then subject) */
 #list { container-type: inline-size; }
@@ -130,7 +130,7 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 }
 
 /* ---------- Voice player ---------- */
-#player { background: #252526; border-top: 1px solid #3c3c3c; padding: 2px max(4px, env(safe-area-inset-right)) 4px max(4px, env(safe-area-inset-left)); font-size: 12px;
+#player { background: #252526; border-top: 1px solid #3c3c3c; padding: 2px max(4px, min(env(safe-area-inset-right), 10px)) 4px max(4px, min(env(safe-area-inset-left), 10px)); font-size: 12px;
   padding-bottom: max(4px, env(safe-area-inset-bottom)); }
 #player .vrow { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; margin-top: 3px; }
 #player button { padding: 3px 7px; min-width: 28px; }

@@ -344,9 +344,11 @@
   function applyInsets() {
     const doc = $("body").contentDocument;
     if (!doc || !doc.body) return;
+    // Phones report the whole camera side as "unsafe", but the camera is only a small
+    // dot (e.g. Pixel), so only keep a thin extra margin there (max 10px).
     const [L, R] = safeInsets(), pad = (!cur.html || readMode) ? 12 : 0;
-    doc.body.style.paddingLeft = (pad + L) + "px";
-    doc.body.style.paddingRight = (pad + R) + "px";
+    doc.body.style.paddingLeft = (pad + Math.min(L, 10)) + "px";
+    doc.body.style.paddingRight = (pad + Math.min(R, 10)) + "px";
   }
   addEventListener("resize", () => { if (!$("reader").hidden) setTimeout(applyInsets, 150); });
 

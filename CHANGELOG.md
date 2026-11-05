@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.8.3 | 2026-11-04 | 4 min | Pixel landscape: camera-side gap reduced to a thin margin |
 | v0.8.2 | 2026-11-04 | 8 min | Phone sideways: no blank strip by the camera; only text keeps clear of it |
 | v0.8.1 | 2026-11-04 | 5 min | Clearer error messages from Google; detects missing Sheets permission |
 | v0.8.0 | 2026-11-04 | 5 min | Connected to Google: real Gmail + Myojin sheet (sign in required) |
@@ -30,12 +31,20 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 15 min** | |
+| **Total** | | **2 h 19 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.8.3 — 2026-11-04 — time spent: 4 min
+
+**What changed**
+- Camera-side gap is now at most 10px extra (was the full width Android reports, about a thumb wide on Pixel 10).
+
+**Why**
+- Pixel's camera is a small dot; the big gap wasted space in landscape.
 
 ## v0.8.2 — 2026-11-04 — time spent: 8 min
 
