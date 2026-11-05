@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.9.2 | 2026-11-04 | 4 min | Sheet links (whole-cell, =HYPERLINK, part of text) work |
 | v0.9.1 | 2026-11-04 | 4 min | Full screen for sheets (F key or ⛶ on the tab bar) |
 | v0.9.0 | 2026-11-04 | 6 min | Sheets show the sheet's own colors, bold, alignment, merged cells, column widths |
 | v0.8.3 | 2026-11-04 | 4 min | Pixel landscape: camera-side gap reduced to a thin margin |
@@ -33,12 +34,24 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 29 min** | |
+| **Total** | | **2 h 33 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.9.2 — 2026-11-04 — time spent: 4 min
+
+**What changed**
+- Links in sheets now show as blue underlined links and open in a new tab:
+  - a cell that is a link, or uses `=HYPERLINK()`
+  - only some words of a cell being a link
+  - links to another tab of the same sheet (open in Google Sheets)
+- Only safe link types are allowed (web, email, phone).
+
+**Why**
+- The real Myojin sheet has links that were missing in AtsuMail.
 
 ## v0.9.1 — 2026-11-04 — time spent: 4 min
 

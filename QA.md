@@ -34,7 +34,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 14. Open 1 receipt/order email. If reading mode looks odd, `Aa` shows the original correctly.
 15. Open a Japanese email. Japanese text shows correctly (no garbled letters).
 16. Wait over 1 hour, tap `↻`. You'll see "Session expired". Tap `Sign in` again and it works. (This is expected for now.)
-16a. Tap **Myojin** (link already saved in config.js). Open the **Pairs** tab: colors, bold and merged cells look like the real sheet. Your real sheet shows, with all its tabs.
+16a. Tap **Myojin** (link already saved in config.js). Open the **Pairs** tab: colors, bold and merged cells look like the real sheet. Links are blue and open in a new tab. Your real sheet shows, with all its tabs.
 17. Phone: Add to Home Screen, open from the icon. No browser bars.
 
 ## Part C — PC (Windows, Edge or Chrome)

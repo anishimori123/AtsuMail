@@ -157,6 +157,8 @@ body.sheetmode #list, body.sheetmode #reader, body.sheetmode #split2 { display: 
 #sheetgrid thead th.rn { z-index: 3; }
 #sheetgrid table:not(.fmt) tbody tr:first-child td { color: #fff; font-weight: bold; }
 #sheetgrid tbody tr:hover td { filter: brightness(1.15); }
+#sheetgrid td a { color: #6cb6ff; text-decoration: underline; }
+#sheetgrid td[style*="background"] a { color: #0645ad; }
 #sheetgrid td.num { text-align: right; font-variant-numeric: tabular-nums; }
 #sheetgrid .hint { padding: 12px; color: #aaa; }
 #sheetbar { display: flex; background: #252526; border-top: 1px solid #3c3c3c; padding-bottom: env(safe-area-inset-bottom); }

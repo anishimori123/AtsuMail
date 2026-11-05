@@ -102,13 +102,18 @@
   }
   // Fetch one tab WITH its formatting (colors, bold, alignment, merged cells, column widths).
   async function loadGrid(id, tab) {
-    const fields = "sheets(merges,data(columnMetadata(pixelSize),rowData(values(formattedValue," +
+    const fields = "sheets(merges,data(columnMetadata(pixelSize),rowData(values(formattedValue,hyperlink," +
+      "textFormatRuns(startIndex,format(link(uri)))," +
       "effectiveFormat(backgroundColor,horizontalAlignment,textFormat(foregroundColor,bold,italic,strikethrough,underline))))))";
     const range = encodeURIComponent("'" + tab.replace(/'/g, "''") + "'");
     const res = await gapi(`https://sheets.googleapis.com/v4/spreadsheets/${id}?ranges=${range}&includeGridData=true&fields=${encodeURIComponent(fields)}`);
     const sh = (res.sheets || [])[0] || {}, d = (sh.data || [])[0] || {};
     return {
-      rows: (d.rowData || []).map((r) => (r.values || []).map((c) => ({ v: c.formattedValue ?? "", f: c.effectiveFormat || {} }))),
+      rows: (d.rowData || []).map((r) => (r.values || []).map((c) => ({
+        v: c.formattedValue ?? "", f: c.effectiveFormat || {},
+        link: c.hyperlink || "",                                   // whole cell is a link (or =HYPERLINK)
+        runs: (c.textFormatRuns || []).map((t) => ({ i: t.startIndex || 0, uri: t.format && t.format.link && t.format.link.uri || "" }))
+      }))),
       widths: (d.columnMetadata || []).map((m) => m.pixelSize || 100),
       merges: sh.merges || []
     };
@@ -118,6 +123,7 @@
     const rows = (ATSU_DEMO.sheet[tab] || []).map((r, ri) => r.map((v, ci) => ({ v, f: ri === 0
       ? { backgroundColor: { red: 0.79, green: 0.89, blue: 1 }, textFormat: { bold: true }, horizontalAlignment: "CENTER" }
       : (ci === 2 && parseFloat(String(v).replace(/,/g, "")) >= 5000 ? { textFormat: { foregroundColor: { red: 0.85, green: 0.1, blue: 0.1 }, bold: true } } : {}) })));
+    if (rows[2] && rows[2][3]) rows[2][3].link = "https://www.google.com/search?q=candles"; // demo link
     return { rows, widths: [], merges: [] };
   }
 
@@ -142,6 +148,29 @@
     if (deco) st.push("text-decoration:" + deco);
     if (f.horizontalAlignment) st.push("text-align:" + f.horizontalAlignment.toLowerCase());
     return st.join(";");
+  }
+
+  // Turn a sheet link into a safe web address. "#gid=..." = link to another tab of the same sheet.
+  function safeUrl(u, sheetUrl) {
+    u = String(u || "").trim();
+    if (u.startsWith("#")) return String(sheetUrl || "").replace(/[#?].*$/, "") + u;
+    return /^(https?:|mailto:|tel:)/i.test(u) ? u : "";
+  }
+  const linkTag = (u, text) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+  // Cell text, with links: the whole cell, or only some words (text runs)
+  function cellHtml(cell, sheetUrl) {
+    const v = String(cell.v ?? "");
+    const whole = safeUrl(cell.link, sheetUrl);
+    if (whole) return linkTag(whole, v || whole);
+    const runs = (cell.runs || []).filter((r) => r.i < v.length);
+    if (!runs.some((r) => r.uri)) return esc(v);
+    let out = "";
+    runs.forEach((r, k) => {
+      const part = v.slice(r.i, k + 1 < runs.length ? runs[k + 1].i : v.length), u = safeUrl(r.uri, sheetUrl);
+      out += u ? linkTag(u, part) : esc(part);
+    });
+    if (runs[0].i > 0) out = esc(v.slice(0, runs[0].i)) + out;
+    return out;
   }
 
   async function openTab(tab) {
@@ -179,7 +208,7 @@
         if (hidden.has(ri + "," + c)) continue;
         const cell = r[c] || { v: "", f: {} }, sp = span[ri + "," + c];
         const attrs = sp ? `${sp[0] > 1 ? ` rowspan="${sp[0]}"` : ""}${sp[1] > 1 ? ` colspan="${sp[1]}"` : ""}` : "";
-        h += `<td${attrs} class="${num(cell.v) ? "num" : ""}" style="${cellStyle(cell.f)}" title="${esc(cell.v)}">${esc(cell.v)}</td>`;
+        h += `<td${attrs} class="${num(cell.v) ? "num" : ""}" style="${cellStyle(cell.f)}" title="${esc(cell.v)}">${cellHtml(cell, s.url)}</td>`;
       }
       h += "</tr>";
     }
@@ -196,7 +225,7 @@
   $("btnSheetFull").onclick = () => setFull(!document.body.classList.contains("full"));
   $("sheettabs").onclick = (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.tab).catch((er) => status(er.message)); };
   // Phone: tap a cell to see its full text
-  $("sheetgrid").onclick = (e) => { const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
+  $("sheetgrid").onclick = (e) => { if (e.target.closest("a")) return; const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
 
   // ---------- Message list ----------
   const header = (m, n) => (m.payload?.headers || []).find((h) => h.name.toLowerCase() === n)?.value || "";
