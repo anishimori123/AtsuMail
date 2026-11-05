@@ -27,6 +27,7 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 9h. In the folder list, under SHEETS, tap **Myojin**. A dark table shows with tabs at the bottom (Sheet1, Log). Tap **Log**: it switches. Tap **Inbox**: back to email.
 9j. WATCH LATER: tap it. Paste a YouTube link, press Add: it appears with title and picture. Tap it: the video plays in AtsuMail. Press F (PC) or ⛶: full screen. Back / Esc: back to the list. Tap ✕: asks, then removes.
 9j2. Phone: while a video plays, use the back gesture: the video closes and stops (no sound). Back again: folders open.
+9j3. Phone: double-tap an open email: full screen. Double-tap again: normal. Same on a sheet.
 9k. Add a non-YouTube link (e.g. an X post): tapping it opens a new tab.
 
 ## Part B — Real Gmail (after you add your Client ID)

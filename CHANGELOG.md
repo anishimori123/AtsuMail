@@ -4,6 +4,7 @@
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.10.2 | 2026-11-04 | 5 min | Phone: double-tap an email or sheet = full screen on/off |
 | v0.10.1 | 2026-11-04 | 14 min | Fix: phone back gesture closes and stops the YouTube video first |
 | v0.10.0 | 2026-11-04 | 9 min | Watch later: save YouTube/other links, play YouTube inside AtsuMail, synced via Google Sheet |
 | v0.9.2 | 2026-11-04 | 4 min | Sheet links (whole-cell, =HYPERLINK, part of text) work |
@@ -36,12 +37,21 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **2 h 56 min** | |
+| **Total** | | **3 h 1 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.10.2 — 2026-11-04 — time spent: 5 min
+
+**What changed**
+- Phone: **double-tap** on an open email or a sheet turns full screen on/off (same as F on PC).
+- Not on links/buttons, not in the Watch later list (one tap there plays the video), and not inside a YouTube video (YouTube uses double-tap to skip 10 s) → use ⛶ there.
+
+**Why**
+- Faster than finding the ⛶ button with one hand.
 
 ## v0.10.1 — 2026-11-04 — time spent: 14 min
 

@@ -228,6 +228,7 @@
     $("sheetview").hidden = true;
   }
   $("btnSheetFull").onclick = () => setFull(!document.body.classList.contains("full"));
+  onDoubleTap($("sheetgrid"), () => setFull(!document.body.classList.contains("full")));
   $("sheettabs").onclick = (e) => { const b = e.target.closest("button"); if (b) openTab(b.dataset.tab).catch((er) => status(er.message)); };
   // Phone: tap a cell to see its full text
   $("sheetgrid").onclick = (e) => { if (e.target.closest("a")) return; const td = e.target.closest("td"); if (td && td.scrollWidth > td.clientWidth) toast(td.title); };
@@ -585,9 +586,25 @@
   }
   addEventListener("resize", () => { if (!$("reader").hidden) setTimeout(applyInsets, 150); });
 
+  // Phone: double-tap = full screen on/off (same as the F key on PC).
+  // Ignored on links, buttons and text boxes.
+  function onDoubleTap(el, fn) {
+    let t0 = 0, x0 = 0, y0 = 0;
+    el.addEventListener("touchend", (e) => {
+      if (e.touches.length || e.changedTouches.length !== 1) return;
+      if (e.target.closest && e.target.closest("a,button,input,select,textarea")) return;
+      const p = e.changedTouches[0], now = Date.now();
+      if (now - t0 < 320 && Math.abs(p.clientX - x0) < 30 && Math.abs(p.clientY - y0) < 30) {
+        t0 = 0; e.preventDefault(); fn();
+      } else { t0 = now; x0 = p.clientX; y0 = p.clientY; }
+    }, { passive: false });
+  }
+  const toggleFull = () => setFull(!document.body.classList.contains("full"));
+
   function onFrameLoad() {
     const doc = $("body").contentDocument;
     if (!doc) return;
+    onDoubleTap(doc, toggleFull);
     applyInsets();
     // Esc and F keep working even after clicking inside the email
     doc.addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key.toLowerCase() === "f") onKey(e); });
