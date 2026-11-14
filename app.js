@@ -1,5 +1,9 @@
 // AtsuMail - a tiny, read-only Gmail reader. Runs fully in your browser.
 (() => {
+  // App version. Must match version.json (both are bumped every release).
+  const APP_VERSION = "0.12.1";
+  // If we arrived via the auto-update link (…/?v=0.12.1), show the plain address again.
+  if (/[?&]v=/.test(location.search)) history.replaceState(history.state, "", location.pathname + location.hash);
   const CFG = window.ATSU_CONFIG || {};
   const DEMO = !CFG.CLIENT_ID;
   const API = "https://gmail.googleapis.com/gmail/v1/users/me";
@@ -861,6 +865,31 @@
   if (AtsuLog.lines().some((l) => l.k === "crash" && l.t.slice(0, 10) === new Date().toISOString().slice(0, 10))) $("btnLog").classList.add("alert");
   if (AtsuLog.lines().slice(-30).some((l) => l.k === "crash")) { $("btnLog").classList.add("alert"); setTimeout(() => toast("AtsuMail closed unexpectedly last time - details in 🐞"), 800); }
   LS("email list");
+
+  // ---------- Auto-update ----------
+  // Asks GitHub for version.json without using any saved copy. If it's newer than this
+  // app, load the new version (unless you're reading/listening - then just tell you).
+  let lastCheck = 0;
+  async function checkUpdate(force) {
+    if (!force && Date.now() - lastCheck < 5 * 60000) return;
+    lastCheck = Date.now();
+    try {
+      const r = await fetch("version.json?t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) return;
+      const v = (await r.json()).version;
+      if (!v || v === APP_VERSION) return;
+      let tried = ""; try { tried = sessionStorage.getItem("atsu.upd") || ""; } catch {}
+      if (tried === v) return;                       // already tried this one - avoid a reload loop
+      const busy = !$("reader").hidden || AtsuVoice.isOpen() || !$("wplayer").hidden;
+      L("update", `new version ${v} available (running ${APP_VERSION})${busy ? " - waiting until you're done" : " - loading it"}`);
+      if (busy) { toast(`New version ${v} - it loads next time you open AtsuMail`); return; }
+      try { sessionStorage.setItem("atsu.upd", v); } catch {}
+      location.replace(location.pathname + "?v=" + encodeURIComponent(v) + location.hash);
+    } catch {}
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(false); });
+  setTimeout(() => checkUpdate(true), 1500);
+  L("info", "running version " + APP_VERSION);
 
   initAuth();
 })();

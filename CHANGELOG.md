@@ -18,9 +18,9 @@ config:
 ---
 xychart-beta
   title "Lines of code changed per version"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1"]
   y-axis "Lines changed" 0 --> 400
-  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200]
+  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42]
 ```
 
 Total time spent so far (minutes, adds up the Summary table below):
@@ -39,9 +39,9 @@ config:
 ---
 xychart-beta
   title "Total build time (minutes)"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1"]
   y-axis "Minutes" 0 --> 240
-  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202]
+  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206]
 ```
 
 Update both graphs with every release (add the new version at the right end).
@@ -50,6 +50,7 @@ Update both graphs with every release (add the new version at the right end).
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.12.1 | 2026-11-13 | 4 min | Auto-update: the plain link always loads the newest version |
 | v0.12.0 | 2026-11-13 | 15 min | Debug log (🐞) with crash detection; read-aloud freeze fixes; screen stays on while reading; change graphs |
 | v0.11.0 | 2026-11-04 | 6 min | Stays signed in for the hour after reopening; one-tap / automatic renewal |
 | v0.10.2 | 2026-11-04 | 5 min | Phone: double-tap an email or sheet = full screen on/off |
@@ -85,12 +86,23 @@ Update both graphs with every release (add the new version at the right end).
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **3 h 22 min** | |
+| **Total** | | **3 h 26 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.12.1 — 2026-11-13 — time spent: 4 min
+
+**What changed**
+- **Auto-update.** AtsuMail asks GitHub for `version.json` (never from a saved copy) when it opens and when it comes back on screen (at most every 5 minutes). If a newer version exists it loads it by itself, then shows the plain address again.
+- If you are reading an email, listening, or watching a video, it does not interrupt: a note says the new version loads next time.
+- No more `?v=...` on the link. Old `?v=` links still work.
+- New file `version.json`; version number also in `app.js` (`APP_VERSION`). Both are bumped every release.
+
+**Why**
+- Having to add `?v=081` etc. to the link after every update was annoying.
 
 ## v0.12.0 — 2026-11-13 — time spent: 15 min
 

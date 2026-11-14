@@ -28,6 +28,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `demo.js` | Fake emails, used when no Client ID is set |
 | `voice.js` | Built-in voice reader (uses your device's voices) |
 | `log.js` | Debug log (🐞): errors, what the app was doing, crash detection |
+| `version.json` | Current version number; the app checks it to update itself |
 | `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
 | `privacy.html` | Privacy policy (Google requires it for sign-in) |

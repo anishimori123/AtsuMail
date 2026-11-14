@@ -51,3 +51,4 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 23. PC: open an email, press F: full screen. Press Ctrl+F again: normal. Ctrl+F opens the browser's Find box (not full screen).
 24. Tap 🐞: the log opens with "AtsuMail opened" lines. Copy works (paste it somewhere). Clear asks first.
 25. Phone: start 🔊 on a long Japanese email and leave it reading 30+ minutes with the screen on. The screen should not turn off. Afterwards check 🐞 for "voice-stuck", "voice-error" or "crash" lines.
+26. After a new release: open the plain link (no ?v=). Within a few seconds the app reloads once by itself and 🐞 shows "running version" with the new number.
