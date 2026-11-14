@@ -2044,7 +2044,9 @@ function speak(ys, voice) {
 async function setup() {
   if (worker) return;
   status("Starting... (first time: about 190 MB download, please wait)");
-  worker = new Worker("worker.js?v=3", { type: "module" });
+  const mode = localStorage.getItem("lab.engine") || "cpu4";
+  const q = mode === "gpu" ? "ep=webgpu&t=4" : mode === "cpumax" ? `ep=wasm&t=${Math.max(1, (navigator.hardwareConcurrency || 4) - 1)}` : "ep=wasm&t=4";
+  worker = new Worker("worker.js?v=4&" + q, { type: "module" });
   worker.onmessage = ({ data }) => {
     if (data.progress) {
       status(data.progress);
@@ -2075,8 +2077,10 @@ async function setup() {
     (e) => logLine("pitch model not used: " + e)
   );
   status("Dictionary ready. Loading the voice model (163 MB, first time only)...");
-  threads = (await ready).threads;
-  $("info").textContent = `CPU threads: ${threads}${threads === 1 ? " (slow mode)" : ""} \xB7 cores: ${navigator.hardwareConcurrency || "?"}`;
+  const r0 = await ready;
+  threads = r0.threads;
+  if (r0.gpu) $("info").textContent = `Graphics chip mode${navigator.gpu ? "" : " (not supported here - using CPU)"} \xB7 cores: ${navigator.hardwareConcurrency || "?"}`;
+  else $("info").textContent = `CPU threads: ${threads}${threads === 1 ? " (slow mode)" : ""} \xB7 cores: ${navigator.hardwareConcurrency || "?"}`;
 }
 function prepare() {
   sentences2 = splitSentences($("text").value).map((s) => ({ ...s }));
@@ -2202,7 +2206,7 @@ async function play(i) {
   status(`Sentence ${i + 1} / ${sentences2.length}`);
   if (i + 1 < sentences2.length) get(i + 1).catch(() => {
   });
-  if (i + 2 < sentences2.length) get(i + 2).catch(() => {
+  for (let k = 2; k <= 6; k++) if (i + k < sentences2.length) get(i + k).catch(() => {
   });
 }
 function stop(msg) {
@@ -2250,3 +2254,8 @@ $("out").onclick = (e) => {
   if (s && worker) play(+s.dataset.i);
 };
 $("info").textContent = `Fast mode (several CPU threads): ${self.crossOriginIsolated ? "on" : "off"}`;
+$("engine").value = localStorage.getItem("lab.engine") || "cpu4";
+$("engine").onchange = () => {
+  localStorage.setItem("lab.engine", $("engine").value);
+  location.reload();
+};

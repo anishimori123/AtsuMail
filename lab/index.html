@@ -39,6 +39,7 @@
   <button id="play">▶ Read aloud</button>
   <label>Voice <select id="voice"><option value="jf_alpha">Woman 1 - Alpha</option><option value="jf_gongitsune">Woman 2 - Gongitsune</option><option value="jf_nezumi">Woman 3 - Nezumi</option><option value="jf_tebukuro">Woman 4 - Tebukuro</option><option value="jm_kumo">Man - Kumo</option><option value="jf_alpha+jm_kumo@0.5">Mix: Alpha + Kumo</option><option value="jf_alpha+jf_tebukuro@0.5">Mix: Alpha + Tebukuro</option><option value="jf_gongitsune+jm_kumo@0.35">Mix: Gongitsune + a little Kumo</option></select></label>
   <label>Speed <select id="rate"><option>0.9</option><option selected>1</option><option>1.1</option><option>1.2</option><option>1.35</option><option>1.5</option></select></label>
+  <label>Engine <select id="engine"><option value="cpu4">CPU (4 threads)</option><option value="cpumax">CPU (all cores)</option><option value="gpu">Graphics chip (experimental)</option></select></label>
   <span id="info" class="dim"></span>
 </div>
 <div id="status">Paste Japanese text above, then press Read aloud.</div>
@@ -47,6 +48,6 @@
 <div id="ys"></div>
 <div id="log"></div>
 <p class="dim">Engine: <a style="color:#6cb6ff" href="https://github.com/receptron/yomiscript">receptron/yomiscript</a> (Apache-2.0), Kokoro-82M voice (Apache-2.0), OpenJTalk dictionary. Readings here come from the dictionary, not from an AI, so some words are misread.</p>
-<script type="module" src="main.js?v=3"></script>
+<script type="module" src="main.js?v=4"></script>
 </body>
 </html>

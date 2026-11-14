@@ -1111,13 +1111,17 @@ var KOKORO_MODELS_URL = "https://huggingface.co/receptron/yomiscript-kokoro/reso
 var ORT = new URL("ort/", self.location.href).href;
 var WEBKIT = /AppleWebKit/.test(navigator.userAgent) && !/Chrome\//.test(navigator.userAgent);
 var threads = 1;
+var gpu = false;
 async function start() {
+  const Q = new URL(self.location.href).searchParams;
+  gpu = Q.get("ep") === "webgpu";
   const ort = await import(
     /* @vite-ignore */
-    ORT + "ort.wasm.min.mjs"
+    ORT + (gpu ? "ort.webgpu.min.mjs" : "ort.wasm.min.mjs")
   );
   ort.env.wasm.wasmPaths = ORT;
-  threads = self.crossOriginIsolated && !WEBKIT ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
+  const want = +Q.get("t") || 4;
+  threads = self.crossOriginIsolated && !WEBKIT ? Math.max(1, Math.min(want, navigator.hardwareConcurrency || 1)) : 1;
   ort.env.wasm.numThreads = threads;
   const fetchModel = await modelFetcher(KOKORO_MODELS_URL);
   let got = 0;
@@ -1138,7 +1142,7 @@ async function start() {
     const b = await bytes(file);
     return file.endsWith(".bin") ? b.buffer : b;
   });
-  await E.init({ suffix: W16, executionProviders: ["wasm"] });
+  await E.init({ suffix: W16, executionProviders: gpu ? ["webgpu", "wasm"] : ["wasm"] });
   self.postMessage({ progress: "Warming up the voice..." });
   await E.synth("ja /a \u2198/");
   return E;
@@ -1149,7 +1153,7 @@ self.onmessage = async ({ data: { id, ys, voice } }) => {
   try {
     const E = await engine;
     if (ys == null) {
-      self.postMessage({ id, threads });
+      self.postMessage({ id, threads, gpu });
       return;
     }
     const t0 = performance.now();
