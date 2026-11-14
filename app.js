@@ -1,7 +1,7 @@
 // AtsuMail - a tiny, read-only Gmail reader. Runs fully in your browser.
 (() => {
   // App version. Must match version.json (both are bumped every release).
-  const APP_VERSION = "0.12.1";
+  const APP_VERSION = "0.13.0";
   // If we arrived via the auto-update link (…/?v=0.12.1), show the plain address again.
   if (/[?&]v=/.test(location.search)) history.replaceState(history.state, "", location.pathname + location.hash);
   const CFG = window.ATSU_CONFIG || {};
@@ -467,7 +467,8 @@
     return null;
   }
 
-  async function openMsg(id) {
+  async function openMsg(id, autoRead) {
+    pendingRead = !!autoRead;      // true only when "Next email" opened it
     curMsgId = id;
     document.querySelectorAll(".row.sel").forEach((r) => r.classList.remove("sel"));
     document.querySelector(`.row[data-id="${id}"]`)?.classList.add("sel", "read");
@@ -478,7 +479,7 @@
       const m = ATSU_DEMO.messages.find((x) => x.id === id);
       ({ from, subject, date, html, text } = m);
     } else {
-      const m = await gapi(`/messages/${id}?format=full`);
+      const m = msgCache.get(id) || await gapi(`/messages/${id}?format=full`);
       from = header(m, "from"); subject = header(m, "subject"); date = +m.internalDate;
       html = findPart(m.payload, "text/html"); text = findPart(m.payload, "text/plain");
     }
@@ -680,6 +681,8 @@
       const i = AtsuVoice.parts().findIndex((p) => p.range && pos >= p.start && pos <= p.end);
       if (i >= 0) AtsuVoice.jump(i);
     });
+    // Opened by "Next email": start reading it straight away
+    if (pendingRead) { pendingRead = false; startReading(); return; }
     // Page was re-drawn while reading (e.g. text size): keep the place
     if (AtsuVoice.isOpen()) AtsuVoice.replace(buildSpeechParts());
   }
@@ -687,8 +690,55 @@
   // 🔊 = built-in voice player. ↗ in the player = open in your Text Reader app instead.
   $("btnSpeak").onclick = () => {
     if (AtsuVoice.isOpen()) { AtsuVoice.close(); $("btnSpeak").classList.remove("on"); return; }
-    AtsuVoice.open(buildSpeechParts(), { onSay: highlight, onClear: clearHighlight }); $("btnSpeak").classList.add("on");
+    startReading();
   };
+
+  // ---------- Keep reading: next (older) email in the folder ----------
+  let autoNext = load("autoNext", true), pendingRead = false, nextTimer = null;
+  const msgCache = new Map();   // emails fetched ahead of time (memory only)
+  const rowOf = (id) => document.querySelector(`#rows .row[data-id="${id}"]`);
+  function startReading() {
+    const parts = buildSpeechParts();
+    AtsuVoice.open(parts, { onSay: highlight, onClear: clearHighlight, onFinish: readNextEmail });
+    $("btnSpeak").classList.add("on");
+    $("vAuto").checked = autoNext;
+    if (autoNext) prefetchAhead();
+    if (!parts.length && autoNext) readNextEmail();   // nothing to read in this one: move on
+  }
+  // Fetch the next 5 emails now, while the Google sign-in is still valid, so reading
+  // can continue even after the 1-hour sign-in runs out.
+  async function prefetchAhead() {
+    if (DEMO) return;
+    let row = rowOf(curMsgId), n = 0;
+    while (row && (row = row.nextElementSibling) && n < 5) {
+      n++;
+      const id = row.dataset.id;
+      if (msgCache.has(id)) continue;
+      if (!token || Date.now() > tokenExp - 60000) return;      // don't trigger a sign-in window from here
+      try { msgCache.set(id, await gapi(`/messages/${id}?format=full`)); } catch { return; }
+      if (msgCache.size > 12) msgCache.delete(msgCache.keys().next().value);
+    }
+  }
+  function readNextEmail() {
+    if (!autoNext || $("reader").hidden) return;
+    clearTimeout(nextTimer);
+    nextTimer = setTimeout(async () => {       // short breath between emails
+      if (!autoNext || $("reader").hidden) return;
+      try {
+        let next = rowOf(curMsgId) && rowOf(curMsgId).nextElementSibling;
+        if (!next && nextPage) { await loadList(true); next = rowOf(curMsgId) && rowOf(curMsgId).nextElementSibling; }
+        if (!next) { toast("No more emails in this folder"); L("voice", "auto-next: end of folder"); return; }
+        L("voice", "auto-next: opening the next email");
+        next.scrollIntoView({ block: "nearest" });
+        await openMsg(next.dataset.id, true);
+      } catch (e) {
+        pendingRead = false;
+        L("problem", "auto-next stopped: " + e.message);
+        status(e.message); toast("Couldn't open the next email - sign in again, then tap it and 🔊");
+      }
+    }, 1200);
+  }
+  $("vAuto").onchange = (e) => { autoNext = e.target.checked; save("autoNext", autoNext); if (autoNext) prefetchAhead(); else clearTimeout(nextTimer); };
   $("vClose").addEventListener("click", () => $("btnSpeak").classList.remove("on"));
   $("vTR").onclick = () => {
     AtsuVoice.stop();
@@ -719,6 +769,7 @@
   $("btnExitFull").onclick = () => setFull(false);
 
   function closeReader() {
+    pendingRead = false; clearTimeout(nextTimer);
     LS("email list");
     setFull(false);
     AtsuVoice.close(); $("btnSpeak").classList.remove("on");

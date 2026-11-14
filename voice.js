@@ -97,7 +97,7 @@ window.AtsuVoice = (() => {
 
   function speakNext(g) {
     if (g !== gen || !playing) return;
-    if (idx >= parts.length) { keepAwake(false); playing = false; setBtn(); show("Finished"); idx = 0; curU = null; hooks.onClear && hooks.onClear(); log("voice", "finished reading"); return; }
+    if (idx >= parts.length) { keepAwake(false); playing = false; setBtn(); show("Finished"); idx = 0; curU = null; hooks.onClear && hooks.onClear(); log("voice", "finished reading"); { const f = hooks.onFinish; f && f(); } return; }
     const p = parts[idx], st = STYLES[style] || STYLES.soft;
     const ja = isJa(p.t);
     const u = new SpeechSynthesisUtterance(p.t.replace(/https?:\/\/\S+/g, " "));

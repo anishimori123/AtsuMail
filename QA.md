@@ -52,3 +52,4 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 24. Tap 🐞: the log opens with "AtsuMail opened" lines. Copy works (paste it somewhere). Clear asks first.
 25. Phone: start 🔊 on a long Japanese email and leave it reading 30+ minutes with the screen on. The screen should not turn off. Afterwards check 🐞 for "voice-stuck", "voice-error" or "crash" lines.
 26. After a new release: open the plain link (no ?v=). Within a few seconds the app reloads once by itself and 🐞 shows "running version" with the new number.
+27. Open a folder with several emails, open the top one, tap 🔊 ("Next email" ticked). When it ends, the next older email opens and reading continues. Untick "Next email": it stops at the end of the current email.
