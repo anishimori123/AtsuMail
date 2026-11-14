@@ -12,7 +12,7 @@
   #play { background: #094771; color: #fff; }
   .bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
   #status { background: #007acc; color: #fff; padding: 3px 8px; } #status.err { background: #c62828; }
-  #speed { margin: 6px 0; color: #fff; }
+  #speed { margin: 6px 0; color: #fff; border: 1px solid #ff8fd1; padding: 6px 8px; } #speed:empty { display: none; }
   #out { margin: 10px 0; font-size: 17px; line-height: 1.9; font-family: Georgia, serif; }
   .s { cursor: pointer; } .s.now { background: #bfe3ff; color: #000; }
   #ys, #log { font: 11px/1.4 Consolas, monospace; color: #888; word-break: break-all; margin-top: 6px; }
@@ -37,7 +37,7 @@
 ところで、最近のAIの進歩には本当に驚かされます。一年前には想像もできなかったことが、今では当たり前になりつつあります。</textarea>
 <div class="bar">
   <button id="play">▶ Read aloud</button>
-  <label>Voice <select id="voice"><option value="jf_alpha">Woman (jf_alpha)</option><option value="jm_kumo">Man (jm_kumo)</option></select></label>
+  <label>Voice <select id="voice"><option value="jf_alpha">Woman 1 - Alpha</option><option value="jf_gongitsune">Woman 2 - Gongitsune</option><option value="jf_nezumi">Woman 3 - Nezumi</option><option value="jf_tebukuro">Woman 4 - Tebukuro</option><option value="jm_kumo">Man - Kumo</option><option value="jf_alpha+jm_kumo@0.5">Mix: Alpha + Kumo</option><option value="jf_alpha+jf_tebukuro@0.5">Mix: Alpha + Tebukuro</option><option value="jf_gongitsune+jm_kumo@0.35">Mix: Gongitsune + a little Kumo</option></select></label>
   <label>Speed <select id="rate"><option>0.9</option><option selected>1</option><option>1.1</option><option>1.2</option><option>1.35</option><option>1.5</option></select></label>
   <span id="info" class="dim"></span>
 </div>
@@ -47,6 +47,6 @@
 <div id="ys"></div>
 <div id="log"></div>
 <p class="dim">Engine: <a style="color:#6cb6ff" href="https://github.com/receptron/yomiscript">receptron/yomiscript</a> (Apache-2.0), Kokoro-82M voice (Apache-2.0), OpenJTalk dictionary. Readings here come from the dictionary, not from an AI, so some words are misread.</p>
-<script type="module" src="main.js?v=2"></script>
+<script type="module" src="main.js?v=3"></script>
 </body>
 </html>

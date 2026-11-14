@@ -2044,7 +2044,7 @@ function speak(ys, voice) {
 async function setup() {
   if (worker) return;
   status("Starting... (first time: about 190 MB download, please wait)");
-  worker = new Worker("worker.js", { type: "module" });
+  worker = new Worker("worker.js?v=3", { type: "module" });
   worker.onmessage = ({ data }) => {
     if (data.progress) {
       status(data.progress);
@@ -2189,7 +2189,7 @@ async function play(i) {
     totalSec += got.seconds;
   }
   const speed = totalSec ? totalMs / 1e3 / totalSec : 0;
-  $("speed").textContent = `This sentence: made in ${(got.ms / 1e3).toFixed(1)} s for ${got.seconds.toFixed(1)} s of audio. Average: ${speed.toFixed(2)} s of work per 1 s of audio ${speed <= 0.9 ? "\u2705 fast enough" : speed <= 1.3 ? "\u26A0\uFE0F borderline (small gaps)" : "\u274C too slow (gaps between sentences)"}`;
+  $("speed").textContent = `SPEED TEST \u2192 This sentence: made in ${(got.ms / 1e3).toFixed(1)} s for ${got.seconds.toFixed(1)} s of audio. Average: ${speed.toFixed(2)} s of work per 1 s of audio ${speed <= 0.9 ? "\u2705 fast enough" : speed <= 1.3 ? "\u26A0\uFE0F borderline (small gaps)" : "\u274C too slow (gaps between sentences)"}`;
   if (player.src) URL.revokeObjectURL(player.src);
   player.src = URL.createObjectURL(got.blob);
   player.playbackRate = +$("rate").value;

@@ -1127,7 +1127,14 @@ async function start() {
     got++;
     return r;
   });
+  const OWN = /^voices\/(af_heart|am_michael|bf_emma|ff_siwis|jf_alpha|jm_kumo|zf_xiaoxiao)\.bin$/;
+  const MORE = "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/";
   const E = new Engine(ort, async (file) => {
+    if (file.startsWith("voices/") && !OWN.test(file)) {
+      const r = await fetch(MORE + file);
+      if (!r.ok) throw new Error(`voice ${file}: ${r.status}`);
+      return await r.arrayBuffer();
+    }
     const b = await bytes(file);
     return file.endsWith(".bin") ? b.buffer : b;
   });
