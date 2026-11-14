@@ -1,9 +1,56 @@
 # Changelog
 
+## Change graph
+
+How much the app's code changed in each version (lines added + removed in `.html`, `.css`, `.js`, `.json`; docs not counted):
+
+```mermaid
+---
+config:
+  xyChart:
+    width: 1000
+    height: 320
+    xAxis:
+      labelFontSize: 11
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#d6409f"
+---
+xychart-beta
+  title "Lines of code changed per version"
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0"]
+  y-axis "Lines changed" 0 --> 400
+  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200]
+```
+
+Total time spent so far (minutes, adds up the Summary table below):
+
+```mermaid
+---
+config:
+  xyChart:
+    width: 1000
+    height: 320
+    xAxis:
+      labelFontSize: 11
+  themeVariables:
+    xyChart:
+      plotColorPalette: "#d6409f"
+---
+xychart-beta
+  title "Total build time (minutes)"
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0"]
+  y-axis "Minutes" 0 --> 240
+  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202]
+```
+
+Update both graphs with every release (add the new version at the right end).
+
 ## Summary
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.12.0 | 2026-11-13 | 15 min | Debug log (🐞) with crash detection; read-aloud freeze fixes; screen stays on while reading; change graphs |
 | v0.11.0 | 2026-11-04 | 6 min | Stays signed in for the hour after reopening; one-tap / automatic renewal |
 | v0.10.2 | 2026-11-04 | 5 min | Phone: double-tap an email or sheet = full screen on/off |
 | v0.10.1 | 2026-11-04 | 14 min | Fix: phone back gesture closes and stops the YouTube video first |
@@ -38,12 +85,28 @@
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **3 h 7 min** | |
+| **Total** | | **3 h 22 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.12.0 — 2026-11-13 — time spent: 15 min
+
+**What changed**
+- **Debug log (🐞 button, top right).** Records errors (file + line), what the app was doing (opened email, "voice JA sentence 57/140", sheet, video, sign-in), voice engine errors, memory use, and app going to background/foreground. Keeps the last 500 lines in this browser only. Buttons: Copy, Download, Clear.
+- **Crash detection.** If AtsuMail closed without you closing it, the next start adds a "crash" line saying when, what it was doing, memory, and whether it was on screen (real crash) or in the background (Android closed it). The 🐞 turns red and a note appears.
+- **Read-aloud fixes** (crash/freeze after 30–40 min of Japanese reading):
+  - keeps the sentence being spoken in memory (Chrome can lose it and reading stops - known Chrome bug)
+  - safety timer: if the voice engine never says "finished", skip to the next sentence instead of freezing (logged as "voice-stuck")
+  - long lines without 、 or commas are cut every ~180 characters (Android's voice engine can choke on giant pieces)
+- **Screen stays on while reading aloud** (released on pause/stop/finish). A sleeping screen makes Android pause or close the tab.
+- **Change graphs** at the top of this CHANGELOG: lines of code changed per version, and total build time.
+- New file: `log.js`. Privacy page: log stays on the device.
+
+**Why**
+- AtsuMail crashed after 30–40 minutes of reading a Japanese email, and there was no way to see why.
 
 ## v0.11.0 — 2026-11-04 — time spent: 6 min
 

@@ -15,6 +15,8 @@ window.AtsuVoice = (() => {
   };
 
   let parts = [], idx = 0, playing = false, gen = 0, timer = null;
+  let curU = null, watchdog = null;   // keep the sentence being spoken (Chrome may lose it otherwise)
+  const log = (k, m) => { try { window.AtsuLog && AtsuLog.add(k, m); } catch {} };
   let hooks = {};   // onSay(part, i) and onClear() - used by the app to highlight text
   const say = (i) => { if (parts[i]) { show(`${i + 1}/${parts.length}  ${parts[i].t}`); hooks.onSay && hooks.onSay(parts[i], i); } };
   let style = load("style", "soft"), speed = load("speed", 1.0);
@@ -59,7 +61,16 @@ window.AtsuVoice = (() => {
       cuts.forEach(([x, y]) => {
         if (y - x <= 220) return pieces.push([x, y]);
         let k = x;
-        for (let i = x; i < y; i++) if (/[、,;；]/.test(para[i]) && i - k > 40) { pieces.push([k, i + 1]); k = i + 1; }
+        for (let i = x; i < y; i++) {
+          if (/[、,;；]/.test(para[i]) && i - k > 40) { pieces.push([k, i + 1]); k = i + 1; }
+          // no comma for a long time (common in Japanese newsletters): cut anyway,
+          // at a space if there is one nearby, so the voice never gets a giant piece
+          else if (i - k >= 180) {
+            let cut = i;
+            for (let j = i; j > i - 40; j--) if (/\s/.test(para[j])) { cut = j; break; }
+            pieces.push([k, cut + 1]); k = cut + 1;
+          }
+        }
         if (k < y) pieces.push([k, y]);
       });
       const kept = pieces.map(([x, y]) => {
@@ -86,7 +97,7 @@ window.AtsuVoice = (() => {
 
   function speakNext(g) {
     if (g !== gen || !playing) return;
-    if (idx >= parts.length) { playing = false; setBtn(); show("Finished"); idx = 0; hooks.onClear && hooks.onClear(); return; }
+    if (idx >= parts.length) { keepAwake(false); playing = false; setBtn(); show("Finished"); idx = 0; curU = null; hooks.onClear && hooks.onClear(); log("voice", "finished reading"); return; }
     const p = parts[idx], st = STYLES[style] || STYLES.soft;
     const ja = isJa(p.t);
     const u = new SpeechSynthesisUtterance(p.t.replace(/https?:\/\/\S+/g, " "));
@@ -96,26 +107,56 @@ window.AtsuVoice = (() => {
     u.rate = Math.min(3, st.rate * speed);
     u.pitch = st.pitch;
     const next = () => {
+      clearTimeout(watchdog);
       if (g !== gen || !playing) return;
       idx++;
       $("vBar").style.width = Math.round((idx / parts.length) * 100) + "%";
       timer = setTimeout(() => speakNext(g), (p.para ? st.paraGap : st.gap) / speed);
     };
     u.onend = next;
-    u.onerror = (e) => { if (e.error !== "interrupted" && e.error !== "canceled") next(); };
+    u.onerror = (e) => {
+      if (e.error === "interrupted" || e.error === "canceled") return;
+      log("voice-error", `${e.error} at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars, voice: ${v ? v.name : "default"})`);
+      next();
+    };
+    curU = u;
     say(idx);
-    synth.speak(u);
+    try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} sentence ${idx + 1}/${parts.length}`); } catch {}
+    try { synth.speak(u); } catch (err) { log("voice-error", "speak failed: " + err.message); next(); return; }
+    // Safety timer: if the voice engine never says "finished", skip ahead instead of freezing.
+    const limit = (p.t.length * (ja ? 330 : 120)) / Math.max(0.5, u.rate) + 8000;
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => {
+      if (g !== gen || !playing || curU !== u) return;
+      log("voice-stuck", `no "finished" after ${Math.round(limit / 1000)}s at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars) - skipped`);
+      synth.cancel(); next();
+    }, limit);
   }
+
+  // Keep the phone screen on while reading aloud (a sleeping screen makes Android
+  // pause or even close the browser tab). Released on pause/stop.
+  let wake = null;
+  async function keepAwake(on) {
+    try {
+      if (on && !wake && navigator.wakeLock) {
+        wake = await navigator.wakeLock.request("screen");
+        wake.addEventListener("release", () => { wake = null; });
+      } else if (!on && wake) { await wake.release(); wake = null; }
+    } catch (e) { log("info", "screen-on lock not available: " + e.message); }
+  }
+  // The lock is dropped when you switch apps; take it again when you come back.
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && playing) keepAwake(true); });
 
   function play() {
     if (!synth) { show("This browser has no voices."); return; }
     if (!parts.length) return;
+    keepAwake(true);
     playing = true; gen++; setBtn();
     synth.cancel(); clearTimeout(timer);
     speakNext(gen);
   }
   // Pause = stop now and remember the sentence (more reliable than synth.pause on phones).
-  function pause() { playing = false; gen++; clearTimeout(timer); synth && synth.cancel(); setBtn(); }
+  function pause() { keepAwake(false); playing = false; gen++; clearTimeout(timer); clearTimeout(watchdog); curU = null; synth && synth.cancel(); setBtn(); }
   function stop() { pause(); idx = 0; $("vBar").style.width = "0%"; hooks.onClear && hooks.onClear(); }
 
   // input: plain text, or a ready list of parts from the app. h: { onSay, onClear }
@@ -123,6 +164,8 @@ window.AtsuVoice = (() => {
     stop();
     hooks = h || {};
     parts = typeof input === "string" ? split(input) : input;
+    const jaN = parts.filter((p) => isJa(p.t)).length, longest = parts.reduce((m, p) => Math.max(m, p.t.length), 0);
+    log("voice", `start: ${parts.length} sentences (${jaN} JA), longest ${longest} chars, style ${style}, speed ${speed}x, voices EN="${(pick("en", voiceEn) || {}).name || "none"}" JA="${(pick("ja", voiceJa) || {}).name || "none"}"`);
     $("player").hidden = false;
     fillSelects();
     play();

@@ -49,3 +49,5 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 21. Open an email on PC. Drag the thin bar between the list and the email left/right: the email gets wider/narrower. Close and reopen the app: the size is remembered. Double-click the bar: back to normal.
 22. Drag the bar between folders and list. Same behavior.
 23. PC: open an email, press F: full screen. Press Ctrl+F again: normal. Ctrl+F opens the browser's Find box (not full screen).
+24. Tap 🐞: the log opens with "AtsuMail opened" lines. Copy works (paste it somewhere). Clear asks first.
+25. Phone: start 🔊 on a long Japanese email and leave it reading 30+ minutes with the screen on. The screen should not turn off. Afterwards check 🐞 for "voice-stuck", "voice-error" or "crash" lines.

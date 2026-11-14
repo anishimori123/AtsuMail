@@ -9,7 +9,12 @@
   let curLabel = "INBOX", nextPage = null, curMsgId = null;
   const SYS_ORDER = ["INBOX", "STARRED", "IMPORTANT", "SENT", "DRAFT", "SPAM", "TRASH"];
 
-  const status = (t) => ($("status").textContent = t);
+  const L = (k, m) => { try { AtsuLog.add(k, m); } catch {} };
+  const LS = (s) => { try { AtsuLog.state(s); } catch {} };
+  const status = (t) => {
+    $("status").textContent = t;
+    if (/error|failed|expired|ran out|blocked|could not|not given/i.test(t)) L("problem", t);
+  };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const prettyName = (n) => (SYS_ORDER.includes(n) ? n[0] + n.slice(1).toLowerCase() : n);
 
@@ -58,6 +63,7 @@
         token = r.access_token;
         grantedScopes = r.scope || "";
         tokenExp = Date.now() + (Number(r.expires_in) || 3599) * 1000;
+        L("sign-in", "signed in (pass valid ~" + Math.round((Number(r.expires_in) || 3599) / 60) + " min)");
         saveTok(); setSignedIn(true);
         if (waiters.length && firstLoadDone) status("Signed in again");
         waiters.forEach((w) => w.resolve());
@@ -132,6 +138,7 @@
   }
   async function openSheet(i) {
     curSheet = i; curTab = null;
+    L("sheet", "opened sheet " + (i + 1)); LS("viewing a sheet");
     document.body.classList.add("sheetmode");
     $("sheetview").hidden = false;
     $("sheetgrid").innerHTML = ""; $("sheettabs").innerHTML = "";
@@ -361,6 +368,7 @@
     const id = ytId(x.url);
     if (!id) { window.open(x.url, "_blank", "noopener"); return; }
     const start = ytStart(x.url);
+    L("video", "playing a YouTube video"); LS("playing a YouTube video");
     setVideo(`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${start ? "&start=" + start : ""}`);
     $("wopen").href = x.url; $("wtitle").textContent = x.title;
     $("wplayer").hidden = false; $("wmain").hidden = true;
@@ -474,6 +482,8 @@
     $("meta").innerHTML = `<b>${esc(fromName(from))}</b> &middot; ${esc(subject || "(no subject)")} <span class="d">&middot; ${new Date(date).toLocaleString()}</span>`;
     $("meta").title = `${from}\n${subject}`;
     cur = { html, text, subject, from };
+    { const body = html || text || "", ja = /[\u3040-\u30ff\u4e00-\u9fff]/.test(body);
+      L("email", `opened: ${body.length} chars${html ? " (designed)" : " (plain)"}${ja ? ", Japanese" : ""}`); LS("reading an email" + (ja ? " (Japanese)" : "")); }
     AtsuVoice.close(); $("btnSpeak").classList.remove("on");
     render();
     if (!(history.state && history.state.atsuRead)) history.pushState({ atsuRead: 1 }, "");
@@ -705,6 +715,7 @@
   $("btnExitFull").onclick = () => setFull(false);
 
   function closeReader() {
+    LS("email list");
     setFull(false);
     AtsuVoice.close(); $("btnSpeak").classList.remove("on");
     $("reader").hidden = true; curMsgId = null;
@@ -829,6 +840,27 @@
   }
   makeSplit($("split1"), "--foldW", "foldW", () => $("folders"), 120, 0.4);
   makeSplit($("split2"), "--listW", "listW", () => $("list"), 200, 0.75);
+
+  // ---------- Debug log screen (🐞) ----------
+  function showLog() { $("logtext").textContent = AtsuLog.text(); $("logbox").hidden = false; $("btnLog").classList.remove("alert"); $("logtext").scrollTop = 1e9; }
+  $("btnLog").onclick = showLog;
+  $("logClose").onclick = () => ($("logbox").hidden = true);
+  $("logCopy").onclick = async () => {
+    try { await navigator.clipboard.writeText(AtsuLog.text()); toast("Log copied - paste it to share"); }
+    catch { const r = document.createRange(); r.selectNodeContents($("logtext")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected - press Copy"); }
+  };
+  $("logSave").onclick = () => {
+    const a2 = document.createElement("a");
+    a2.href = URL.createObjectURL(new Blob([AtsuLog.text()], { type: "text/plain" }));
+    a2.download = "atsumail-log-" + new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-") + ".txt";
+    a2.click(); setTimeout(() => URL.revokeObjectURL(a2.href), 2000);
+  };
+  $("logClear").onclick = () => { if (confirm("Clear the debug log?")) { AtsuLog.clear(); showLog(); } };
+  // Red 🐞 when something went wrong (or the last session ended unexpectedly)
+  addEventListener("atsu-log-alert", () => $("btnLog").classList.add("alert"));
+  if (AtsuLog.lines().some((l) => l.k === "crash" && l.t.slice(0, 10) === new Date().toISOString().slice(0, 10))) $("btnLog").classList.add("alert");
+  if (AtsuLog.lines().slice(-30).some((l) => l.k === "crash")) { $("btnLog").classList.add("alert"); setTimeout(() => toast("AtsuMail closed unexpectedly last time - details in 🐞"), 800); }
+  LS("email list");
 
   initAuth();
 })();

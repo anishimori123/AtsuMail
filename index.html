@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1e1e1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>AtsuMail</title>
-<link rel="stylesheet" href="style.css?v=0.11.0">
+<link rel="stylesheet" href="style.css?v=0.12.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -19,6 +19,7 @@
     <span id="path">AtsuMail</span>
     <span class="spacer"></span>
     <button id="btnRefresh" title="Refresh">&#8635;</button>
+    <button id="btnLog" title="Debug log">&#x1F41E;</button>
     <button id="btnSignIn">Sign in</button>
   </div>
 
@@ -104,13 +105,26 @@
     </section>
   </div>
 
+  <!-- Debug log -->
+  <div id="logbox" hidden>
+    <div class="lbar">
+      <b>Debug log</b>
+      <span class="spacer"></span>
+      <button id="logCopy">Copy</button>
+      <button id="logSave">Download</button>
+      <button id="logClear">Clear</button>
+      <button id="logClose" title="Close">&#x2715;</button>
+    </div>
+    <pre id="logtext"></pre>
+  </div>
   <div id="toast" hidden></div>
   <div id="status">Ready</div>
 
-  <script src="config.js?v=0.11.0"></script>
+  <script src="log.js?v=0.12.0"></script>
+  <script src="config.js?v=0.12.0"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="demo.js?v=0.11.0"></script>
-  <script src="voice.js?v=0.11.0"></script>
-  <script src="app.js?v=0.11.0"></script>
+  <script src="demo.js?v=0.12.0"></script>
+  <script src="voice.js?v=0.12.0"></script>
+  <script src="app.js?v=0.12.0"></script>
 </body>
 </html>

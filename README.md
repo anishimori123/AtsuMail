@@ -27,6 +27,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `config.js` | Your settings (Google Client ID goes here) |
 | `demo.js` | Fake emails, used when no Client ID is set |
 | `voice.js` | Built-in voice reader (uses your device's voices) |
+| `log.js` | Debug log (🐞): errors, what the app was doing, crash detection |
 | `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
 | `privacy.html` | Privacy policy (Google requires it for sign-in) |
@@ -105,6 +106,13 @@ Steps:
 PC keyboard: `↑` / `↓` = previous / next email, `F` = full screen on/off (when an email or a sheet is open), `Esc` = leave full screen / close email.
 
 PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
+
+## Debug log (🐞)
+
+- Tap **🐞** (top right) to see what happened: errors, voice problems, and whether AtsuMail closed unexpectedly last time.
+- The 🐞 turns **red** when something went wrong.
+- **Copy** (or **Download**) and paste it to whoever is helping you fix it. The log never leaves your device by itself.
+- It does not store email text, only short notes like "opened: 4,312 chars, Japanese".
 
 ## Best voices (free)
 
