@@ -1953,15 +1953,21 @@ function wordsToYs(words3) {
     ipa[t.wi] += s;
   });
   const units = [];
-  let lead = "";
+  let lead = "", carry = null;
   W2.forEach((w, wi) => {
     if (ipa[wi]) {
-      units.push({ ipa: ipa[wi], t: lead + w.text });
+      const endsQ = w.toks[w.toks.length - 1].k === "Q" && !ipa[wi].endsWith("\u0294");
+      const u = carry ? { ipa: carry.ipa + ipa[wi], t: carry.t + w.text } : { ipa: ipa[wi], t: lead + w.text };
       lead = "";
-    } else if (/^[、，,]$/.test(w.text) && units.length) units.push({ ipa: "\u2016", t: w.text });
+      carry = null;
+      if (endsQ) carry = u;
+      else units.push(u);
+    } else if (carry) carry.t += w.text;
+    else if (/^[、，,]$/.test(w.text) && units.length) units.push({ ipa: "\u2016", t: w.text });
     else if (units.length) units[units.length - 1].t += w.text;
     else lead += w.text;
   });
+  if (carry) units.push({ ipa: carry.ipa.replace(/[^aiɯeoːɴmnŋɲ]$/, "\u0294"), t: carry.t });
   while (units.length && units[units.length - 1].ipa === "\u2016") {
     const u = units.pop();
     if (units.length) units[units.length - 1].t += u.t;
