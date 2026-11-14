@@ -1133,7 +1133,13 @@ async function start() {
   });
   const OWN = /^voices\/(af_heart|am_michael|bf_emma|ff_siwis|jf_alpha|jm_kumo|zf_xiaoxiao)\.bin$/;
   const MORE = "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main/";
-  const E = new Engine(ort, async (file) => {
+  const onGpu = new Set((Q.get("gp") || "dec").split(",")), order = ["enc", "f0n", "dec"];
+  let made = 0;
+  const ortMixed = !gpu ? ort : {
+    Tensor: ort.Tensor,
+    InferenceSession: { create: (bytes2) => ort.InferenceSession.create(bytes2, { executionProviders: onGpu.has(order[made++]) ? ["webgpu", "wasm"] : ["wasm"] }) }
+  };
+  const E = new Engine(ortMixed, async (file) => {
     if (file.startsWith("voices/") && !OWN.test(file)) {
       const r = await fetch(MORE + file);
       if (!r.ok) throw new Error(`voice ${file}: ${r.status}`);

@@ -2046,7 +2046,7 @@ async function setup() {
   status("Starting... (first time: about 190 MB download, please wait)");
   const mode = localStorage.getItem("lab.engine") || "cpu4";
   const q = mode === "gpu" ? "ep=webgpu&t=4" : mode === "cpumax" ? `ep=wasm&t=${Math.max(1, (navigator.hardwareConcurrency || 4) - 1)}` : "ep=wasm&t=4";
-  worker = new Worker("worker.js?v=4&" + q, { type: "module" });
+  worker = new Worker("worker.js?v=5&" + q, { type: "module" });
   worker.onmessage = ({ data }) => {
     if (data.progress) {
       status(data.progress);
