@@ -50,6 +50,7 @@ Update both graphs with every release (add the new version at the right end).
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| — | 2026-11-13 | 11 min | Voice Lab experiment page (`lab/`): Japanese read by the open-source yomiscript / Kokoro engine |
 | v0.13.0 | 2026-11-13 | 8 min | Read aloud continues with the next (older) email in the folder |
 | v0.12.1 | 2026-11-13 | 4 min | Auto-update: the plain link always loads the newest version |
 | v0.12.0 | 2026-11-13 | 15 min | Debug log (🐞) with crash detection; read-aloud freeze fixes; screen stays on while reading; change graphs |
@@ -87,12 +88,23 @@ Update both graphs with every release (add the new version at the right end).
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **3 h 34 min** | |
+| **Total** | | **3 h 45 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## Voice Lab (experiment, no app version change) — 2026-11-13 — time spent: 11 min
+
+**What changed**
+- New separate page `lab/` (https://anishimori123.github.io/AtsuMail/lab/) to judge a more human Japanese voice before touching the app.
+- Pipeline: dictionary reading (OpenJTalk, no AI) → yomiscript pitch accent → Kokoro-82M voice, all in the browser. First use downloads about 190 MB.
+- Shows how long each sentence takes to make versus its length, to see if a phone is fast enough.
+- Third-party code is listed in `lab/README.md`. The lab's bundled files are not counted in the change graph.
+
+**Why**
+- The phone's built-in Japanese voice still sounds robotic. Test whether this open-source engine is better and fast enough on a Pixel.
 
 ## v0.13.0 — 2026-11-13 — time spent: 8 min
 

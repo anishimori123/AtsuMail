@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AtsuMail Voice Lab</title>
+<style>
+  body { background: #1e1e1e; color: #ddd; font: 15px/1.5 "Segoe UI", Arial, sans-serif; margin: 0 auto; max-width: 820px; padding: 10px; }
+  h1 { font-size: 18px; color: #fff; margin: 4px 0; } small, .dim { color: #999; }
+  textarea { width: 100%; height: 150px; background: #252526; color: #ddd; border: 1px solid #444; font: inherit; padding: 6px; box-sizing: border-box; }
+  button, select { background: #2d2d2d; color: #ddd; border: 1px solid #444; font: inherit; padding: 6px 12px; }
+  #play { background: #094771; color: #fff; }
+  .bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  #status { background: #007acc; color: #fff; padding: 3px 8px; } #status.err { background: #c62828; }
+  #speed { margin: 6px 0; color: #fff; }
+  #out { margin: 10px 0; font-size: 17px; line-height: 1.9; font-family: Georgia, serif; }
+  .s { cursor: pointer; } .s.now { background: #bfe3ff; color: #000; }
+  #ys, #log { font: 11px/1.4 Consolas, monospace; color: #888; word-break: break-all; margin-top: 6px; }
+</style>
+<script>
+  // "Fast mode": register the helper, then reload once so it takes effect.
+  if ("serviceWorker" in navigator && !self.crossOriginIsolated) {
+    navigator.serviceWorker.register("coi-sw.js").then((reg) => {
+      const go = () => { if (!sessionStorage.getItem("coi")) { sessionStorage.setItem("coi", "1"); location.reload(); } };
+      if (navigator.serviceWorker.controller) go();
+      else navigator.serviceWorker.addEventListener("controllerchange", go);
+      if (reg.active && !navigator.serviceWorker.controller) go();
+    }).catch(() => {});
+  }
+</script>
+</head>
+<body>
+<h1>AtsuMail Voice Lab <small>experiment</small></h1>
+<div class="dim">Reads Japanese with the open-source yomiscript engine (Kokoro voice), inside your browser. First use downloads about 190 MB (use Wi-Fi). Japanese text only.</div>
+<textarea id="text">今日はとても良い天気ですね。朝から雲ひとつない青空が広がっています。
+週末は、友達と京都へ行く予定です。紅葉がちょうど見頃だと聞きました。
+ところで、最近のAIの進歩には本当に驚かされます。一年前には想像もできなかったことが、今では当たり前になりつつあります。</textarea>
+<div class="bar">
+  <button id="play">▶ Read aloud</button>
+  <label>Voice <select id="voice"><option value="jf_alpha">Woman (jf_alpha)</option><option value="jm_kumo">Man (jm_kumo)</option></select></label>
+  <label>Speed <select id="rate"><option>0.9</option><option selected>1</option><option>1.1</option><option>1.2</option><option>1.35</option><option>1.5</option></select></label>
+  <span id="info" class="dim"></span>
+</div>
+<div id="status">Paste Japanese text above, then press Read aloud.</div>
+<div id="speed"></div>
+<div id="out"></div>
+<div id="ys"></div>
+<div id="log"></div>
+<p class="dim">Engine: <a style="color:#6cb6ff" href="https://github.com/receptron/yomiscript">receptron/yomiscript</a> (Apache-2.0), Kokoro-82M voice (Apache-2.0), OpenJTalk dictionary. Readings here come from the dictionary, not from an AI, so some words are misread.</p>
+<script type="module" src="main.js?v=1"></script>
+</body>
+</html>
