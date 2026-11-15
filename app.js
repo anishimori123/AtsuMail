@@ -1,7 +1,8 @@
 // AtsuMail - a tiny, read-only Gmail reader. Runs fully in your browser.
 (() => {
   // App version. Must match version.json (both are bumped every release).
-  const APP_VERSION = "0.14.1";
+  const APP_VERSION = "0.14.2";
+  window.ATSU_VERSION = APP_VERSION;
   // If we arrived via the auto-update link (…/?v=0.12.1), show the plain address again.
   if (/[?&]v=/.test(location.search)) history.replaceState(history.state, "", location.pathname + location.hash);
   const CFG = window.ATSU_CONFIG || {};
@@ -897,7 +898,7 @@
   makeSplit($("split2"), "--listW", "listW", () => $("list"), 200, 0.75);
 
   // ---------- Debug log screen (🐞) ----------
-  function showLog() { $("logtext").textContent = AtsuLog.text(); $("logbox").hidden = false; $("btnLog").classList.remove("alert"); $("logtext").scrollTop = 1e9; }
+  function showLog() { $("logtext").textContent = "Version " + APP_VERSION + "\n" + AtsuLog.text(); $("logbox").hidden = false; $("btnLog").classList.remove("alert"); $("logtext").scrollTop = 1e9; }
   $("btnLog").onclick = showLog;
   $("logClose").onclick = () => ($("logbox").hidden = true);
   $("logCopy").onclick = async () => {

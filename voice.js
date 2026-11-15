@@ -168,6 +168,10 @@ window.AtsuVoice = (() => {
   }
   function speakNatural(g, p, st, next, fallback) {
     const job = natGet(p.t);
+    // Tell the listener it's working while the audio is being made (the first sentence can take a while)
+    let waited = false;
+    const waitT = setTimeout(() => { waited = true; if (g === gen && playing) show(`⏳ Making natural voice… ${idx + 1}/${parts.length}`); }, 600);
+    job.finally(() => clearTimeout(waitT)).catch(() => {});
     for (let k = 1; k <= 4; k++) { const q = parts[idx + k]; if (q && isJa(q.t)) natGet(q.t).catch(() => {}); }   // make audio ahead
     job.then((res) => {
       if (g !== gen || !playing) return;
@@ -223,6 +227,7 @@ window.AtsuVoice = (() => {
     hooks = h || {};
     parts = typeof input === "string" ? split(input) : input;
     const jaN = parts.filter((p) => isJa(p.t)).length, longest = parts.reduce((m, p) => Math.max(m, p.t.length), 0);
+    log("voice", `JA voice: ${engine}, app version ${window.ATSU_VERSION || "?"}`);
     log("voice", `start: ${parts.length} sentences (${jaN} JA), longest ${longest} chars, style ${style}, speed ${speed}x, voices EN="${(pick("en", voiceEn) || {}).name || "none"}" JA="${(pick("ja", voiceJa) || {}).name || "none"}"`);
     $("player").hidden = false;
     fillSelects();
