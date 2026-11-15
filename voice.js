@@ -90,6 +90,7 @@ window.AtsuVoice = (() => {
     $("vJa").innerHTML = opt(ja, (pick("ja", voiceJa) || {}).name);
     $("vStyle").innerHTML = Object.entries(STYLES).map(([k, s]) => `<option value="${k}" ${k === style ? "selected" : ""}>${s.label}</option>`).join("");
     $("vSpeed").textContent = speed.toFixed(1) + "x";
+    $("vEngine").value = engine;
   }
 
   function show(text) { $("vNow").textContent = text; }
@@ -119,18 +120,74 @@ window.AtsuVoice = (() => {
       log("voice-error", `${e.error} at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars, voice: ${v ? v.name : "default"})`);
       next();
     };
-    curU = u;
-    say(idx);
-    try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} sentence ${idx + 1}/${parts.length}`); } catch {}
-    try { synth.speak(u); } catch (err) { log("voice-error", "speak failed: " + err.message); next(); return; }
-    // Safety timer: if the voice engine never says "finished", skip ahead instead of freezing.
-    const limit = (p.t.length * (ja ? 330 : 120)) / Math.max(0.5, u.rate) + 8000;
-    clearTimeout(watchdog);
-    watchdog = setTimeout(() => {
-      if (g !== gen || !playing || curU !== u) return;
-      log("voice-stuck", `no "finished" after ${Math.round(limit / 1000)}s at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars) - skipped`);
-      synth.cancel(); next();
-    }, limit);
+    const deviceSpeak = () => {
+      curU = u;
+      say(idx);
+      try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} sentence ${idx + 1}/${parts.length}`); } catch {}
+      try { synth.speak(u); } catch (err) { log("voice-error", "speak failed: " + err.message); next(); return; }
+      // Safety timer: if the voice engine never says "finished", skip ahead instead of freezing.
+      const limit = (p.t.length * (ja ? 330 : 120)) / Math.max(0.5, u.rate) + 8000;
+      clearTimeout(watchdog);
+      watchdog = setTimeout(() => {
+        if (g !== gen || !playing || curU !== u) return;
+        log("voice-stuck", `no "finished" after ${Math.round(limit / 1000)}s at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars) - skipped`);
+        synth.cancel(); next();
+      }, limit);
+    };
+    // Natural voice (Kokoro) for Japanese sentences; English and anything it can't read use the device voice.
+    if (engine === "natural" && ja) {
+      say(idx);
+      try { window.AtsuLog && AtsuLog.state(`voice JA (natural) sentence ${idx + 1}/${parts.length}`); } catch {}
+      speakNatural(g, p, st, next, deviceSpeak);
+    } else deviceSpeak();
+  }
+
+  // ---------- Natural Japanese voice (open-source yomiscript + Kokoro, runs in the browser) ----------
+  let engine = load("engine", "device"), natModule = null, natUrl = null, natFails = 0, natCount = 0;
+  const natCache = new Map();          // sentence text -> Promise of its audio
+  const audio = new Audio();
+  function natMod() {
+    if (!natModule) {
+      natModule = import("./lab/engine.js?v=1").then(async (m) => {
+        const r = await m.init((t) => { if (playing) show(t); });
+        log("voice", `natural voice ready (${r.mode === "gpu" ? "graphics chip" : "CPU, " + r.threads + " thread(s) - may be slow"})`);
+        return m;
+      });
+      natModule.catch(() => { natModule = null; });
+    }
+    return natModule;
+  }
+  function natGet(text) {
+    if (!natCache.has(text)) {
+      const pr = natMod().then((m) => m.synth(text.replace(/https?:\/\/\S+/g, " "), "jf_alpha"));
+      natCache.set(text, pr);
+      pr.catch(() => natCache.delete(text));
+      if (natCache.size > 30) natCache.delete(natCache.keys().next().value);
+    }
+    return natCache.get(text);
+  }
+  function speakNatural(g, p, st, next, fallback) {
+    const job = natGet(p.t);
+    for (let k = 1; k <= 4; k++) { const q = parts[idx + k]; if (q && isJa(q.t)) natGet(q.t).catch(() => {}); }   // make audio ahead
+    job.then((res) => {
+      if (g !== gen || !playing) return;
+      if (!res) { fallback(); return; }
+      natFails = 0;
+      say(idx);
+      if (natUrl) URL.revokeObjectURL(natUrl);
+      natUrl = URL.createObjectURL(res.blob);
+      audio.src = natUrl;
+      audio.playbackRate = Math.max(0.5, Math.min(3, st.rate * speed));
+      audio.onended = () => { if (g === gen) next(); };
+      audio.onerror = () => { if (g === gen && playing) { log("voice-error", "natural voice: audio could not play - device voice used"); fallback(); } };
+      audio.play().catch((e) => { if (g === gen && playing) { log("voice-error", "natural voice: " + e.message + " - device voice used"); fallback(); } });
+      if (++natCount % 15 === 0) natModule && natModule.then((m) => { const s = m.stats(); log("voice", `natural voice speed: ${s.speed.toFixed(2)} s of work per 1 s of audio (${s.mode})`); }).catch(() => {});
+    }).catch((e) => {
+      if (g !== gen || !playing) return;
+      log("voice-error", "natural voice failed: " + (e && e.message || e) + " - device voice used");
+      if (++natFails >= 3) { engine = "device"; $("vEngine").value = "device"; log("voice", "natural voice switched off after 3 failures"); }
+      fallback();
+    });
   }
 
   // Keep the phone screen on while reading aloud (a sleeping screen makes Android
@@ -152,11 +209,11 @@ window.AtsuVoice = (() => {
     if (!parts.length) return;
     keepAwake(true);
     playing = true; gen++; setBtn();
-    synth.cancel(); clearTimeout(timer);
+    synth.cancel(); clearTimeout(timer); try { audio.pause(); } catch {}
     speakNext(gen);
   }
   // Pause = stop now and remember the sentence (more reliable than synth.pause on phones).
-  function pause() { keepAwake(false); playing = false; gen++; clearTimeout(timer); clearTimeout(watchdog); curU = null; synth && synth.cancel(); setBtn(); }
+  function pause() { keepAwake(false); playing = false; gen++; clearTimeout(timer); clearTimeout(watchdog); curU = null; synth && synth.cancel(); try { audio.pause(); } catch {} setBtn(); }
   function stop() { pause(); idx = 0; $("vBar").style.width = "0%"; hooks.onClear && hooks.onClear(); }
 
   // input: plain text, or a ready list of parts from the app. h: { onSay, onClear }
@@ -189,6 +246,7 @@ window.AtsuVoice = (() => {
   $("vPrev").onclick = () => { idx = Math.max(0, idx - 1); playing ? play() : say(idx); };
   $("vNext").onclick = () => { idx = Math.min(parts.length - 1, idx + 1); playing ? play() : say(idx); };
   $("vClose").onclick = close;
+  $("vEngine").onchange = (e) => { engine = e.target.value; save("engine", engine); natFails = 0; log("voice", "Japanese voice: " + engine); restartIfPlaying(); };
   $("vStyle").onchange = (e) => { style = e.target.value; save("style", style); restartIfPlaying(); };
   $("vEn").onchange = (e) => { voiceEn = e.target.value; save("voiceEn", voiceEn); restartIfPlaying(); };
   $("vJa").onchange = (e) => { voiceJa = e.target.value; save("voiceJa", voiceJa); restartIfPlaying(); };

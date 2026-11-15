@@ -12,3 +12,5 @@ Third-party code in this folder (not written for AtsuMail):
 - `main.js`, `worker.js`: bundles that include `@yomiscript/core`, `@yomiscript/kokoro`, `@yomiscript/ja-accent` (Apache-2.0, receptron) and `model_cache.js` from the yomiscript demo.
 - `frontend_bg.wasm`: `@yomiscript/ja-accent` (jpreprocess / NAIST-JDIC front end; see that package's NOTICE).
 - `ort/`: onnxruntime-web 1.22.0 (MIT, Microsoft).
+
+- `engine.js`: the same engine as a module for the AtsuMail app's "Natural (beta)" JA voice (bundles the same packages as `main.js`).

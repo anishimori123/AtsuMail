@@ -108,6 +108,14 @@ PC keyboard: `↑` / `↓` = previous / next email, `F` = full screen on/off (wh
 
 PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
 
+## Natural Japanese voice (beta)
+
+- In the voice player choose **JA voice → Natural (beta)**. First use downloads about 190 MB (use Wi-Fi); after that it starts in a few seconds.
+- Made on your own device with open-source parts: [yomiscript](https://github.com/receptron/yomiscript) (Apache-2.0), Kokoro-82M voice (Apache-2.0), OpenJTalk dictionary, onnxruntime-web (MIT). Details in `lab/README.md`.
+- Readings come from a dictionary, not an AI, so a few words are misread. English sentences use the device voice.
+- If audio can't keep up (gaps), check 🐞 for "natural voice speed" - below 1.0 is fast enough.
+- Test page with more voices: https://anishimori123.github.io/AtsuMail/lab/
+
 ## Debug log (🐞)
 
 - Tap **🐞** (top right) to see what happened: errors, voice problems, and whether AtsuMail closed unexpectedly last time.

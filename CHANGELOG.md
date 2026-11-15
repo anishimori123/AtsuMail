@@ -18,9 +18,9 @@ config:
 ---
 xychart-beta
   title "Lines of code changed per version"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0"]
   y-axis "Lines changed" 0 --> 400
-  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77]
+  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77, 105]
 ```
 
 Total time spent so far (minutes, adds up the Summary table below):
@@ -39,9 +39,9 @@ config:
 ---
 xychart-beta
   title "Total build time (minutes)"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0"]
-  y-axis "Minutes" 0 --> 240
-  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0"]
+  y-axis "Minutes" 0 --> 300
+  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214, 250]
 ```
 
 Update both graphs with every release (add the new version at the right end).
@@ -50,6 +50,7 @@ Update both graphs with every release (add the new version at the right end).
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.14.0 | 2026-11-15 | 25 min | Natural Japanese voice (beta) in the player: open-source yomiscript + Kokoro, made on the device |
 | — | 2026-11-13 | 11 min | Voice Lab experiment page (`lab/`): Japanese read by the open-source yomiscript / Kokoro engine |
 | v0.13.0 | 2026-11-13 | 8 min | Read aloud continues with the next (older) email in the folder |
 | v0.12.1 | 2026-11-13 | 4 min | Auto-update: the plain link always loads the newest version |
@@ -88,12 +89,26 @@ Update both graphs with every release (add the new version at the right end).
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **3 h 45 min** | |
+| **Total** | | **4 h 10 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.14.0 — 2026-11-15 — time spent: 25 min
+
+**What changed**
+- New **JA voice** choice in the voice player: **Device** (as before) or **Natural (beta)**. Remembered.
+- Natural = the open-source [yomiscript](https://github.com/receptron/yomiscript) engine with the Kokoro-82M voice "Alpha", running in the browser: dictionary reading → pitch accent → voice. First use downloads about 190 MB (kept afterwards; shared with the Voice Lab page).
+- Japanese sentences use the natural voice; English sentences and anything it can't read still use the device voice.
+- Uses the graphics chip for the heavy part when the browser has one (the part that sets sound lengths stays on the CPU, where it is correct). Audio for the next 4 sentences is made ahead.
+- Highlight, tap-to-jump, speed, styles (speed only), Next email and the 🐞 log all work with it. After 3 failures in a row it switches back to Device by itself.
+- Fix: the invisible swipe strip on the left edge covered part of the player ("Next email" box could not be tapped).
+- Voice Lab since the first version: 8 voices and mixes, engine modes, read-ahead (see `lab/`). Bundled engine files in `lab/` are not counted in the change graph.
+
+**Why**
+- The device's Japanese voice sounds robotic. Lab testing: the Alpha voice sounds good; graphics-chip mode was about 5x faster on PC with the same audio.
 
 ## Voice Lab (experiment, no app version change) — 2026-11-13 — time spent: 11 min
 
