@@ -142,6 +142,7 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 #vPlay { background: #094771; color: #fff; }
 #vProg { height: 3px; background: #333; }
 #vBar { height: 100%; width: 0; background: #ff8fd1; transition: width .3s; }
+#vNote { margin-top: 3px; color: #ff8fd1; }
 #vNow { margin-top: 3px; color: #bbb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #btnSpeak.on { background: #094771; color: #fff; }
 #btnSignIn.renew { background: #ff8fd1; color: #000; border-color: #ff8fd1; }

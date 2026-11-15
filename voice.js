@@ -186,6 +186,16 @@ window.AtsuVoice = (() => {
       audio.onended = () => { if (natCount <= 4) log("natural", `sentence ended after ${audio.currentTime.toFixed(1)} s`); if (g === gen) next(); };
       audio.onerror = () => { if (g === gen && playing) { log("voice-error", "natural voice: audio could not play - device voice used"); fallback(); } };
       audio.play().catch((e) => { if (g === gen && playing) { log("voice-error", "natural voice: " + e.message + " - device voice used"); fallback(); } });
+      // Too slow on this device (audio takes much longer to make than to play): go back to the device voice.
+      natModule && natModule.then((m) => {
+        const s = m.stats();
+        if (engine === "natural" && s.seconds > 6 && s.speed > 1.4) {
+          engine = "device"; save("engine", engine); $("vEngine").value = "device";
+          log("voice", `natural voice is too slow on this device (${s.speed.toFixed(1)} s of work per 1 s of audio) - switched back to Device`);
+          $("vNote").textContent = "Natural voice is too slow on this device - using the Device voice."; $("vNote").hidden = false;
+          natCache.clear();
+        }
+      }).catch(() => {});
       if (++natCount % 15 === 0) natModule && natModule.then((m) => { const s = m.stats(); log("voice", `natural voice speed: ${s.speed.toFixed(2)} s of work per 1 s of audio (${s.mode})`); }).catch(() => {});
     }).catch((e) => {
       if (g !== gen || !playing) return;
@@ -252,7 +262,7 @@ window.AtsuVoice = (() => {
   $("vPrev").onclick = () => { idx = Math.max(0, idx - 1); playing ? play() : say(idx); };
   $("vNext").onclick = () => { idx = Math.min(parts.length - 1, idx + 1); playing ? play() : say(idx); };
   $("vClose").onclick = close;
-  $("vEngine").onchange = (e) => { engine = e.target.value; save("engine", engine); natFails = 0; log("voice", "Japanese voice: " + engine); restartIfPlaying(); };
+  $("vEngine").onchange = (e) => { $("vNote").hidden = true; engine = e.target.value; save("engine", engine); natFails = 0; log("voice", "Japanese voice: " + engine); restartIfPlaying(); };
   $("vStyle").onchange = (e) => { style = e.target.value; save("style", style); restartIfPlaying(); };
   $("vEn").onchange = (e) => { voiceEn = e.target.value; save("voiceEn", voiceEn); restartIfPlaying(); };
   $("vJa").onchange = (e) => { voiceJa = e.target.value; save("voiceJa", voiceJa); restartIfPlaying(); };
