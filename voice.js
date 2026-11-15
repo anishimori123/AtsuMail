@@ -148,8 +148,8 @@ window.AtsuVoice = (() => {
   const audio = new Audio();
   function natMod() {
     if (!natModule) {
-      natModule = import("./lab/engine.js?v=1").then(async (m) => {
-        const r = await m.init((t) => { if (playing) show(t); });
+      natModule = import("./lab/engine.js?v=2").then(async (m) => {
+        const r = await m.init((t) => { if (playing) show(t); }, (t) => log("natural", t));
         log("voice", `natural voice ready (${r.mode === "gpu" ? "graphics chip" : "CPU, " + r.threads + " thread(s) - may be slow"})`);
         return m;
       });
@@ -176,9 +176,10 @@ window.AtsuVoice = (() => {
       say(idx);
       if (natUrl) URL.revokeObjectURL(natUrl);
       natUrl = URL.createObjectURL(res.blob);
-      audio.src = natUrl;
+      audio.src = natUrl; audio.volume = 1; audio.muted = false;
+      if (natCount < 4) log("natural", `playing sentence ${idx + 1}: ${res.seconds.toFixed(1)} s of audio`);
       audio.playbackRate = Math.max(0.5, Math.min(3, st.rate * speed));
-      audio.onended = () => { if (g === gen) next(); };
+      audio.onended = () => { if (natCount <= 4) log("natural", `sentence ended after ${audio.currentTime.toFixed(1)} s`); if (g === gen) next(); };
       audio.onerror = () => { if (g === gen && playing) { log("voice-error", "natural voice: audio could not play - device voice used"); fallback(); } };
       audio.play().catch((e) => { if (g === gen && playing) { log("voice-error", "natural voice: " + e.message + " - device voice used"); fallback(); } });
       if (++natCount % 15 === 0) natModule && natModule.then((m) => { const s = m.stats(); log("voice", `natural voice speed: ${s.speed.toFixed(2)} s of work per 1 s of audio (${s.mode})`); }).catch(() => {});

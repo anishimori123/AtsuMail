@@ -2020,6 +2020,19 @@ var onProgress = () => {
 };
 var totalMs = 0;
 var totalSec = 0;
+var forceCpu = false;
+var note = () => {
+};
+var made = 0;
+try {
+  forceCpu = localStorage.getItem("atsu.v.natCpu") === "1";
+} catch {
+}
+var rmsOf = (pcm) => {
+  let s = 0;
+  for (let i = 0; i < pcm.length; i++) s += pcm[i] * pcm[i];
+  return pcm.length ? Math.sqrt(s / pcm.length) : 0;
+};
 function send(ys, voice) {
   const id = nextId++;
   return new Promise((resolve, reject) => {
@@ -2031,11 +2044,12 @@ function failAll(msg) {
   for (const w of waiting.values()) w.reject(new Error(msg));
   waiting.clear();
 }
-function init(progress) {
+function init(progress, logger) {
   if (progress) onProgress = progress;
+  if (logger) note = logger;
   if (starting) return starting;
   starting = (async () => {
-    mode = navigator.gpu ? "gpu" : "cpu";
+    mode = navigator.gpu && !forceCpu ? "gpu" : "cpu";
     const q = mode === "gpu" ? "ep=webgpu&t=4&gp=dec" : "ep=wasm&t=4";
     onProgress("Starting the natural voice (first time: about 190 MB download)...");
     worker = new Worker(new URL("worker.js?v=5&" + q, import.meta.url), { type: "module" });
@@ -2119,7 +2133,28 @@ function synth(text, voice = "jf_alpha") {
         if (plain && plain !== ys) got = await send(plain, voice);
         else throw e;
       }
-      pcs.push(await pcmOf(got.blob));
+      let pcm = await pcmOf(got.blob), rms = rmsOf(pcm);
+      if (mode === "gpu" && (rms < 40 || !isFinite(rms))) {
+        note(`graphics chip gave silent audio (level ${Math.round(rms)}) - switching the voice to the CPU`);
+        forceCpu = true;
+        try {
+          localStorage.setItem("atsu.v.natCpu", "1");
+        } catch {
+        }
+        try {
+          worker.terminate();
+        } catch {
+        }
+        worker = null;
+        starting = null;
+        failAll("restarting on CPU");
+        await init();
+        got = await send(ys, voice);
+        pcm = await pcmOf(got.blob);
+        rms = rmsOf(pcm);
+      }
+      if (made++ < 6) note(`piece ${made}: ${s.text.length} chars -> ${(pcm.length / 24e3).toFixed(1)} s of audio in ${(got.ms / 1e3).toFixed(1)} s, level ${Math.round(rms)}, ${mode}`);
+      pcs.push(pcm);
       ms += got.ms;
       any = true;
       pcs.push(new Int16Array(Math.round(24e3 * 0.12)));
