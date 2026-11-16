@@ -108,7 +108,19 @@ PC keyboard: `↑` / `↓` = previous / next email, `F` = full screen on/off (wh
 
 PC resizing: drag the thin bars between the panes (they turn blue). Double-click a bar to reset.
 
-## Natural Japanese voice (beta)
+## Azure voice (cloud, natural, works on phones)
+
+1. Open an email → 🔊 → **Voice → Azure (cloud)**. The settings box opens the first time (later: **⚙**).
+2. Paste your **Azure Speech key** and type the **region** of your Speech resource (for example `japaneast`). Find both in the Azure portal → your Speech resource → **Keys and Endpoint**. Never put the key in the repo or in a chat.
+3. Pick the voices → **Save**.
+
+Staying free:
+- Azure's free plan (**F0**) gives 500,000 characters a month and **cannot charge you**: it just stops at the limit. Check in the Azure portal → your Speech resource → **Pricing tier**. If it says **Standard (S0)**, usage above the free amount is billed.
+- Each Japanese character counts as **2**. A 28,000-character newsletter is about 56,000, so the free amount is roughly 8–9 long newsletters a month.
+- AtsuMail's own limit (default 450,000) only counts what AtsuMail sends from this browser. Text Reader, or AtsuMail on another device, uses the same Azure allowance and is not included in that count.
+- With Azure on, the text of each sentence is sent to Microsoft to be spoken.
+
+## Natural Japanese voice (PC)
 
 - In the voice player choose **JA voice → Natural (beta)**. First use downloads about 190 MB (use Wi-Fi); after that it starts in a few seconds.
 - Made on your own device with open-source parts: [yomiscript](https://github.com/receptron/yomiscript) (Apache-2.0), Kokoro-82M voice (Apache-2.0), OpenJTalk dictionary, onnxruntime-web (MIT). Details in `lab/README.md`.

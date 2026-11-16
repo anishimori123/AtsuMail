@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1e1e1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>AtsuMail</title>
-<link rel="stylesheet" href="style.css?v=0.15.0">
+<link rel="stylesheet" href="style.css?v=0.16.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -66,10 +66,12 @@
         <div class="vrow">
           <label>EN <select id="vEn"></select></label>
           <label>JA <select id="vJa"></select></label>
-          <label title="Natural = a more human Japanese voice made on your device (first use downloads about 190 MB)">JA voice <select id="vEngine"><option value="device">Device</option><option value="natural">Natural (beta)</option></select></label>
+          <label title="Device = your phone/PC voice. Azure = natural cloud voice (needs your Azure key). Natural = made on the device, PC only.">Voice <select id="vEngine"><option value="device">Device</option><option value="azure">Azure (cloud)</option><option value="natural">Natural (PC)</option></select></label>
+          <button id="azGear" title="Azure voice settings">&#9881;</button>
           <label class="vauto" title="When this email ends, read the next (older) one in the folder"><input type="checkbox" id="vAuto"> Next email</label>
         </div>
         <div id="vNote" hidden></div>
+        <div id="vUse"></div>
         <div id="vNow"></div>
       </div>
       <div id="edge"></div>
@@ -108,6 +110,27 @@
     </section>
   </div>
 
+  <!-- Azure voice settings -->
+  <div id="azbox" hidden>
+    <div class="azin">
+      <b>Azure voice settings</b>
+      <p class="dim">Saved only in this browser. With the Azure voice on, the text of each sentence is sent to Microsoft Azure to be spoken.</p>
+      <label>Azure Speech key <input id="azKey" type="password" autocomplete="off" placeholder="paste your key here"></label>
+      <label>Region <input id="azRegion" type="text" autocomplete="off" placeholder="japaneast"></label>
+      <label>Japanese voice <select id="azVoiceJa">
+        <option value="ja-JP-NanamiNeural">Nanami (woman)</option><option value="ja-JP-MayuNeural">Mayu (woman)</option><option value="ja-JP-ShioriNeural">Shiori (woman)</option><option value="ja-JP-AoiNeural">Aoi (woman)</option>
+        <option value="ja-JP-KeitaNeural">Keita (man)</option><option value="ja-JP-DaichiNeural">Daichi (man)</option><option value="ja-JP-NaokiNeural">Naoki (man)</option>
+      </select></label>
+      <label>English voice <select id="azVoiceEn">
+        <option value="en-US-AvaNeural">Ava (woman)</option><option value="en-US-JennyNeural">Jenny (woman)</option><option value="en-US-AndrewNeural">Andrew (man)</option><option value="en-US-GuyNeural">Guy (man)</option>
+      </select></label>
+      <label>Monthly limit (characters; free plan = 500,000) <input id="azCap" type="number" min="0" max="500000" step="10000"></label>
+      <div id="azUse" class="dim"></div>
+      <p class="dim">Azure counts each Japanese character as 2. AtsuMail stops using Azure at this limit and goes back to the Device voice.</p>
+      <div class="azbtn"><button id="azSave">Save</button> <button id="azClose">Cancel</button></div>
+    </div>
+  </div>
+
   <!-- Debug log -->
   <div id="logbox" hidden>
     <div class="lbar">
@@ -123,11 +146,11 @@
   <div id="toast" hidden></div>
   <div id="status">Ready</div>
 
-  <script src="log.js?v=0.15.0"></script>
-  <script src="config.js?v=0.15.0"></script>
+  <script src="log.js?v=0.16.0"></script>
+  <script src="config.js?v=0.16.0"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="demo.js?v=0.15.0"></script>
-  <script src="voice.js?v=0.15.0"></script>
-  <script src="app.js?v=0.15.0"></script>
+  <script src="demo.js?v=0.16.0"></script>
+  <script src="voice.js?v=0.16.0"></script>
+  <script src="app.js?v=0.16.0"></script>
 </body>
 </html>

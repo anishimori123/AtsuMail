@@ -18,9 +18,9 @@ config:
 ---
 xychart-beta
   title "Lines of code changed per version"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0"]
   y-axis "Lines changed" 0 --> 400
-  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77, 105, 25, 24, 30, 90]
+  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77, 105, 25, 24, 30, 90, 148]
 ```
 
 Total time spent so far (minutes, adds up the Summary table below):
@@ -39,9 +39,9 @@ config:
 ---
 xychart-beta
   title "Total build time (minutes)"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0"]
   y-axis "Minutes" 0 --> 300
-  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214, 250, 258, 265, 271, 291]
+  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214, 250, 258, 265, 271, 291, 298]
 ```
 
 Update both graphs with every release (add the new version at the right end).
@@ -50,6 +50,7 @@ Update both graphs with every release (add the new version at the right end).
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.16.0 | 2026-11-15 | 7 min | Azure cloud voice (natural, light on the phone) with a built-in monthly character limit |
 | v0.15.0 | 2026-11-15 | 20 min | English words inside Japanese sentences are read by the English voice; lighter voice measured |
 | v0.14.3 | 2026-11-15 | 6 min | Natural voice switches back to Device by itself when the device is too slow; voice test page |
 | v0.14.2 | 2026-11-15 | 7 min | Natural voice: "Making natural voice…" note while waiting; version shown in the 🐞 log |
@@ -93,12 +94,27 @@ Update both graphs with every release (add the new version at the right end).
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **4 h 51 min** | |
+| **Total** | | **4 h 58 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.16.0 — 2026-11-15 — time spent: 7 min
+
+**What changed**
+- New voice choice in the player: **Azure (cloud)**. Natural Microsoft Azure voices for Japanese and English; nothing heavy runs on the phone.
+- **⚙** in the player opens Azure settings: key, region, Japanese voice, English voice, monthly limit. Saved only in this browser. The key is never written to the 🐞 log.
+- **Stays within the free amount:** AtsuMail counts the characters it sends each month the way Azure bills them (each Japanese character counts as 2) and stops at the limit (default 450,000 of the free 500,000), then uses the Device voice. The count shows in the player.
+- Only one sentence is fetched ahead, because unused audio still counts.
+- Wrong key/region (401/403), quota used up (429) or 3 network failures: a pink note explains and the Device voice takes over.
+- "Natural (beta)" renamed "Natural (PC)".
+- Privacy page: with Azure on, sentence text is sent to Microsoft.
+
+**Why**
+- On-device natural voices are too slow on the Pixel 10 (measured). A cloud voice is light on the phone and human-like.
+- Uses the plain web address of Azure's speech service instead of the large Azure library Text Reader loads.
 
 ## v0.15.0 — 2026-11-15 — time spent: 20 min (estimate)
 

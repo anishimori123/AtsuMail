@@ -147,6 +147,15 @@ body.full #edge, body.full #edgeR { top: 0; bottom: 60px; }
 #btnSpeak.on { background: #094771; color: #fff; }
 #btnSignIn.renew { background: #ff8fd1; color: #000; border-color: #ff8fd1; }
 
+/* ---------- Azure settings ---------- */
+#azbox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 10px; }
+#azbox .azin { background: #252526; border: 1px solid #444; padding: 12px; max-width: 420px; width: 100%; max-height: 95vh; overflow: auto; }
+#azbox label { display: block; margin: 8px 0 2px; color: #bbb; font-size: 12px; }
+#azbox input, #azbox select { display: block; width: 100%; background: #1e1e1e; color: #ddd; border: 1px solid #444; font: inherit; padding: 6px; margin-top: 2px; }
+#azbox .dim { color: #999; font-size: 12px; margin: 6px 0; }
+#azbox .azbtn { margin-top: 10px; } #azSave { background: #094771; color: #fff; }
+#vUse { color: #888; font-size: 11px; }
+
 /* ---------- Debug log ---------- */
 #btnLog.alert { background: #c62828; color: #fff; }
 #logbox { position: fixed; inset: 0; z-index: 50; background: #1e1e1e; display: flex; flex-direction: column;

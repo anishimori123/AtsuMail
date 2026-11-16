@@ -55,3 +55,4 @@ If something fails, write: **test number + what you saw + a screenshot**. That's
 27. Open a folder with several emails, open the top one, tap 🔊 ("Next email" ticked). When it ends, the next older email opens and reading continues. Untick "Next email": it stops at the end of the current email.
 28. Open a Japanese email, tap 🔊, choose JA voice → Natural (beta). After the download it reads in the Alpha voice; the highlight follows; ❚❚ / ⏭ / speed work. Switch back to Device: it changes at once. 🐞 shows "natural voice ready" and a speed line.
 29. Device voice: open a Japanese email that has English words (e.g. OpenAI, iPhone). Tap 🔊: the English words are spoken as English words, not letter by letter.
+30. Azure voice: 🔊 → Voice → Azure (cloud) → paste key + region → Save. It reads in the Azure voice; the player shows "Azure this month: N / 450,000". Wrong key: a pink note appears and the Device voice continues.

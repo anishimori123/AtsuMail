@@ -107,6 +107,7 @@ window.AtsuVoice = (() => {
     $("vStyle").innerHTML = Object.entries(STYLES).map(([k, s]) => `<option value="${k}" ${k === style ? "selected" : ""}>${s.label}</option>`).join("");
     $("vSpeed").textContent = speed.toFixed(1) + "x";
     $("vEngine").value = engine;
+    $("vUse").textContent = engine === "azure" ? azUseText() : "";
   }
 
   function show(text) { $("vNow").textContent = text; }
@@ -163,12 +164,103 @@ window.AtsuVoice = (() => {
       speakSeg();
     };
     // Natural voice (Kokoro) for Japanese sentences; English and anything it can't read use the device voice.
-    if (engine === "natural" && ja) {
+    if (engine === "azure" && azReady()) {
+      say(idx);
+      try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} (Azure) sentence ${idx + 1}/${parts.length}`); } catch {}
+      speakAzure(g, p, ja, st, next, deviceSpeak);
+    } else if (engine === "natural" && ja) {
       say(idx);
       try { window.AtsuLog && AtsuLog.state(`voice JA (natural) sentence ${idx + 1}/${parts.length}`); } catch {}
       speakNatural(g, p, st, next, deviceSpeak);
     } else deviceSpeak();
   }
+
+  // ---------- Azure cloud voice (Microsoft Azure Speech; the text of each sentence is sent to Azure) ----------
+  // Free plan: 500,000 characters a month, where each Japanese/Chinese/Korean character counts as 2.
+  // AtsuMail keeps its own count for the month and stops using Azure at the limit set here.
+  const AZ = {
+    get key() { return load("azKey", ""); }, get region() { return load("azRegion", "japaneast"); },
+    get voiceJa() { return load("azVoiceJa", "ja-JP-NanamiNeural"); }, get voiceEn() { return load("azVoiceEn", "en-US-AvaNeural"); },
+    get cap() { return load("azCap", 450000); },
+  };
+  const azMonth = () => new Date().toISOString().slice(0, 7);
+  function azUsed() { const u = load("azUse", null); return u && u.month === azMonth() ? u.chars : 0; }
+  function azAdd(n) { save("azUse", { month: azMonth(), chars: azUsed() + n }); }
+  // How Azure counts: every character, CJK characters twice.
+  const azCost = (t) => { let n = 0; for (const ch of t) n += /[⺀-鿿가-힯豈-﫿＀-￯　-〿]/.test(ch) ? 2 : 1; return n; };
+  const azReady = () => !!AZ.key && !azBlocked;
+  let azBlocked = false, azFails = 0;
+  const azCache = new Map();
+  const xml = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
+  function azNote(t) { $("vNote").textContent = t; $("vNote").hidden = false; }
+  function azStopUsing(why) {
+    azBlocked = true; azCache.clear();
+    log("voice", "Azure voice off: " + why);
+    azNote(why + " Using the Device voice.");
+  }
+  function azGet(text, ja) {
+    const key = (ja ? "j:" : "e:") + text;
+    if (azCache.has(key)) return azCache.get(key);
+    const clean = text.replace(/https?:\/\/\S+/g, " ").trim(), cost = azCost(clean);
+    if (azUsed() + cost > AZ.cap) return Promise.reject(Object.assign(new Error("monthly limit"), { limit: true }));
+    azAdd(cost);                                   // count before sending, so the limit can never be passed
+    const voice = ja ? AZ.voiceJa : AZ.voiceEn, lang = voice.slice(0, 5);
+    const pr = fetch(`https://${AZ.region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: "POST",
+      headers: { "Ocp-Apim-Subscription-Key": AZ.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3" },
+      body: `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}">${xml(clean)}</voice></speak>`,
+    }).then(async (r) => {
+      if (!r.ok) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status });
+      const blob = await r.blob();
+      if (!blob.size) throw new Error("Azure sent no audio");
+      return blob;
+    });
+    azCache.set(key, pr);
+    pr.catch(() => azCache.delete(key));
+    if (azCache.size > 12) azCache.delete(azCache.keys().next().value);
+    return pr;
+  }
+  function speakAzure(g, p, ja, st, next, fallback) {
+    if (!/[\p{L}\p{N}]/u.test(p.t.replace(/https?:\/\/\S+/g, ""))) { next(); return; }
+    const job = azGet(p.t, ja);
+    const q = parts[idx + 1]; if (q) azGet(q.t, isJa(q.t)).catch(() => {});      // only one sentence ahead: unused audio still counts
+    let waitT = setTimeout(() => { if (g === gen && playing) show(`⏳ Azure voice… ${idx + 1}/${parts.length}`); }, 700);
+    job.then((blob) => {
+      clearTimeout(waitT);
+      if (g !== gen || !playing) return;
+      azFails = 0; say(idx);
+      if (natUrl) URL.revokeObjectURL(natUrl);
+      natUrl = URL.createObjectURL(blob);
+      audio.src = natUrl; audio.volume = 1; audio.muted = false;
+      audio.playbackRate = Math.max(0.5, Math.min(3, st.rate * speed));
+      audio.onended = () => { if (g === gen) next(); };
+      audio.onerror = () => { if (g === gen && playing) { log("voice-error", "Azure audio could not play - device voice used"); fallback(); } };
+      audio.play().catch((e) => { if (g === gen && playing) { log("voice-error", "Azure: " + e.message + " - device voice used"); fallback(); } });
+      $("vUse").textContent = azUseText();
+    }).catch((e) => {
+      clearTimeout(waitT);
+      if (e.limit) azStopUsing(`Azure monthly limit reached (${azUsed().toLocaleString()} of ${AZ.cap.toLocaleString()} characters).`);
+      else if (e.status === 401 || e.status === 403) azStopUsing(`Azure refused the key (error ${e.status}): check the key and region in ⚙.`);
+      else if (e.status === 429) azStopUsing("Azure says the free amount is used up or too many requests (error 429).");
+      else { log("voice-error", "Azure failed: " + (e.message || e) + " - device voice used"); if (++azFails >= 3) azStopUsing("Azure could not be reached 3 times."); }
+      if (g === gen && playing) fallback();
+    });
+  }
+  const azUseText = () => `Azure this month: ${azUsed().toLocaleString()} / ${AZ.cap.toLocaleString()} characters`;
+  // settings box
+  function azOpenSettings() {
+    $("azKey").value = AZ.key; $("azRegion").value = AZ.region; $("azVoiceJa").value = AZ.voiceJa; $("azVoiceEn").value = AZ.voiceEn; $("azCap").value = AZ.cap;
+    $("azUse").textContent = azUseText(); $("azbox").hidden = false;
+  }
+  $("azSave").onclick = () => {
+    save("azKey", $("azKey").value.trim()); save("azRegion", $("azRegion").value.trim().toLowerCase() || "japaneast");
+    save("azVoiceJa", $("azVoiceJa").value); save("azVoiceEn", $("azVoiceEn").value);
+    save("azCap", Math.max(0, Math.min(500000, Math.round(+$("azCap").value) || 450000)));
+    azBlocked = false; azFails = 0; azCache.clear(); $("vNote").hidden = true; $("azbox").hidden = true;
+    if (AZ.key) { engine = "azure"; save("engine", engine); $("vEngine").value = "azure"; log("voice", "Azure settings saved"); restartIfPlaying(); }
+  };
+  $("azClose").onclick = () => { $("azbox").hidden = true; $("vEngine").value = engine; };
+  $("azGear").onclick = azOpenSettings;
 
   // ---------- Natural Japanese voice (open-source yomiscript + Kokoro, runs in the browser) ----------
   let engine = load("engine", "device"), natModule = null, natUrl = null, natFails = 0, natCount = 0;
@@ -290,7 +382,9 @@ window.AtsuVoice = (() => {
   $("vPrev").onclick = () => { idx = Math.max(0, idx - 1); playing ? play() : say(idx); };
   $("vNext").onclick = () => { idx = Math.min(parts.length - 1, idx + 1); playing ? play() : say(idx); };
   $("vClose").onclick = close;
-  $("vEngine").onchange = (e) => { $("vNote").hidden = true; engine = e.target.value; save("engine", engine); natFails = 0; log("voice", "Japanese voice: " + engine); restartIfPlaying(); };
+  $("vEngine").onchange = (e) => { $("vNote").hidden = true;
+    if (e.target.value === "azure" && !AZ.key) { azOpenSettings(); return; }     // first time: ask for the key
+    azBlocked = false; engine = e.target.value; save("engine", engine); natFails = 0; log("voice", "Japanese voice: " + engine); restartIfPlaying(); };
   $("vStyle").onchange = (e) => { style = e.target.value; save("style", style); restartIfPlaying(); };
   $("vEn").onchange = (e) => { voiceEn = e.target.value; save("voiceEn", voiceEn); restartIfPlaying(); };
   $("vJa").onchange = (e) => { voiceJa = e.target.value; save("voiceJa", voiceJa); restartIfPlaying(); };
