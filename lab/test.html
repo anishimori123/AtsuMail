@@ -23,8 +23,9 @@
 </head>
 <body>
 <h1>AtsuMail Voice Test</h1>
-<p class="dim">Tests 4 ways of running the natural voice on this device with one sentence: is there real sound, and how fast. Takes 1–3 minutes. Keep the screen on.</p>
-<button id="run">▶ Run test</button> <button id="copy">Copy result</button>
+<p class="dim">Tests a lighter, faster natural voice (Supertonic 3) on this device with one sentence. First run downloads the voice (a few hundred MB, use Wi-Fi): is there real sound, and how fast. Takes 1–3 minutes. Keep the screen on.</p>
+<button id="run">▶ Test the LIGHT voice</button> <button id="runAll" style="background:#2d2d2d">Test both voices</button> <button id="copy">Copy result</button>
+<div id="prog" class="dim"></div>
 <pre id="out">Tap "Run test".</pre>
 <div id="plays"></div>
 <script type="module">
@@ -50,6 +51,8 @@ const run = (q, limitMs) => new Promise((res, rej) => {
   w.onerror = (e) => { clearTimeout(to); rej(new Error(e.message || "worker error")); };
   w.postMessage({ id: 0, ys: null });
 });
+let which = "light";
+$("runAll").onclick = () => { which = "all"; $("run").click(); };
 $("run").onclick = async () => {
   $("run").disabled = true; $("plays").innerHTML = "";
   let adapter = "none";
@@ -61,7 +64,43 @@ $("run").onclick = async () => {
     ["Graphics chip: last part", "ep=webgpu&t=1&gp=dec"],
     ["Graphics chip: last two parts", "ep=webgpu&t=1&gp=f0n,dec"],
   ];
-  for (const [name, q] of tests) {
+  // ---- the lighter voice (Supertonic 3) ----
+  const text = "今日はとても良い天気ですね。";
+  const runSt = (q, steps, limitMs) => new Promise((res, rej) => {
+    const w = new Worker("st_worker.js?v=1&" + q, { type: "module" });
+    const t0 = performance.now(); let tReady = 0, mb = 0, threads = 0;
+    const to = setTimeout(() => { w.terminate(); rej(new Error("no answer after " + Math.round(limitMs / 1000) + " s")); }, limitMs);
+    w.onmessage = async ({ data }) => {
+      if (data.fatal) { clearTimeout(to); w.terminate(); return rej(new Error(data.fatal)); }
+      if (data.progress) { $("prog").textContent = data.progress; return; }
+      if (data.id === 0) { tReady = performance.now() - t0; mb = data.mb; threads = data.threads; w.postMessage({ id: 1, text, steps }); return; }
+      if (data.id === 1) { if (data.error) { clearTimeout(to); w.terminate(); return rej(new Error(data.error)); } w.postMessage({ id: 2, text, steps }); return; }
+      clearTimeout(to); $("prog").textContent = "";
+      if (data.error) { w.terminate(); return rej(new Error(data.error)); }
+      const pcm = new Int16Array((await data.blob.arrayBuffer()).slice(44));
+      let s2 = 0; for (const x of pcm) s2 += x * x;
+      w.terminate();
+      res({ blob: data.blob, sec: data.seconds, ms: data.ms, level: Math.round(Math.sqrt(s2 / Math.max(1, pcm.length))), readyS: tReady / 1000, mb, threads });
+    };
+    w.onerror = (e) => { clearTimeout(to); rej(new Error(e.message || "worker error")); };
+    w.postMessage({ id: 0, text: null });
+  });
+  const light = [
+    ["LIGHT voice, 4 threads, best quality (8 steps)", "t=4", 8],
+    ["LIGHT voice, 4 threads, faster (5 steps)", "t=4", 5],
+    ["LIGHT voice, 1 thread (inside the app), 5 steps", "t=1", 5],
+  ];
+  if (which !== "kokoro") for (const [name, q, steps] of light) {
+    say(`… ${name}`);
+    try {
+      const r = await runSt(q, steps, 600000);
+      const speed = r.ms / 1000 / r.sec, ok = r.level > 300 && r.sec > 1 && r.sec < 6;
+      say(`  ${ok ? "SOUND OK" : "WRONG / SILENT"} · level ${r.level} · ${r.sec.toFixed(2)} s audio made in ${(r.ms / 1000).toFixed(1)} s = ${speed.toFixed(2)} work per 1 s ${speed <= 0.9 ? "(fast enough)" : speed <= 1.3 ? "(borderline)" : "(too slow)"} · start-up ${r.readyS.toFixed(0)} s · ${r.mb} MB · threads ${r.threads}`);
+      const b = document.createElement("button"); b.textContent = "▶ Hear: " + name; const url = URL.createObjectURL(r.blob);
+      b.onclick = () => new Audio(url).play(); $("plays").append(b, document.createElement("br"));
+    } catch (e) { say(`  FAILED: ${e.message}`); }
+  }
+  if (which !== "light") for (const [name, q] of tests) {
     say(`… ${name}`);
     try {
       const r = await run(q, 240000);
@@ -71,6 +110,7 @@ $("run").onclick = async () => {
       b.onclick = () => new Audio(url).play(); $("plays").append(b, document.createElement("br"));
     } catch (e) { say(`  FAILED: ${e.message}`); }
   }
+  which = "light";
   say("\nDone. Tap each ▶ Hear button below, then Copy result and send it.");
   $("run").disabled = false;
 };
