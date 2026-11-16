@@ -108,6 +108,7 @@ window.AtsuVoice = (() => {
     $("vSpeed").textContent = speed.toFixed(1) + "x";
     $("vEngine").value = engine;
     $("vUse").textContent = engine === "azure" ? azUseText() : "";
+    if (engine !== "azure") $("vUse").classList.remove("warn");
   }
 
   function show(text) { $("vNow").textContent = text; }
@@ -292,7 +293,12 @@ window.AtsuVoice = (() => {
       if (g === gen && playing) fallback();
     });
   }
-  const azUseText = () => `Azure this month: ${azUsed().toLocaleString()} / ${AZ.cap.toLocaleString()} characters`;
+  const azUseText = () => {
+    const pct = AZ.cap ? Math.floor((azUsed() / AZ.cap) * 100) : 100;
+    // pink from 80% of the monthly limit
+    for (const id of ["vUse", "azUse"]) $(id).classList.toggle("warn", pct >= 80);
+    return `Azure this month: ${azUsed().toLocaleString()} / ${AZ.cap.toLocaleString()} characters (${pct}%)`;
+  };
   // settings box
   function azOpenSettings() {
     $("azKey").value = AZ.key; $("azRegion").value = AZ.region; $("azVoiceJa").value = AZ.voiceJa; $("azVoiceEn").value = AZ.voiceEn; $("azCap").value = AZ.cap;

@@ -18,9 +18,9 @@ config:
 ---
 xychart-beta
   title "Lines of code changed per version"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0", "0.16.1", "0.16.2"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0", "0.16.1", "0.16.2", "0.16.3"]
   y-axis "Lines changed" 0 --> 400
-  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77, 105, 25, 24, 30, 90, 148, 129, 38]
+  line [349, 97, 61, 8, 18, 10, 55, 10, 33, 29, 61, 11, 29, 20, 128, 14, 22, 17, 15, 186, 160, 52, 12, 23, 36, 20, 105, 29, 49, 226, 23, 27, 74, 200, 42, 77, 105, 25, 24, 30, 90, 148, 129, 38, 25]
 ```
 
 Total time spent so far (minutes, adds up the Summary table below):
@@ -39,9 +39,9 @@ config:
 ---
 xychart-beta
   title "Total build time (minutes)"
-  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0", "0.16.1", "0.16.2"]
+  x-axis ["0.1.0", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.1", "0.4.2", "0.4.4", "0.5.0", "0.5.2", "0.5.3", "0.5.4", "0.5.5", "0.6.0", "0.6.1", "0.6.2", "0.6.3", "0.6.4", "0.7.0", "0.7.2", "0.7.3", "0.8.0", "0.8.1", "0.8.2", "0.8.3", "0.9.0", "0.9.1", "0.9.2", "0.10.0", "0.10.1", "0.10.2", "0.11.0", "0.12.0", "0.12.1", "0.13.0", "0.14.0", "0.14.1", "0.14.2", "0.14.3", "0.15.0", "0.16.0", "0.16.1", "0.16.2", "0.16.3"]
   y-axis "Minutes" 0 --> 360
-  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214, 250, 258, 265, 271, 291, 298, 326, 344]
+  line [3, 4, 42, 45, 48, 49, 55, 56, 60, 62, 66, 67, 70, 74, 79, 82, 85, 87, 89, 96, 107, 117, 122, 127, 135, 139, 145, 149, 153, 162, 176, 181, 187, 202, 206, 214, 250, 258, 265, 271, 291, 298, 326, 344, 353]
 ```
 
 Update both graphs with every release (add the new version at the right end).
@@ -50,6 +50,7 @@ Update both graphs with every release (add the new version at the right end).
 
 | Version | Date | Time | What changed |
 |---|---|---|---|
+| v0.16.3 | 2026-11-15 | 9 min | Azure character count turns pink from 80% of the monthly limit |
 | v0.16.2 | 2026-11-15 | 18 min | Azure: clearer audio (higher quality, speed set by Azure instead of stretching) |
 | v0.16.1 | 2026-11-15 | 28 min | Azure: several sentences per request, paced under the free plan's rate limit, key check on Save |
 | v0.16.0 | 2026-11-15 | 7 min | Azure cloud voice (natural, light on the phone) with a built-in monthly character limit |
@@ -96,12 +97,20 @@ Update both graphs with every release (add the new version at the right end).
 | — | 2026-11-01 | 16 min | Test checklist (QA.md), GitHub Pages setup |
 | v0.2.0 | 2026-11-01 | 1 min | Reading mode, text size, full screen |
 | v0.1.0 | 2026-11-01 | 3 min | First version: dark read-only Gmail reader with demo mode |
-| **Total** | | **5 h 44 min** | |
+| **Total** | | **5 h 53 min** | |
 
 Time = clock time from the previous release to this one (includes waiting and testing).
 Add a new row at the top of this table for every release, and update the total.
 
 ---
+
+## v0.16.3 — 2026-11-15 — time spent: 9 min
+
+**What changed**
+- The "Azure this month" count shows the percentage used and turns **pink and bold** from 80% of the monthly limit, in the player and in ⚙.
+
+**Why**
+- An early warning before the free amount runs out.
 
 ## v0.16.2 — 2026-11-15 — time spent: 18 min
 
