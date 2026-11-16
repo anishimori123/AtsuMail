@@ -1,7 +1,7 @@
 // AtsuMail - a tiny, read-only Gmail reader. Runs fully in your browser.
 (() => {
   // App version. Must match version.json (both are bumped every release).
-  const APP_VERSION = "0.14.3";
+  const APP_VERSION = "0.15.0";
   window.ATSU_VERSION = APP_VERSION;
   // If we arrived via the auto-update link (…/?v=0.12.1), show the plain address again.
   if (/[?&]v=/.test(location.search)) history.replaceState(history.state, "", location.pathname + location.hash);

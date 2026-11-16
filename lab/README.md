@@ -14,3 +14,4 @@ Third-party code in this folder (not written for AtsuMail):
 - `ort/`: onnxruntime-web 1.22.0 (MIT, Microsoft).
 
 - `engine.js`: the same engine as a module for the AtsuMail app's "Natural (beta)" JA voice (bundles the same packages as `main.js`).
+- `test.html`, `st_worker.js`: speed/sound test for on-device voices; `st_worker.js` bundles `@yomiscript/supertonic` (Apache-2.0). Supertonic 3 model weights (downloaded at run time from Hugging Face, not stored here) are under OpenRAIL-M.

@@ -22,6 +22,22 @@ window.AtsuVoice = (() => {
   let style = load("style", "soft"), speed = load("speed", 1.0);
   let voiceEn = load("voiceEn", ""), voiceJa = load("voiceJa", "");
 
+  // Split a Japanese sentence into Japanese pieces and English pieces. A run of Latin text counts as
+  // English when it has a word of 3+ letters ("OpenAI", "machine learning"); short ones like "AI", "PC"
+  // stay with the Japanese voice, which says them the way Japanese speakers do.
+  function splitLang(text) {
+    const out = [], re = /[A-Za-z][A-Za-z0-9'’.&+\-]*(?:[ ,]+[A-Za-z0-9][A-Za-z0-9'’.&+\-]*)*/g;
+    let at = 0, m;
+    const push = (t, ja) => { if (!/[\p{L}\p{N}]/u.test(t)) { if (out.length) out[out.length - 1].t += t; return; } const last = out[out.length - 1]; if (last && last.ja === ja) last.t += t; else out.push({ t, ja }); };
+    while ((m = re.exec(text))) {
+      if (!/[A-Za-z]{3,}/.test(m[0])) continue;
+      if (m.index > at) push(text.slice(at, m.index), true);
+      push(m[0].replace(/[.,]+$/, ""), false);
+      at = m.index + m[0].length;
+    }
+    if (at < text.length) push(text.slice(at), true);
+    return out.length ? out : [{ t: text, ja: true }];
+  }
   const isJa = (s) => /[぀-ヿ㐀-鿿ｦ-ﾟ]/.test(s);
 
   // Best-sounding voices first: Edge "Online (Natural)", Apple "Premium/Enhanced", Google.
@@ -101,12 +117,6 @@ window.AtsuVoice = (() => {
     if (idx >= parts.length) { keepAwake(false); playing = false; setBtn(); show("Finished"); idx = 0; curU = null; hooks.onClear && hooks.onClear(); log("voice", "finished reading"); { const f = hooks.onFinish; f && f(); } return; }
     const p = parts[idx], st = STYLES[style] || STYLES.soft;
     const ja = isJa(p.t);
-    const u = new SpeechSynthesisUtterance(p.t.replace(/https?:\/\/\S+/g, " "));
-    const v = pick(ja ? "ja" : "en", ja ? voiceJa : voiceEn);
-    if (v) u.voice = v;
-    u.lang = v ? v.lang : (ja ? "ja-JP" : "en-US");
-    u.rate = Math.min(3, st.rate * speed);
-    u.pitch = st.pitch;
     const next = () => {
       clearTimeout(watchdog);
       if (g !== gen || !playing) return;
@@ -114,25 +124,43 @@ window.AtsuVoice = (() => {
       $("vBar").style.width = Math.round((idx / parts.length) * 100) + "%";
       timer = setTimeout(() => speakNext(g), (p.para ? st.paraGap : st.gap) / speed);
     };
-    u.onend = next;
-    u.onerror = (e) => {
-      if (e.error === "interrupted" || e.error === "canceled") return;
-      log("voice-error", `${e.error} at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars, voice: ${v ? v.name : "default"})`);
-      next();
-    };
+    // Device voice. A Japanese sentence with English words in it is spoken in pieces:
+    // Japanese pieces with the Japanese voice, English words with the English voice
+    // (otherwise the Japanese voice spells English out letter by letter).
     const deviceSpeak = () => {
-      curU = u;
+      const text = p.t.replace(/https?:\/\/\S+/g, " ");
+      const segs = ja ? splitLang(text) : [{ t: text, ja: false }];
+      let k = 0;
       say(idx);
       try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} sentence ${idx + 1}/${parts.length}`); } catch {}
-      try { synth.speak(u); } catch (err) { log("voice-error", "speak failed: " + err.message); next(); return; }
-      // Safety timer: if the voice engine never says "finished", skip ahead instead of freezing.
-      const limit = (p.t.length * (ja ? 330 : 120)) / Math.max(0.5, u.rate) + 8000;
-      clearTimeout(watchdog);
-      watchdog = setTimeout(() => {
-        if (g !== gen || !playing || curU !== u) return;
-        log("voice-stuck", `no "finished" after ${Math.round(limit / 1000)}s at sentence ${idx + 1}/${parts.length} (${ja ? "JA" : "EN"}, ${p.t.length} chars) - skipped`);
-        synth.cancel(); next();
-      }, limit);
+      const speakSeg = () => {
+        if (g !== gen || !playing) return;
+        if (k >= segs.length) { next(); return; }
+        const sg = segs[k], uu = new SpeechSynthesisUtterance(sg.t);
+        const vv = pick(sg.ja ? "ja" : "en", sg.ja ? voiceJa : voiceEn);
+        if (vv) uu.voice = vv;
+        uu.lang = vv ? vv.lang : (sg.ja ? "ja-JP" : "en-US");
+        uu.rate = Math.min(3, st.rate * speed);
+        uu.pitch = st.pitch;
+        const after = () => { if (curU !== uu) return; clearTimeout(watchdog); k++; speakSeg(); };
+        uu.onend = after;
+        uu.onerror = (e) => {
+          if (e.error === "interrupted" || e.error === "canceled") return;
+          log("voice-error", `${e.error} at sentence ${idx + 1}/${parts.length} (${sg.ja ? "JA" : "EN"}, ${sg.t.length} chars, voice: ${vv ? vv.name : "default"})`);
+          after();
+        };
+        curU = uu;
+        try { synth.speak(uu); } catch (err) { log("voice-error", "speak failed: " + err.message); after(); return; }
+        // Safety timer: if the voice engine never says "finished", skip ahead instead of freezing.
+        const limit = (sg.t.length * (sg.ja ? 330 : 120)) / Math.max(0.5, uu.rate) + 8000;
+        clearTimeout(watchdog);
+        watchdog = setTimeout(() => {
+          if (g !== gen || !playing || curU !== uu) return;
+          log("voice-stuck", `no "finished" after ${Math.round(limit / 1000)}s at sentence ${idx + 1}/${parts.length} (${sg.ja ? "JA" : "EN"}, ${sg.t.length} chars) - skipped`);
+          synth.cancel(); after();
+        }, limit);
+      };
+      speakSeg();
     };
     // Natural voice (Kokoro) for Japanese sentences; English and anything it can't read use the device voice.
     if (engine === "natural" && ja) {
@@ -271,5 +299,5 @@ window.AtsuVoice = (() => {
   if (synth) synth.onvoiceschanged = () => { if (!$("player").hidden) fillSelects(); };
   addEventListener("beforeunload", () => synth && synth.cancel());
 
-  return { open, close, stop, replace, jump, split, isOpen: () => !$("player").hidden, parts: () => parts };
+  return { open, close, stop, replace, jump, split, splitLang, isOpen: () => !$("player").hidden, parts: () => parts };
 })();
