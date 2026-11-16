@@ -31,6 +31,7 @@ A tiny, old-school, dark-mode Gmail **reader**. Made for phones: when you open a
 | `version.json` | Current version number; the app checks it to update itself |
 | `manifest.json` + `icon-*.png` | Lets you install it on PC or add it to your phone's Home Screen, with its own icon |
 | `QA.md` | Test checklist to run after every new version |
+| `VOICE_OPTIONS.md` | Voice plan: why Azure, what to do if the free amount runs out, other services compared |
 | `privacy.html` | Privacy policy (Google requires it for sign-in) |
 
 ## Try it (demo mode, no Google needed)
@@ -119,6 +120,7 @@ Staying free:
 - Each Japanese character counts as **2**. A 28,000-character newsletter is about 56,000, so the free amount is roughly 8–9 long newsletters a month.
 - AtsuMail's own limit (default 450,000) only counts what AtsuMail sends from this browser. Text Reader, or AtsuMail on another device, uses the same Azure allowance and is not included in that count.
 - With Azure on, the text of each sentence is sent to Microsoft to be spoken.
+- Other voice services, and what to do if the free amount ever runs out: see [VOICE_OPTIONS.md](VOICE_OPTIONS.md).
 
 ## Natural Japanese voice (PC)
 
