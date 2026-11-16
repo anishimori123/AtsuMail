@@ -118,12 +118,14 @@ window.AtsuVoice = (() => {
     if (idx >= parts.length) { keepAwake(false); playing = false; setBtn(); show("Finished"); idx = 0; curU = null; hooks.onClear && hooks.onClear(); log("voice", "finished reading"); { const f = hooks.onFinish; f && f(); } return; }
     const p = parts[idx], st = STYLES[style] || STYLES.soft;
     const ja = isJa(p.t);
+    let step = 1;                      // how many sentences this turn covers (Azure reads several per request)
     const next = () => {
       clearTimeout(watchdog);
       if (g !== gen || !playing) return;
-      idx++;
+      const lastPart = parts[idx + step - 1] || p;
+      idx += step;
       $("vBar").style.width = Math.round((idx / parts.length) * 100) + "%";
-      timer = setTimeout(() => speakNext(g), (p.para ? st.paraGap : st.gap) / speed);
+      timer = setTimeout(() => speakNext(g), (lastPart.para ? st.paraGap : st.gap) / speed);
     };
     // Device voice. A Japanese sentence with English words in it is spoken in pieces:
     // Japanese pieces with the Japanese voice, English words with the English voice
@@ -167,7 +169,13 @@ window.AtsuVoice = (() => {
     if (engine === "azure" && azReady()) {
       say(idx);
       try { window.AtsuLog && AtsuLog.state(`voice ${ja ? "JA" : "EN"} (Azure) sentence ${idx + 1}/${parts.length}`); } catch {}
-      speakAzure(g, p, ja, st, next, deviceSpeak);
+      const grp = azGroup(idx);
+      step = grp.n;
+      if (grp.n > 1 && hooks.onSay) {                       // highlight the whole group being read
+        const a = parts[idx].range, b = parts[idx + grp.n - 1].range;
+        if (a && b) { try { const r = a.cloneRange(); r.setEnd(b.endContainer, b.endOffset); hooks.onSay({ range: r }, idx); } catch {} }
+      }
+      speakAzure(g, grp, st, next, () => { step = 1; deviceSpeak(); });
     } else if (engine === "natural" && ja) {
       say(idx);
       try { window.AtsuLog && AtsuLog.state(`voice JA (natural) sentence ${idx + 1}/${parts.length}`); } catch {}
@@ -198,37 +206,69 @@ window.AtsuVoice = (() => {
     log("voice", "Azure voice off: " + why);
     azNote(why + " Using the Device voice.");
   }
+  // Azure's free plan allows about 20 requests a minute, so AtsuMail sends several sentences in one
+  // request (about 80+ characters each time) and never more than 14 requests in any 60 seconds.
+  function azGroup(i) {
+    const ja = isJa(parts[i].t);
+    let text = parts[i].t, n = 1;
+    while (parts[i + n] && isJa(parts[i + n].t) === ja && text.length < 80 && text.length + parts[i + n].t.length <= 300) {
+      text += (ja ? "" : " ") + parts[i + n].t; n++;
+    }
+    return { text, n, ja };
+  }
+  const azTimes = [];
+  async function azSlot() {
+    for (;;) {
+      const now = Date.now();
+      while (azTimes.length && now - azTimes[0] > 60000) azTimes.shift();
+      if (azTimes.length < 14) { azTimes.push(now); return; }
+      await new Promise((r) => setTimeout(r, 60000 - (now - azTimes[0]) + 200));
+    }
+  }
+  async function azFetch(clean, ja, tries = 3) {
+    const voice = ja ? AZ.voiceJa : AZ.voiceEn, lang = voice.slice(0, 5);
+    for (let k = 1; ; k++) {
+      await azSlot();
+      try {
+        const r = await fetch(`https://${AZ.region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+          method: "POST",
+          headers: { "Ocp-Apim-Subscription-Key": AZ.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3" },
+          body: `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}">${xml(clean)}</voice></speak>`,
+        });
+        if (r.status === 401 || r.status === 403 || r.status === 400) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status, final: true });
+        if (!r.ok) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status });
+        const blob = await r.blob();
+        if (!blob.size) throw new Error("Azure sent no audio");
+        return blob;
+      } catch (e) {
+        if (e.final || k >= tries) throw e;
+        // "busy" answers (429) often arrive as a plain network error in the browser: wait and try again
+        log("voice", `Azure busy or unreachable (${e.message}) - waiting ${k * 8} s, try ${k + 1}/${tries}`);
+        await new Promise((r) => setTimeout(r, k * 8000));
+      }
+    }
+  }
   function azGet(text, ja) {
     const key = (ja ? "j:" : "e:") + text;
     if (azCache.has(key)) return azCache.get(key);
     const clean = text.replace(/https?:\/\/\S+/g, " ").trim(), cost = azCost(clean);
     if (azUsed() + cost > AZ.cap) return Promise.reject(Object.assign(new Error("monthly limit"), { limit: true }));
     azAdd(cost);                                   // count before sending, so the limit can never be passed
-    const voice = ja ? AZ.voiceJa : AZ.voiceEn, lang = voice.slice(0, 5);
-    const pr = fetch(`https://${AZ.region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-      method: "POST",
-      headers: { "Ocp-Apim-Subscription-Key": AZ.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3" },
-      body: `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}">${xml(clean)}</voice></speak>`,
-    }).then(async (r) => {
-      if (!r.ok) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status });
-      const blob = await r.blob();
-      if (!blob.size) throw new Error("Azure sent no audio");
-      return blob;
-    });
+    const pr = azFetch(clean, ja);
     azCache.set(key, pr);
     pr.catch(() => azCache.delete(key));
-    if (azCache.size > 12) azCache.delete(azCache.keys().next().value);
+    if (azCache.size > 8) azCache.delete(azCache.keys().next().value);
     return pr;
   }
-  function speakAzure(g, p, ja, st, next, fallback) {
-    if (!/[\p{L}\p{N}]/u.test(p.t.replace(/https?:\/\/\S+/g, ""))) { next(); return; }
-    const job = azGet(p.t, ja);
-    const q = parts[idx + 1]; if (q) azGet(q.t, isJa(q.t)).catch(() => {});      // only one sentence ahead: unused audio still counts
-    let waitT = setTimeout(() => { if (g === gen && playing) show(`⏳ Azure voice… ${idx + 1}/${parts.length}`); }, 700);
+  function speakAzure(g, grp, st, next, fallback) {
+    if (!/[\p{L}\p{N}]/u.test(grp.text.replace(/https?:\/\/\S+/g, ""))) { next(); return; }
+    const at = idx, job = azGet(grp.text, grp.ja);
+    if (parts[at + grp.n]) { const nx = azGroup(at + grp.n); azGet(nx.text, nx.ja).catch(() => {}); }   // one group ahead only: unused audio still counts
+    let waitT = setTimeout(() => { if (g === gen && playing) show(`⏳ Azure voice… ${at + 1}/${parts.length}`); }, 900);
     job.then((blob) => {
       clearTimeout(waitT);
       if (g !== gen || !playing) return;
-      azFails = 0; say(idx);
+      azFails = 0; show(`${at + 1}${grp.n > 1 ? "–" + (at + grp.n) : ""}/${parts.length}  ${grp.text}`);
       if (natUrl) URL.revokeObjectURL(natUrl);
       natUrl = URL.createObjectURL(blob);
       audio.src = natUrl; audio.volume = 1; audio.muted = false;
@@ -241,8 +281,10 @@ window.AtsuVoice = (() => {
       clearTimeout(waitT);
       if (e.limit) azStopUsing(`Azure monthly limit reached (${azUsed().toLocaleString()} of ${AZ.cap.toLocaleString()} characters).`);
       else if (e.status === 401 || e.status === 403) azStopUsing(`Azure refused the key (error ${e.status}): check the key and region in ⚙.`);
-      else if (e.status === 429) azStopUsing("Azure says the free amount is used up or too many requests (error 429).");
-      else { log("voice-error", "Azure failed: " + (e.message || e) + " - device voice used"); if (++azFails >= 3) azStopUsing("Azure could not be reached 3 times."); }
+      else {
+        log("voice-error", "Azure failed after 3 tries: " + (e.message || e) + " - device voice used for this part");
+        if (++azFails >= 3) azStopUsing("Azure could not be reached for 3 parts in a row (each tried 3 times).");
+      }
       if (g === gen && playing) fallback();
     });
   }
@@ -253,12 +295,32 @@ window.AtsuVoice = (() => {
     $("azUse").textContent = azUseText(); $("azbox").hidden = false;
   }
   $("azSave").onclick = () => {
-    save("azKey", $("azKey").value.trim()); save("azRegion", $("azRegion").value.trim().toLowerCase() || "japaneast");
+    save("azKey", $("azKey").value.trim()); save("azRegion", $("azRegion").value.toLowerCase().replace(/[^a-z0-9]/g, "") || "japaneast");
     save("azVoiceJa", $("azVoiceJa").value); save("azVoiceEn", $("azVoiceEn").value);
     save("azCap", Math.max(0, Math.min(500000, Math.round(+$("azCap").value) || 450000)));
     azBlocked = false; azFails = 0; azCache.clear(); $("vNote").hidden = true; $("azbox").hidden = true;
-    if (AZ.key) { engine = "azure"; save("engine", engine); $("vEngine").value = "azure"; log("voice", "Azure settings saved"); restartIfPlaying(); }
+    if (!AZ.key) return;
+    engine = "azure"; save("engine", engine); $("vEngine").value = "azure"; log("voice", "Azure settings saved");
+    // Check the key straight away with one tiny request, and say plainly whether it works.
+    const k = AZ.key;
+    if (/^https?:|\s|[^A-Za-z0-9]/.test(k) || k.length < 20) {
+      azStopUsing("That doesn't look like an Azure key (a key is one long run of letters and numbers, no spaces, not a web address). Open ⚙ and paste KEY 1 again.");
+      return;
+    }
+    azNote("Checking the Azure key…");
+    azAdd(azCost("テスト"));
+    azFetch("テスト", true, 1).then(() => {
+      azNote("✓ Azure key works. Reading with the Azure voice."); log("voice", "Azure key check: OK");
+      setTimeout(() => { if ($("vNote").textContent.startsWith("✓")) $("vNote").hidden = true; }, 6000);
+      restartIfPlaying();
+    }).catch((e) => {
+      log("voice", "Azure key check failed: " + (e.status || e.message));
+      if (e.status === 401 || e.status === 403) azStopUsing(`Azure refused the key (error ${e.status}). Check that the key was copied fully and the region is where the resource was made (japaneast).`);
+      else azStopUsing(`Could not reach Azure with region "${AZ.region}" (${e.status || "network error"}). Check the region spelling in ⚙.`);
+    });
   };
+  // Show how long the pasted key is (not the key itself), so a wrong paste is obvious
+  $("azKey").oninput = () => { const k = $("azKey").value.trim(); $("azLen").textContent = !k ? "" : /^https?:/.test(k) ? "⚠ This is a web address, not a key." : /[^A-Za-z0-9]/.test(k) ? "⚠ A key has only letters and numbers." : `${k.length} characters pasted` + (k.length < 20 ? " (too short for a key)" : ""); };
   $("azClose").onclick = () => { $("azbox").hidden = true; $("vEngine").value = engine; };
   $("azGear").onclick = azOpenSettings;
 

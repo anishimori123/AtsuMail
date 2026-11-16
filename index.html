@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1e1e1e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>AtsuMail</title>
-<link rel="stylesheet" href="style.css?v=0.16.0">
+<link rel="stylesheet" href="style.css?v=0.16.1">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -116,6 +116,7 @@
       <b>Azure voice settings</b>
       <p class="dim">Saved only in this browser. With the Azure voice on, the text of each sentence is sent to Microsoft Azure to be spoken.</p>
       <label>Azure Speech key <input id="azKey" type="password" autocomplete="off" placeholder="paste your key here"></label>
+      <div id="azLen" class="dim"></div>
       <label>Region <input id="azRegion" type="text" autocomplete="off" placeholder="japaneast"></label>
       <label>Japanese voice <select id="azVoiceJa">
         <option value="ja-JP-NanamiNeural">Nanami (woman)</option><option value="ja-JP-MayuNeural">Mayu (woman)</option><option value="ja-JP-ShioriNeural">Shiori (woman)</option><option value="ja-JP-AoiNeural">Aoi (woman)</option>
@@ -146,11 +147,11 @@
   <div id="toast" hidden></div>
   <div id="status">Ready</div>
 
-  <script src="log.js?v=0.16.0"></script>
-  <script src="config.js?v=0.16.0"></script>
+  <script src="log.js?v=0.16.1"></script>
+  <script src="config.js?v=0.16.1"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="demo.js?v=0.16.0"></script>
-  <script src="voice.js?v=0.16.0"></script>
-  <script src="app.js?v=0.16.0"></script>
+  <script src="demo.js?v=0.16.1"></script>
+  <script src="voice.js?v=0.16.1"></script>
+  <script src="app.js?v=0.16.1"></script>
 </body>
 </html>
