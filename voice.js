@@ -225,15 +225,18 @@ window.AtsuVoice = (() => {
       await new Promise((r) => setTimeout(r, 60000 - (now - azTimes[0]) + 200));
     }
   }
-  async function azFetch(clean, ja, tries = 3) {
+  async function azFetch(clean, ja, tries = 3, rate = 1) {
+    // Azure speaks at the chosen speed itself (cleaner than the phone stretching the audio afterwards)
+    const pct = Math.round((Math.max(0.5, Math.min(3, rate)) - 1) * 100);
+    const inner = pct ? `<prosody rate="${pct > 0 ? "+" : ""}${pct}%">${xml(clean)}</prosody>` : xml(clean);
     const voice = ja ? AZ.voiceJa : AZ.voiceEn, lang = voice.slice(0, 5);
     for (let k = 1; ; k++) {
       await azSlot();
       try {
         const r = await fetch(`https://${AZ.region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
           method: "POST",
-          headers: { "Ocp-Apim-Subscription-Key": AZ.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3" },
-          body: `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}">${xml(clean)}</voice></speak>`,
+          headers: { "Ocp-Apim-Subscription-Key": AZ.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "audio-48khz-96kbitrate-mono-mp3" },
+          body: `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}">${inner}</voice></speak>`,
         });
         if (r.status === 401 || r.status === 403 || r.status === 400) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status, final: true });
         if (!r.ok) throw Object.assign(new Error("Azure answered " + r.status), { status: r.status });
@@ -248,13 +251,13 @@ window.AtsuVoice = (() => {
       }
     }
   }
-  function azGet(text, ja) {
-    const key = (ja ? "j:" : "e:") + text;
+  function azGet(text, ja, rate = 1) {
+    const key = (ja ? "j:" : "e:") + rate.toFixed(2) + ":" + text;
     if (azCache.has(key)) return azCache.get(key);
     const clean = text.replace(/https?:\/\/\S+/g, " ").trim(), cost = azCost(clean);
     if (azUsed() + cost > AZ.cap) return Promise.reject(Object.assign(new Error("monthly limit"), { limit: true }));
     azAdd(cost);                                   // count before sending, so the limit can never be passed
-    const pr = azFetch(clean, ja);
+    const pr = azFetch(clean, ja, 3, rate);
     azCache.set(key, pr);
     pr.catch(() => azCache.delete(key));
     if (azCache.size > 8) azCache.delete(azCache.keys().next().value);
@@ -262,8 +265,9 @@ window.AtsuVoice = (() => {
   }
   function speakAzure(g, grp, st, next, fallback) {
     if (!/[\p{L}\p{N}]/u.test(grp.text.replace(/https?:\/\/\S+/g, ""))) { next(); return; }
-    const at = idx, job = azGet(grp.text, grp.ja);
-    if (parts[at + grp.n]) { const nx = azGroup(at + grp.n); azGet(nx.text, nx.ja).catch(() => {}); }   // one group ahead only: unused audio still counts
+    const rate = st.rate * speed;
+    const at = idx, job = azGet(grp.text, grp.ja, rate);
+    if (parts[at + grp.n]) { const nx = azGroup(at + grp.n); azGet(nx.text, nx.ja, rate).catch(() => {}); }   // one group ahead only: unused audio still counts
     let waitT = setTimeout(() => { if (g === gen && playing) show(`⏳ Azure voice… ${at + 1}/${parts.length}`); }, 900);
     job.then((blob) => {
       clearTimeout(waitT);
@@ -272,7 +276,7 @@ window.AtsuVoice = (() => {
       if (natUrl) URL.revokeObjectURL(natUrl);
       natUrl = URL.createObjectURL(blob);
       audio.src = natUrl; audio.volume = 1; audio.muted = false;
-      audio.playbackRate = Math.max(0.5, Math.min(3, st.rate * speed));
+      audio.playbackRate = 1;                       // the speed is already in the audio
       audio.onended = () => { if (g === gen) next(); };
       audio.onerror = () => { if (g === gen && playing) { log("voice-error", "Azure audio could not play - device voice used"); fallback(); } };
       audio.play().catch((e) => { if (g === gen && playing) { log("voice-error", "Azure: " + e.message + " - device voice used"); fallback(); } });
