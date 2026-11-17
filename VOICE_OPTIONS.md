@@ -1,10 +1,48 @@
 # Voice options for AtsuMail
 
-Written 2026-11-15. A rough comparison, kept here in case the voice plan needs to change later.
+Written 2026-11-15, updated 2026-11-17. A rough comparison, kept here in case the voice plan needs to change later.
 
 ## Decision
 
 **Stay on Azure, Free (F0) plan.** It sounds natural in Japanese, works on PC and Pixel, and cannot charge anything: it simply stops at the monthly limit.
+
+## Can Azure charge the card? (checked 2026-11-17)
+
+Short answer: **not by reaching the character limit.** A charge needs a deliberate change in the Azure portal.
+
+There are two separate things in Azure:
+
+| Thing | Now | What it decides |
+|---|---|---|
+| **The account** ("Azure subscription 1") | 30-day free trial, started 2026-11-15 | Whether Microsoft is *able* to bill the card |
+| **The Speech resource** (`atsumail-speech`) pricing tier | **Free (F0)** | What happens at the limit: on Free it **stops** until the 1st of next month |
+
+Two locks before any money moves:
+
+1. AtsuMail stops sending at its own limit (default 450,000) and the count turns pink at 80%.
+2. Azure's Free tier stops at 500,000 characters a month. It never switches to paid by itself.
+
+### The 30-day trial (ends about 2026-12-15)
+
+- When the trial ends, Microsoft **disables** the account. The Azure voice stops working. Nothing is charged.
+- To keep the Azure voice: in the Azure portal choose **Upgrade** (to "pay-as-you-go"). The Speech resource stays on Free and still stops at the limit.
+- Downside of upgrading: the account as a whole can then bill the card. The Free tier still protects the voice, but these would cost money:
+  - changing the Speech **Pricing tier** from Free to Standard (S0),
+  - creating any other paid service in the account.
+- If upgrading, set a **budget alert** first (Azure portal → Cost Management → Budgets, for example $1). It is free and emails when anything is spent.
+- Or do not upgrade: use **Voice → Device** (free, no limit).
+
+### How to check at any time
+
+1. Open https://portal.azure.com
+2. Click **atsumail-speech**. The line **Pricing tier** must say **Free**.
+3. Click **Subscriptions → Azure subscription 1**. **Current cost** must say **$0.00**.
+4. **All resources** must list only `atsumail-speech`.
+
+### Notes
+
+- The $1 seen on the card on 2026-11-16 was Microsoft's temporary card check at sign-up. Microsoft says it is reversed. Azure showed $0.00 spent.
+- Not confirmed: Microsoft's free list shows the Speech allowance with a "12 months" label. Re-check around **October 2027** that the Free tier still works and still stops at the limit.
 
 ## If the free amount runs out
 
